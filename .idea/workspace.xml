@@ -18,6 +18,14 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
   <component name="ProjectId" id="1pnahZM2McgyGaAg0B1oZE9D4Bi" />
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
@@ -92,7 +100,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="MulticastServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+    <configuration name="MulticastServer" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="MulticastServer" />
       <module name="Projeto-SD" />
       <method v="2">
@@ -106,10 +114,18 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="VotingTerm" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="VotingTerm" />
+      <module name="Projeto-SD" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.MulticastServer" />
         <item itemvalue="Application.RmiServer" />
+        <item itemvalue="Application.VotingTerm" />
       </list>
     </recent_temporary>
   </component>

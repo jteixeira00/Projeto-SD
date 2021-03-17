@@ -10,26 +10,35 @@ import java.rmi.RemoteException;
 
 
 public class MulticastServer extends Thread {
-    private String MULTICAST_ADDRESS = "224.3.2.1";
+    private static String MULTICAST_ADDRESS;
     private int PORT = 4321;
     private long SLEEP_TIME = 5000;
+    private static int tableNumber;
 
     public static void main(String[] args) {
+        try {
+            RmiInterface ti = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+            MULTICAST_ADDRESS = ti.getNewAddress();
+            tableNumber = ti.getTableNumber();
+
+        }
+        catch (NotBoundException|MalformedURLException|RemoteException e) {
+            e.printStackTrace();
+        }
         MulticastServer server = new MulticastServer();
         server.start();
-
         client cliente = new client();
         cliente.start();
     }
 
     public MulticastServer() {
-        super("Server " + (long) (Math.random() * 1000));
+        super("Table Number " + tableNumber);
     }
 
     public void run() {
         MulticastSocket socket = null;
         long counter = 0;
-        System.out.println(this.getName() + " running...");
+        System.out.println(this.getName() + " running in address " + MULTICAST_ADDRESS);
         try {
             socket = new MulticastSocket();  // create socket without binding it (only for sending)
             while (true) {
@@ -39,7 +48,6 @@ public class MulticastServer extends Thread {
                 InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
                 socket.send(packet);
-
                 try { sleep((long) (Math.random() * SLEEP_TIME)); } catch (InterruptedException e) { }
             }
         } catch (IOException e) {
