@@ -25,6 +25,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public int getTableNumber() throws RemoteException{
         return addressEnd++;
     }
+
     public static void main(String args[]){
         try {
             RmiInterface ri = new RmiServer();

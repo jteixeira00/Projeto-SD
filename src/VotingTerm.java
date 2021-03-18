@@ -2,12 +2,13 @@ import java.net.MulticastSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.io.IOException;
+import java.util.Scanner;
+
 
 public class VotingTerm extends Thread{
 
-    private String MULTICAST_ADDRESS = "224.3.2.1";
+    private static String MULTICAST_ADDRESS = "224.3.2.";
     private int PORT = 4321;
-
     public static void main(String[] args){
         VotingTerm client = new VotingTerm();
         client.start();
@@ -16,6 +17,11 @@ public class VotingTerm extends Thread{
     public void run() {
         MulticastSocket socket = null;
         try {
+            System.out.println( "A que mesa de voto deseja ligar-se?");
+            Scanner in = new Scanner(System.in);
+            String s = in.nextLine();
+            MULTICAST_ADDRESS = MULTICAST_ADDRESS+s;
+            System.out.println("Terminal de voto conectado à mesa nº "+s);
             socket = new MulticastSocket(PORT);  // create socket and bind it
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
@@ -34,5 +40,5 @@ public class VotingTerm extends Thread{
             socket.close();
         }
     }
-
 }
+

@@ -89,7 +89,14 @@
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
-  <component name="RunManager" selected="Application.MulticastServer">
+  <component name="RunManager" selected="Application.AdminTerminal">
+    <configuration name="AdminTerminal" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="AdminTerminal" />
+      <module name="Projeto-SD" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Main" type="Application" factoryName="Application" temporary="true">
       <option name="MAIN_CLASS_NAME" value="com.company.Main" />
       <module name="Projeto-SD" />
@@ -123,9 +130,10 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.AdminTerminal" />
+        <item itemvalue="Application.VotingTerm" />
         <item itemvalue="Application.MulticastServer" />
         <item itemvalue="Application.RmiServer" />
-        <item itemvalue="Application.VotingTerm" />
       </list>
     </recent_temporary>
   </component>
