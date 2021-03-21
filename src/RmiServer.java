@@ -9,6 +9,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public ArrayList<String> addressPool;
     public int addressEnd = 1;
     public String baseAddress = "224.3.2.";
+    public static int idCounter = 1;
     public RmiServer() throws RemoteException{
         super();
     }
@@ -35,4 +36,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             System.out.println("RMI SERVER EXCEPTION: " + ex1);
         }
     }
+
+
 }
