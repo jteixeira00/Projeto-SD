@@ -27,6 +27,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return addressEnd++;
     }
 
+
+
     public static void main(String args[]){
         try {
             RmiInterface ri = new RmiServer();
@@ -37,5 +39,25 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
     }
 
+    @Override
+    public boolean login(String numero, String password) throws RemoteException {
+        System.out.println("Procurando utilizador com nº " + numero);
+        boolean result = false;
+        return result;
+    }
+    @Override
+    public ArrayList<Eleicao> getEleicoes() throws RemoteException {
 
+        return null;
+    }
+
+    @Override
+    public ArrayList<Pessoa> getPessoas() throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public ArrayList<MulticastServer> getMesas() throws RemoteException {
+        return null;
+    }
 }

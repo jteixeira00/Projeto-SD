@@ -1,10 +1,11 @@
 import javax.lang.model.element.NestingKind;
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Eleicao {
+public class Eleicao implements Serializable{
     private final String titulo;
     private final String descricao;
     private final Date startDate;
@@ -49,5 +50,41 @@ public class Eleicao {
                 this.tipoVoters = Pessoa.voterType.FUNCIONARIO;
                 break;
         }
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Pessoa.voterType getTipoVoters() {
+        return tipoVoters;
+    }
+
+    public void setTipoVoters(Pessoa.voterType tipoVoters) {
+        this.tipoVoters = tipoVoters;
+    }
+
+    public ArrayList<String> getOrgVoters() {
+        return orgVoters;
+    }
+
+    public void setOrgVoters(ArrayList<String> orgVoters) {
+        this.orgVoters = orgVoters;
     }
 }
