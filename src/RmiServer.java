@@ -3,6 +3,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
@@ -10,17 +11,19 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public ArrayList<String> addressPool;
     public int addressEnd = 1;
     public String baseAddress = "224.3.2.";
-    public static int idCounter = 1;
+
 
     private ArrayList<Eleicao> listaEleicoes;
     private ArrayList<Pessoa> listaPessoas;
     private ArrayList<Pessoa> pessoasOnline;
+    private ArrayList<MulticastServer> listaMesas;
 
     public RmiServer() throws RemoteException{
         super();
         this.listaPessoas = new ArrayList<>();
         this.listaEleicoes = new ArrayList<>();
         this.pessoasOnline = new ArrayList<>();
+        this.listaMesas = new ArrayList<>();
     }
 
     public double add(double a, double b) throws RemoteException{
@@ -50,12 +53,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
     }
 
-    @Override
-    public boolean login(String numero, String password) throws RemoteException {
-        System.out.println("Procurando utilizador com nº " + numero);
-        boolean result = false;
-        return result;
-    }
+
+
+
     @Override
     public ArrayList<Eleicao> getEleicoes() throws RemoteException {
         return listaEleicoes;
@@ -71,10 +71,53 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return null;
     }
 
-//  ====================== FILES =============================
+
+    /* ================ LOGINS LOGOUTS ======================== */
+
+
+    @Override
+    public boolean login(String numero, String password) throws RemoteException {
+        System.out.println("Procurando utilizador com nº " + numero);
+        Pessoa p = getPessoabyNumber(numero);
+        if (p.getPassword().equals(password)){
+            //check if user already online
+            if (this.pessoasOnline.contains(p)) {
+                return false;
+            }
+            addOnlineUser(p);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public void logout(String numero) throws RemoteException{
+        this.pessoasOnline.remove(getPessoabyNumber(numero));
+    }
+
+    /* =============== Eleições e votar ===============*/
+
+    public ArrayList<Eleicao> eleicoesOngoing() throws RemoteException {
+        ArrayList<Eleicao> res = new ArrayList<>();
+        Date date = new Date();
+        for(Eleicao e:getEleicoes()){
+            if(date.after(e.getStartDate()) && date.before(e.getEndDate())){
+                res.add(e);
+            }
+        }
+        return res;
+    }
+
+    public ArrayList<Lista> getListasCandidatas(Eleicao e){
+        return e.getListasCandidatas();
+    }
+
+    /* ====================== FILES =========================== */
     public void load(){
         ObjectInputStream is1 = null;
         ObjectInputStream is2 = null;
+        ObjectInputStream is3 = null;
         try{
             FileInputStream stream = new FileInputStream("eleicoes.data");
             is1 = new ObjectInputStream(stream);
@@ -83,6 +126,10 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             stream = new FileInputStream("pessoas.data");
             is2 = new ObjectInputStream(stream);
             this.listaPessoas = (ArrayList<Pessoa>) is2.readObject();
+
+            stream = new FileInputStream("mesas.data");
+            is3 = new ObjectInputStream(stream);
+            this.listaMesas = (ArrayList<MulticastServer>) is3.readObject();
 
         }
         catch(Exception e){
@@ -96,6 +143,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
                 if (is2 != null) {
                     is2.close();
                 }
+                if (is3 != null) {
+                    is3.close();
+                }
             }
             catch(IOException e){
                 e.printStackTrace();
@@ -106,6 +156,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public void save(){
         ObjectOutputStream os1 = null;
         ObjectOutputStream os2 = null;
+        ObjectOutputStream os3 = null;
 
         try{
             FileOutputStream stream = new FileOutputStream("eleicoes.data");
@@ -115,6 +166,11 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             stream = new FileOutputStream("pessoas.data");
             os2 = new ObjectOutputStream(stream);
             os2.writeObject(this.listaPessoas);
+
+            stream = new FileOutputStream("mesas.data");
+            os3 = new ObjectOutputStream(stream);
+            os3.writeObject(this.listaMesas);
+
         }
         catch(IOException e){
             e.printStackTrace();
@@ -127,6 +183,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
                 if (os2 != null) {
                     os2.close();
                 }
+                if (os3 != null) {
+                    os3.close();
+                }
             }
             catch(IOException e){
                 e.printStackTrace();
@@ -135,5 +194,21 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
 
+
+    /* === AUX METHODS === */
+
+    public Pessoa getPessoabyNumber(String numero){
+        for(Pessoa p:this.listaPessoas){
+            if (p.getNumero().equals(numero)){
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public void addOnlineUser(Pessoa p){
+        this.pessoasOnline.add(p);
+
+    }
 }
 

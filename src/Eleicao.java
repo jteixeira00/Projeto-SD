@@ -10,7 +10,7 @@ public class Eleicao implements Serializable{
     private final String descricao;
     private final Date startDate;
     private final Date endDate;
-    private final int id;
+    private ArrayList<Lista> listasCandidatas;
     Pessoa.voterType tipoVoters;
     ArrayList<String> orgVoters;
 
@@ -19,7 +19,7 @@ public class Eleicao implements Serializable{
         this.descricao = descricao;
         this.startDate = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(startDate, startHour,startMinute));
         this.endDate = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(endDate, endHour, endMinute));
-        this.id = RmiServer.idCounter++;
+
     }
 
     public String parseDate(String date, int hour, int minute){
@@ -68,10 +68,6 @@ public class Eleicao implements Serializable{
         return endDate;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public Pessoa.voterType getTipoVoters() {
         return tipoVoters;
     }
@@ -86,5 +82,13 @@ public class Eleicao implements Serializable{
 
     public void setOrgVoters(ArrayList<String> orgVoters) {
         this.orgVoters = orgVoters;
+    }
+
+    public ArrayList<Lista> getListasCandidatas() {
+        return listasCandidatas;
+    }
+
+    public void setListasCandidatas(ArrayList<Lista> listasCandidatas) {
+        this.listasCandidatas = listasCandidatas;
     }
 }

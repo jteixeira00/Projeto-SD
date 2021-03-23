@@ -89,7 +89,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="codeWithMe.voiceChat.enabledByDefault" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="Errors" />
   </component>
   <component name="RunManager" selected="Application.MulticastServer">
     <configuration name="AdminTerminal" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
