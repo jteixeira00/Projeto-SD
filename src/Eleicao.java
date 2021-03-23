@@ -8,17 +8,20 @@ import java.util.Date;
 public class Eleicao implements Serializable{
     private final String titulo;
     private final String descricao;
+    private final String departamento;
     private final Date startDate;
     private final Date endDate;
     private ArrayList<Lista> listasCandidatas;
     Pessoa.voterType tipoVoters;
     ArrayList<String> orgVoters;
 
-    Eleicao(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute) throws ParseException {
+    Eleicao(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento) throws ParseException {
         this.titulo = titulo;
         this.descricao = descricao;
         this.startDate = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(startDate, startHour,startMinute));
         this.endDate = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(endDate, endHour, endMinute));
+        this.departamento = departamento;
+
 
     }
 
