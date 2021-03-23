@@ -21,10 +21,10 @@ public class VotingTerm extends Thread{
             Scanner in = new Scanner(System.in);
             String s = in.nextLine();
             MULTICAST_ADDRESS = MULTICAST_ADDRESS+s;
-            System.out.println("Terminal de voto conectado à mesa nº "+s);
             socket = new MulticastSocket(PORT);  // create socket and bind it
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
+            System.out.println("Terminal de voto conectado à mesa nº "+s);
             while (true) {
                 byte[] buffer = new byte[256];
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
