@@ -109,6 +109,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return res;
     }
 
+
+
     public boolean votar(Eleicao e, Lista l, Pessoa p, String departamento) {
         Voto v = new Voto(l, p, departamento);
         try {
@@ -126,9 +128,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
     //to-do
     @Override
-    public boolean createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento) throws RemoteException {
-
-
+    public boolean createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws RemoteException {
         return false;
     }
 
