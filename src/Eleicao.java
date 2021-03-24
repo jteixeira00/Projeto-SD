@@ -33,8 +33,6 @@ public class Eleicao implements Serializable{
             case 3:
                 this.tipoVoters = Pessoa.voterType.FUNCIONARIO;
                 break;
-            default:
-                this.tipoVoters = Pessoa.voterType.NONE;
         }
 
         this.titulo = titulo;

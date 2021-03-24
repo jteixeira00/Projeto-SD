@@ -111,22 +111,13 @@ public class AdminTerminal
                 break;
         }
 
-        System.out.println("\nRestringir eleição para um único grupo de Pessoas?(1 - Sim | 2 - Não): ");
-        int type;
-        String answerS = sc.nextLine();
-        int answer = Integer.parseInt(answerS);
-
-        switch (answer){
-            case 1:
-                System.out.println("1 - Estudante\n2 - Docente\n3 - Funcionário\n");
-                String typeS = sc.nextLine();
-                type = Integer.parseInt(typeS);
-                break;
-
-            default:
-                System.out.println("Número Inválido\n");
-                type = 0;
-                break;
+        System.out.println("Restringir eleição para que grupo de Pessoas?(1 - Estudantes || 2 - Docentes || 3 - Funcionários): ");
+        int type = 0;
+        while(type != 1 || type != 2 || type != 3) {
+            String typeS = sc.nextLine();
+            type = Integer.parseInt(typeS);
+            if(type != 1 || type != 2 || type != 3)
+                System.out.println("Numero Inválido: Tente de novo\n");
         }
 
         boolean check = ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, departamento, type);
