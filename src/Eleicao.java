@@ -39,6 +39,8 @@ public class Eleicao implements Serializable{
         this.descricao = descricao;
         this.startDate = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(startDate, startHour,startMinute));
         this.endDate = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(endDate, endHour, endMinute));
+        Date date = new Date();
+
         this.departamento = departamento;
 
 

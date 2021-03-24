@@ -2,6 +2,8 @@ import java.io.*;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -129,7 +131,30 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     //to-do
     @Override
     public boolean createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws RemoteException {
-        return false;
+        Date startDate1 = null;
+        try {
+            startDate1 = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(startDate, startHour,startMinute));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date endDate1 = null;
+        try {
+            endDate1 = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(endDate, endHour, endMinute));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date date = new Date();
+        if(startDate1.after(endDate1) || startDate1.after(date)) {
+            return false;
+        }
+
+        try {
+            Eleicao e = new Eleicao(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, departamento, type);
+        } catch (ParseException parseException) {
+            parseException.printStackTrace();
+        }
+
+        return true;
     }
 
     //to-do
@@ -272,6 +297,18 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     public void addPessoaLista(Pessoa p){
         this.listaPessoas.add(p);
+    }
+
+    public String parseDate(String date, int hour, int minute){
+        String sHour = ""+hour;
+        if (sHour.length()==1){
+            sHour = "0"+sHour;
+        }
+        String sMinute = ""+minute;
+        if (sMinute.length()==1){
+            sMinute = "0"+sMinute;
+        }
+        return date+"T"+sHour+":"+sMinute;
     }
 }
 
