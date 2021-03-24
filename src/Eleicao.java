@@ -109,7 +109,8 @@ public class Eleicao implements Serializable{
         return votosNulos;
     }
     public void addVoto(Voto v){
-        this.votos.add(v);
+        this.votos.add(v);}
+
     public void showCandidatos() throws RemoteException {
         ArrayList<Lista> candidatos = listasCandidatas;
 
