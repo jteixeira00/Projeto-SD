@@ -4,6 +4,7 @@ import java.util.ArrayList;
 public class Lista implements Serializable {
     private ArrayList<Pessoa> membros;
     private String nome;
+    private int votos = 0;
 
     public Lista(ArrayList<Pessoa> membros, String nome) {
         this.membros = membros;
@@ -28,5 +29,14 @@ public class Lista implements Serializable {
 
     public void addPessoa(Pessoa pessoa){
         //to do
+    }
+
+    public boolean addVoto(){
+        this.votos++;
+        return true;
+    }
+
+    public int getVotos() {
+        return votos;
     }
 }

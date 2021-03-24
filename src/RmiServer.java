@@ -109,6 +109,23 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return res;
     }
 
+    public boolean votar(Eleicao e, Lista l, Pessoa p, String departamento){
+        Voto v = new Voto(l, p, departamento);
+        try {
+            if(!this.eleicoesOngoing().contains(e)){
+                return false;
+            }
+        } catch (RemoteException remoteException) {
+            remoteException.printStackTrace();
+            return false;
+        }
+        e.addVoto(v);
+        l.addVoto();
+        save();
+        return true;
+
+    }
+
     public ArrayList<Lista> getListasCandidatas(Eleicao e){
         return e.getListasCandidatas();
     }

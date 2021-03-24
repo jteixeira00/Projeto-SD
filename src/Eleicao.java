@@ -15,6 +15,11 @@ public class Eleicao implements Serializable{
     Pessoa.voterType tipoVoters;
     ArrayList<String> orgVoters;
 
+
+    private int votosNulos=0;
+    private int votosBrancos = 0;
+    private ArrayList<Voto> votos;
+
     Eleicao(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento) throws ParseException {
         this.titulo = titulo;
         this.descricao = descricao;
@@ -93,5 +98,16 @@ public class Eleicao implements Serializable{
 
     public void setListasCandidatas(ArrayList<Lista> listasCandidatas) {
         this.listasCandidatas = listasCandidatas;
+    }
+
+    public int getVotosBrancos() {
+        return votosBrancos;
+    }
+
+    public int getVotosNulos() {
+        return votosNulos;
+    }
+    public void addVoto(Voto v){
+        this.votos.add(v);
     }
 }
