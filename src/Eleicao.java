@@ -21,7 +21,22 @@ public class Eleicao implements Serializable{
     private int votosBrancos = 0;
     private ArrayList<Voto> votos;
 
-    Eleicao(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento) throws ParseException {
+    Eleicao(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws ParseException {
+
+        switch(type){
+            case 1:
+                this.tipoVoters = Pessoa.voterType.ALUNO;
+                break;
+            case 2:
+                this.tipoVoters = Pessoa.voterType.DOCENTE;
+                break;
+            case 3:
+                this.tipoVoters = Pessoa.voterType.FUNCIONARIO;
+                break;
+            default:
+                this.tipoVoters = Pessoa.voterType.NONE;
+        }
+
         this.titulo = titulo;
         this.descricao = descricao;
         this.startDate = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(startDate, startHour,startMinute));

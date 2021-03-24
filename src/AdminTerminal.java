@@ -111,9 +111,25 @@ public class AdminTerminal
                 break;
         }
 
+        System.out.println("\nRestringir eleição para um único grupo de Pessoas?(1 - Sim | 2 - Não): ");
+        int type;
+        String answerS = sc.nextLine();
+        int answer = Integer.parseInt(answerS);
 
+        switch (answer){
+            case 1:
+                System.out.println("1 - Estudante\n2 - Docente\n3 - Funcionário\n");
+                String typeS = sc.nextLine();
+                type = Integer.parseInt(typeS);
+                break;
 
-        boolean check = ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, departamento);
+            default:
+                System.out.println("Número Inválido\n");
+                type = 0;
+                break;
+        }
+
+        boolean check = ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, departamento, type);
         return check;
     }
 
@@ -128,7 +144,7 @@ public class AdminTerminal
 
         switch (tipo){
             case 1:
-                System.out.println("---Adicionar Candidatos---\n");
+                System.out.println("\n---Adicionar Candidatos---\n");
                 ri.showPessoas();
                 System.out.println("Pessoa que pretende adicionar (1 - ");
                 System.out.println(ri.sizePessoas());
@@ -138,11 +154,11 @@ public class AdminTerminal
                 if(add <= ri.sizePessoas())
                     check = ri.addCandidateRMI(eleicao,add);
                 else
-                    System.out.printf("Candidato inválido.\n");
+                    System.out.printf("\nCandidato inválido.\n");
                 break;
 
             case 2:
-                System.out.println("---Remover Candidatos---\n");
+                System.out.println("\n---Remover Candidatos---\n");
                 if(size == 0){
                     System.out.println("Lista Vazia - Impossivel Remover Candidatos");
                     break;
@@ -156,7 +172,33 @@ public class AdminTerminal
                 if(delet <= size)
                     check = ri.deleteCandidateRMI(eleicao,delet);
                 else
-                    System.out.printf("Candidato inválido.\n");
+                    System.out.printf("\nCandidato inválido.\n");
+                break;
+
+            default:
+                break;
+        }
+
+        return check;
+    }
+
+    public boolean gerirMesas() throws RemoteException{
+        boolean check = false;
+        System.out.println("---Gerir Mesas---\n");
+        Scanner sc = new Scanner(System.in);
+        System.out.println("\n1 - Adicionar mesa || 2 - Remover mesa:  ");
+        String tipoS = sc.nextLine();
+        int tipo = Integer.parseInt(tipoS);
+
+        switch (tipo){
+            case 1:
+                System.out.println("\n---Adicionar Mesa---\n");
+
+                break;
+
+            case 2:
+                System.out.println("\n---Remover Mesa---\n");
+
                 break;
 
             default:

@@ -14,7 +14,8 @@ public class Pessoa implements Serializable {
     public enum voterType{
         ALUNO,
         DOCENTE,
-        FUNCIONARIO
+        FUNCIONARIO,
+        NONE
     }
     private voterType type;
 
