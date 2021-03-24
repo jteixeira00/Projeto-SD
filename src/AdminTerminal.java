@@ -1,8 +1,10 @@
+import org.jetbrains.annotations.NotNull;
+
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AdminTerminal
@@ -11,8 +13,7 @@ public class AdminTerminal
     private String password;
     private RmiInterface ri;
 
-    public boolean loginUser() throws RemoteException
-    {
+    public boolean loginUser() throws RemoteException    {
         while(true) {
             boolean check = ri.login(this.numero, this.password);
             if (!check) {
@@ -24,40 +25,146 @@ public class AdminTerminal
 
     }
 
-    public boolean registerUser(Pessoa pessoa) throws RemoteException{
-       return true;
+    public boolean registerUser() throws RemoteException {
+        System.out.println("---Criar Utilizador---\n");
+        Scanner sc = new Scanner(System.in);
+        System.out.println("1 - Estudante\n2 - Docente\n3 - Funcionário\n");
+        String tipoS = sc.nextLine();
+        int tipo = Integer.parseInt(tipoS);
+
+        System.out.println("\nNome: ");
+        String nome = sc.nextLine();
+
+        System.out.println("\nPassword: ");
+        String password = sc.nextLine();
+
+        System.out.println("\nNúmero da Universidade: ");
+        String uni = sc.nextLine();
+
+        System.out.println("\nNúmero do Cartão de Cidadão: ");
+        String cc = sc.nextLine();
+
+        System.out.println("\nValidade do Cartão de Cidadão (dd-MM-yyyy): ");
+        String validade = sc.nextLine();
+
+        System.out.println("\nContacto Telefónico: ");
+        String numeroTelefonico = sc.nextLine();
+
+        System.out.println("\nMorada: ");
+        String morada = sc.nextLine();
+
+        System.out.println("\nDepartamento: ");
+        String departamento = sc.nextLine();
+
+        System.out.println("\nFaculdade: ");
+        String faculdade = sc.nextLine();
+
+        boolean check = ri.createUserRMI(tipo, nome, uni, departamento, faculdade, numeroTelefonico, morada, cc, validade, password);
+        return check;
     }
 
-    private Eleicao createEleicao() throws ParseException {
+    public boolean createEleicao() throws RemoteException {
         System.out.println("---Criar Eleição---\n");
         Scanner sc = new Scanner(System.in);
-        System.out.println("Titulo: ");
+
+        System.out.println("\nTitulo: ");
         String titulo = sc.nextLine();
-        System.out.println("Descrição");
+
+        System.out.println("\nDescrição: ");
         String descricao = sc.nextLine();
-        System.out.println("Data de Inicio (dd-MM-yyyy): \n");
+
+        System.out.println("\nData de Inicio (dd-MM-yyyy): ");
         String startDate = sc.nextLine();
-        System.out.println("Hora de Inicio: \n");
+
+        System.out.println("\nHora de Inicio: ");
         String startH = sc.nextLine();
         int startHour = Integer.parseInt(startH);
-        System.out.println("Minuto de Inicio: \n");
+
+        System.out.println("\nMinuto de Inicio: ");
         String startM = sc.nextLine();
         int startMinute = Integer.parseInt(startH);
-        System.out.println("Data de Fim (dd-MM-yyyy): \n");
+
+        System.out.println("\nData de Fim (dd-MM-yyyy): ");
         String endDate = sc.nextLine();
-        System.out.println("Hora de Fim: \n");
+
+        System.out.println("\nHora de Fim: ");
         String endH = sc.nextLine();
         int endHour = Integer.parseInt(startH);
-        System.out.println("Minuto de Fim: \n");
+
+        System.out.println("\nMinuto de Fim: ");
         String endM = sc.nextLine();
         int endMinute = Integer.parseInt(startH);
-        System.out.println("Departamento: ");
-        String departamento = sc.nextLine();
-        Eleicao election = new Eleicao(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, departamento);
-        return election;
+
+        System.out.println("\nRestringir eleição para um único departamento?(1 - Sim | 2 - Não): ");
+        String departamento;
+        String tipoS = sc.nextLine();
+        int tipo = Integer.parseInt(tipoS);
+
+        switch (tipo){
+            case 1:
+                System.out.println("\nDepartamento: ");
+                departamento = sc.nextLine();
+                break;
+
+            default:
+                departamento = "none";
+                break;
+        }
+
+
+
+        boolean check = ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, departamento);
+        return check;
     }
 
+    public boolean gerirCandidatos(Eleicao eleicao) throws RemoteException{
+        boolean check = false;
+        System.out.println("---Gerir Candidatos---\n");
+        Scanner sc = new Scanner(System.in);
+        System.out.println("\n1 - Adicionar candidatos || 2 - Remover candidatos:  ");
+        String tipoS = sc.nextLine();
+        int tipo = Integer.parseInt(tipoS);
+        int size = eleicao.sizeCandidatos();
 
+        switch (tipo){
+            case 1:
+                System.out.println("---Adicionar Candidatos---\n");
+                ri.showPessoas();
+                System.out.println("Pessoa que pretende adicionar (1 - ");
+                System.out.println(ri.sizePessoas());
+                System.out.println("): ");
+                String addS = sc.nextLine();
+                int add = Integer.parseInt(addS);
+                if(add <= ri.sizePessoas())
+                    check = ri.addCandidateRMI(eleicao,add);
+                else
+                    System.out.printf("Candidato inválido.\n");
+                break;
+
+            case 2:
+                System.out.println("---Remover Candidatos---\n");
+                if(size == 0){
+                    System.out.println("Lista Vazia - Impossivel Remover Candidatos");
+                    break;
+                }
+                eleicao.showCandidatos();
+                System.out.println("Candidato que pretende eliminar (1 - ");
+                System.out.println(size);
+                System.out.println("): ");
+                String deletS = sc.nextLine();
+                int delet = Integer.parseInt(deletS);
+                if(delet <= size)
+                    check = ri.deleteCandidateRMI(eleicao,delet);
+                else
+                    System.out.printf("Candidato inválido.\n");
+                break;
+
+            default:
+                break;
+        }
+
+        return check;
+    }
 
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
         try {

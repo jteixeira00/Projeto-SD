@@ -1,5 +1,6 @@
 import javax.lang.model.element.NestingKind;
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -93,5 +94,20 @@ public class Eleicao implements Serializable{
 
     public void setListasCandidatas(ArrayList<Lista> listasCandidatas) {
         this.listasCandidatas = listasCandidatas;
+    }
+
+    public void showCandidatos() throws RemoteException {
+        ArrayList<Lista> candidatos = listasCandidatas;
+
+        for(int i = 0; i < candidatos.size(); i++) {
+            System.out.println(i + 1);
+            System.out.println(" - ");
+            System.out.println(candidatos.get(i).getNome());
+            System.out.println("\n");
+        }
+    }
+
+    public int sizeCandidatos() throws RemoteException{
+        return listasCandidatas.size();
     }
 }

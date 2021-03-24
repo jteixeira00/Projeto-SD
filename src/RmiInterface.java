@@ -17,5 +17,15 @@ public interface RmiInterface extends Remote {
     public void logout(String numero) throws RemoteException;
     public ArrayList<Eleicao> eleicoesOngoing() throws RemoteException;
 
+    public boolean createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento) throws RemoteException;
 
+    public boolean createUserRMI(int tipo, String nome, String numero, String dep, String fac, String contacto, String morada, String cc, String validadecc, String password) throws RemoteException;
+
+    public boolean deleteCandidateRMI(Eleicao eleicao, int delete) throws RemoteException;
+
+    public void showPessoas() throws RemoteException;
+
+    public int sizePessoas() throws RemoteException;
+
+    public boolean addCandidateRMI(Eleicao eleicao, int add) throws RemoteException;
 }
