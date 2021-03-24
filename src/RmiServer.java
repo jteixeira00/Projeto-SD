@@ -124,6 +124,38 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         save();
         return true;
 
+    //to-do
+    @Override
+    public boolean createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento) throws RemoteException {
+        return false;
+    }
+
+    //to-do
+    @Override
+    public boolean createUserRMI(int tipo, String nome, String numero, String dep, String fac, String contacto, String morada, String cc, String validadecc, String password) throws RemoteException {
+        return false;
+    }
+    //to-do
+    @Override
+    public boolean deleteCandidateRMI(Eleicao eleicao, int delete) throws RemoteException {
+        return false;
+    }
+
+    //to-do [copiar do eleição.showCandidatos()]
+    @Override
+    public void showPessoas() throws RemoteException {
+
+    }
+
+    @Override
+    public int sizePessoas() throws RemoteException {
+        return listaPessoas.size();
+    }
+
+    //to-do
+    @Override
+    public boolean addCandidateRMI(Eleicao eleicao, int add) throws RemoteException {
+        return false;
     }
 
     public ArrayList<Lista> getListasCandidatas(Eleicao e){
