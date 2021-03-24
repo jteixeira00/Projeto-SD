@@ -127,14 +127,24 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     //to-do
     @Override
     public boolean createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento) throws RemoteException {
+
+
         return false;
     }
 
     //to-do
     @Override
     public boolean createUserRMI(int tipo, String nome, String numero, String dep, String fac, String contacto, String morada, String cc, String validadecc, String password) throws RemoteException {
-        return false;
+        for(Pessoa aux: getPessoas()){
+            if(aux.getNumero().equals(numero) || aux.getCc().equals(cc)){
+                return false;
+            }
+        }
+        Pessoa p = new Pessoa(tipo, nome, numero, dep, fac, contacto, morada, cc, validadecc, password);
+        this.addPessoaLista(p);
+        return true;
     }
+
     //to-do
     @Override
     public boolean deleteCandidateRMI(Eleicao eleicao, int delete) throws RemoteException {
@@ -258,6 +268,10 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public void addOnlineUser(Pessoa p){
         this.pessoasOnline.add(p);
 
+    }
+
+    public void addPessoaLista(Pessoa p){
+        this.listaPessoas.add(p);
     }
 }
 
