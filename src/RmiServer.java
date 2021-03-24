@@ -109,10 +109,10 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return res;
     }
 
-    public boolean votar(Eleicao e, Lista l, Pessoa p, String departamento){
+    public boolean votar(Eleicao e, Lista l, Pessoa p, String departamento) {
         Voto v = new Voto(l, p, departamento);
         try {
-            if(!this.eleicoesOngoing().contains(e)){
+            if (!this.eleicoesOngoing().contains(e)) {
                 return false;
             }
         } catch (RemoteException remoteException) {
@@ -123,7 +123,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         l.addVoto();
         save();
         return true;
-
+    }
     //to-do
     @Override
     public boolean createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento) throws RemoteException {
