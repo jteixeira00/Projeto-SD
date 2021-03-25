@@ -126,8 +126,8 @@ public class Eleicao implements Serializable{
     public void addVoto(Voto v){
         this.votos.add(v);}
 
-    public void showCandidatos() throws RemoteException {
-        ArrayList<Lista> candidatos = listasCandidatas;
+    public void showCandidatos(int index) throws RemoteException {
+        ArrayList<Pessoa> candidatos = listasCandidatas.get(index).getMembros();
 
         for(int i = 0; i < candidatos.size(); i++) {
             System.out.println(i + 1);
@@ -139,5 +139,9 @@ public class Eleicao implements Serializable{
 
     public int sizeCandidatos() throws RemoteException{
         return listasCandidatas.size();
+    }
+
+    public int sizeLista(int index) throws RemoteException{
+        return listasCandidatas.get(index).getSize();
     }
 }

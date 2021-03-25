@@ -126,10 +126,16 @@ public class AdminTerminal
         boolean check = false;
         System.out.println("---Gerir Candidatos---\n");
         Scanner sc = new Scanner(System.in);
+        System.out.println("Lista que pretende gerir (1 - ");
+        System.out.println(eleicao.sizeCandidatos());
+        System.out.println("): ");
+        String choiceS = sc.nextLine();
+        int choice = Integer.parseInt(choiceS);
+
         System.out.println("\n1 - Adicionar candidatos || 2 - Remover candidatos:  ");
         String tipoS = sc.nextLine();
         int tipo = Integer.parseInt(tipoS);
-        int size = eleicao.sizeCandidatos();
+        int size = eleicao.sizeLista(choice - 1);
 
         switch (tipo){
             case 1:
@@ -141,7 +147,7 @@ public class AdminTerminal
                 String addS = sc.nextLine();
                 int add = Integer.parseInt(addS);
                 if(add <= ri.sizePessoas())
-                    check = ri.addCandidateRMI(eleicao,add);
+                    check = ri.addCandidateRMI(eleicao,choice - 1,add);
                 else
                     System.out.printf("\nCandidato inválido.\n");
                 break;
@@ -152,14 +158,14 @@ public class AdminTerminal
                     System.out.println("Lista Vazia - Impossivel Remover Candidatos");
                     break;
                 }
-                eleicao.showCandidatos();
+                eleicao.showCandidatos(choice - 1);
                 System.out.println("Candidato que pretende eliminar (1 - ");
                 System.out.println(size);
                 System.out.println("): ");
                 String deletS = sc.nextLine();
                 int delet = Integer.parseInt(deletS);
                 if(delet <= size)
-                    check = ri.deleteCandidateRMI(eleicao,delet);
+                    check = ri.deleteCandidateRMI(eleicao,choice - 1,delet);
                 else
                     System.out.printf("\nCandidato inválido.\n");
                 break;
@@ -205,8 +211,6 @@ public class AdminTerminal
 
         return check;
     }
-
-
 
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
         try {

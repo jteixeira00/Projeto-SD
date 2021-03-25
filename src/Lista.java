@@ -39,4 +39,8 @@ public class Lista implements Serializable {
     public int getVotos() {
         return votos;
     }
+
+    public int getSize() {
+        return membros.size();
+    }
 }

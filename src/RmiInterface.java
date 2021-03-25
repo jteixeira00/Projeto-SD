@@ -21,13 +21,13 @@ public interface RmiInterface extends Remote {
 
     public boolean createUserRMI(int tipo, String nome, String numero, String dep, String fac, String contacto, String morada, String cc, String validadecc, String password) throws RemoteException;
 
-    public boolean deleteCandidateRMI(Eleicao eleicao, int delete) throws RemoteException;
+    public boolean deleteCandidateRMI(Eleicao eleicao, int index, int delete) throws RemoteException;
 
     public void showPessoas() throws RemoteException;
 
     public int sizePessoas() throws RemoteException;
 
-    public boolean addCandidateRMI(Eleicao eleicao, int add) throws RemoteException;
+    public boolean addCandidateRMI(Eleicao eleicao, int lista, int add) throws RemoteException;
 
     public boolean criaMesaRMI(String departamento) throws RemoteException;
 
