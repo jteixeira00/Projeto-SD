@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.net.MulticastSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -9,12 +10,12 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 
-public class MulticastServer extends Thread {
+public class MulticastServer extends Thread implements Serializable {
     private static String MULTICAST_ADDRESS;
     private int PORT = 4321;
     private long SLEEP_TIME = 5000;
     private static int tableNumber;
-
+    private static String departamento;
     public static void main(String[] args) {
         try {
             RmiInterface ti = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
@@ -25,6 +26,7 @@ public class MulticastServer extends Thread {
         catch (NotBoundException|MalformedURLException|RemoteException e) {
             e.printStackTrace();
         }
+        setDepartamento(args[0]);
         MulticastServer server = new MulticastServer();
         server.start();
         client cliente = new client();
@@ -55,6 +57,13 @@ public class MulticastServer extends Thread {
         } finally {
             socket.close();
         }
+    }
+
+    public static void setDepartamento(String s){
+        departamento = s;
+    }
+    public String getDepartamento(){
+        return departamento;
     }
 }
 
