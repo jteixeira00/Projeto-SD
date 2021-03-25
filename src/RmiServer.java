@@ -173,6 +173,11 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     //to-do
     @Override
     public boolean deleteCandidateRMI(Eleicao eleicao, int delete) throws RemoteException {
+        /*
+        ArrayList<Lista> aux = eleicao.getListasCandidatas();
+        aux.remove(delete);
+        eleicao.setListasCandidatas(aux);
+         */
         return false;
     }
 
@@ -190,6 +195,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     //to-do
     @Override
     public boolean addCandidateRMI(Eleicao eleicao, int add) throws RemoteException {
+        //ArrayList<Lista> aux = eleicao.getListasCandidatas();
+
         return false;
     }
 
