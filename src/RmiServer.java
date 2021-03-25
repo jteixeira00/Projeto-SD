@@ -193,6 +193,30 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return false;
     }
 
+    //to-do
+    @Override
+    public boolean criaMesaRMI(String departamento) throws RemoteException {
+        return false;
+    }
+
+    //to-do [copiar do eleição.showCandidatos()]
+    @Override
+    public void showMesas() throws RemoteException {
+
+    }
+
+    //to-do
+    @Override
+    public int sizeMesas() throws RemoteException {
+        return listaMesas.size();
+    }
+
+    //to-do
+    @Override
+    public boolean deleteMesaRMI(int del) throws RemoteException {
+        return false;
+    }
+
     public ArrayList<Lista> getListasCandidatas(Eleicao e){
         return e.getListasCandidatas();
     }

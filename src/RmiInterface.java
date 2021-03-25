@@ -28,4 +28,12 @@ public interface RmiInterface extends Remote {
     public int sizePessoas() throws RemoteException;
 
     public boolean addCandidateRMI(Eleicao eleicao, int add) throws RemoteException;
+
+    public boolean criaMesaRMI(String departamento) throws RemoteException;
+
+    public void showMesas() throws RemoteException;
+
+    public int sizeMesas() throws RemoteException;
+
+    public boolean deleteMesaRMI(int del) throws RemoteException;
 }
