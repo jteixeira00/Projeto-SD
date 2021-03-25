@@ -182,12 +182,21 @@ public class AdminTerminal
         switch (tipo){
             case 1:
                 System.out.println("\n---Adicionar Mesa---\n");
-
+                System.out.println("Departamento da Mesa: ");
+                String departamento = sc.nextLine();
+                //verificar se o departamento já tem mesa
+                check = ri.criaMesaRMI(departamento);
                 break;
 
             case 2:
                 System.out.println("\n---Remover Mesa---\n");
-
+                ri.showMesas();
+                System.out.println("Mesa que pretende remover (1 - ");
+                System.out.println(ri.sizeMesas());
+                System.out.println("): ");
+                String delS = sc.nextLine();
+                int del = Integer.parseInt(delS);
+                check = ri.deleteMesaRMI(del);
                 break;
 
             default:
@@ -196,6 +205,8 @@ public class AdminTerminal
 
         return check;
     }
+
+
 
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
         try {
