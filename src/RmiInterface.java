@@ -11,7 +11,7 @@ public interface RmiInterface extends Remote {
     public ArrayList<Eleicao> getEleicoes() throws  RemoteException;
     public ArrayList<Pessoa> getPessoas() throws  RemoteException;
     public ArrayList<MulticastServer> getMesas() throws RemoteException;
-
+    public ArrayList<Eleicao> getEleicoesFutuas() throws RemoteException;
     public boolean login(String numero, String password) throws RemoteException;
 
     public void logout(String numero) throws RemoteException;

@@ -1,4 +1,5 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
@@ -20,7 +21,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     private ArrayList<Pessoa> pessoasOnline;
     private ArrayList<MulticastServer> listaMesas;
 
-    public RmiServer() throws RemoteException{
+    public RmiServer() throws RemoteException {
         super();
         this.listaPessoas = new ArrayList<>();
         this.listaEleicoes = new ArrayList<>();
@@ -28,34 +29,28 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         this.listaMesas = new ArrayList<>();
     }
 
-    public double add(double a, double b) throws RemoteException{
-        return a+b;
+    public double add(double a, double b) throws RemoteException {
+        return a + b;
     }
 
     @Override
     public String getNewAddress() throws RemoteException {
-        return baseAddress+Integer.toString(addressEnd);
+        return baseAddress + Integer.toString(addressEnd);
     }
 
-    public int getTableNumber() throws RemoteException{
+    public int getTableNumber() throws RemoteException {
         return addressEnd++;
     }
 
 
-
-
-
-    public static void main(String args[]){
+    public static void main(String args[]) {
         try {
             RmiInterface ri = new RmiServer();
             LocateRegistry.createRegistry(7000).rebind("rmiServer", ri);
-        }
-        catch (RemoteException ex1){
+        } catch (RemoteException ex1) {
             System.out.println("RMI SERVER EXCEPTION: " + ex1);
         }
     }
-
-
 
 
     @Override
@@ -81,20 +76,19 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public boolean login(String numero, String password) throws RemoteException {
         System.out.println("Procurando utilizador com nº " + numero);
         Pessoa p = getPessoabyNumber(numero);
-        if (p.getPassword().equals(password)){
+        if (p.getPassword().equals(password)) {
             //check if user already online
             if (this.pessoasOnline.contains(p)) {
                 return false;
             }
             addOnlineUser(p);
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
 
-    public void logout(String numero) throws RemoteException{
+    public void logout(String numero) throws RemoteException {
         this.pessoasOnline.remove(getPessoabyNumber(numero));
     }
 
@@ -103,14 +97,13 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public ArrayList<Eleicao> eleicoesOngoing() throws RemoteException {
         ArrayList<Eleicao> res = new ArrayList<>();
         Date date = new Date();
-        for(Eleicao e:getEleicoes()){
-            if(date.after(e.getStartDate()) && date.before(e.getEndDate())){
+        for (Eleicao e : getEleicoes()) {
+            if (date.after(e.getStartDate()) && date.before(e.getEndDate())) {
                 res.add(e);
             }
         }
         return res;
     }
-
 
 
     public boolean votar(Eleicao e, Lista l, Pessoa p, String departamento) {
@@ -128,12 +121,13 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         save();
         return true;
     }
+
     //to-do
     @Override
     public boolean createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws RemoteException {
         Date startDate1 = null;
         try {
-            startDate1 = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(startDate, startHour,startMinute));
+            startDate1 = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(startDate, startHour, startMinute));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -144,7 +138,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             e.printStackTrace();
         }
         Date date = new Date();
-        if(startDate1.after(endDate1) || startDate1.after(date)) {
+        if (startDate1.after(endDate1) || startDate1.after(date)) {
             return false;
         }
 
@@ -160,8 +154,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     //to-do
     @Override
     public boolean createUserRMI(int tipo, String nome, String numero, String dep, String fac, String contacto, String morada, String cc, String validadecc, String password) throws RemoteException {
-        for(Pessoa aux: getPessoas()){
-            if(aux.getNumero().equals(numero) || aux.getCc().equals(cc)){
+        for (Pessoa aux : getPessoas()) {
+            if (aux.getNumero().equals(numero) || aux.getCc().equals(cc)) {
                 return false;
             }
         }
@@ -172,7 +166,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     //to-do
     @Override
-    public boolean deleteCandidateRMI(Eleicao eleicao, int delete) throws RemoteException {
+    public boolean deleteCandidateRMI(Eleicao eleicao, int choice, int delete) throws RemoteException {
         /*
         ArrayList<Lista> aux = eleicao.getListasCandidatas();
         aux.remove(delete);
@@ -194,7 +188,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     //to-do
     @Override
-    public boolean addCandidateRMI(Eleicao eleicao, int add) throws RemoteException {
+    public boolean addCandidateRMI(Eleicao eleicao, int choice, int add) throws RemoteException {
         //ArrayList<Lista> aux = eleicao.getListasCandidatas();
 
         return false;
@@ -224,16 +218,16 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return false;
     }
 
-    public ArrayList<Lista> getListasCandidatas(Eleicao e){
+    public ArrayList<Lista> getListasCandidatas(Eleicao e) {
         return e.getListasCandidatas();
     }
 
     /* ====================== FILES =========================== */
-    public void load(){
+    public void load() {
         ObjectInputStream is1 = null;
         ObjectInputStream is2 = null;
         ObjectInputStream is3 = null;
-        try{
+        try {
             FileInputStream stream = new FileInputStream("eleicoes.data");
             is1 = new ObjectInputStream(stream);
             this.listaEleicoes = (ArrayList<Eleicao>) is1.readObject();
@@ -246,11 +240,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             is3 = new ObjectInputStream(stream);
             this.listaMesas = (ArrayList<MulticastServer>) is3.readObject();
 
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             try {
                 if (is1 != null) {
                     is1.close();
@@ -261,19 +253,18 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
                 if (is3 != null) {
                     is3.close();
                 }
-            }
-            catch(IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void save(){
+    public void save() {
         ObjectOutputStream os1 = null;
         ObjectOutputStream os2 = null;
         ObjectOutputStream os3 = null;
 
-        try{
+        try {
             FileOutputStream stream = new FileOutputStream("eleicoes.data");
             os1 = new ObjectOutputStream(stream);
             os1.writeObject(this.listaEleicoes);
@@ -286,11 +277,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             os3 = new ObjectOutputStream(stream);
             os3.writeObject(this.listaMesas);
 
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             try {
                 if (os1 != null) {
                     os1.close();
@@ -301,8 +290,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
                 if (os3 != null) {
                     os3.close();
                 }
-            }
-            catch(IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -312,34 +300,53 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     /* === AUX METHODS === */
 
-    public Pessoa getPessoabyNumber(String numero){
-        for(Pessoa p:this.listaPessoas){
-            if (p.getNumero().equals(numero)){
+    public Pessoa getPessoabyNumber(String numero) {
+        for (Pessoa p : this.listaPessoas) {
+            if (p.getNumero().equals(numero)) {
                 return p;
             }
         }
         return null;
     }
 
-    public void addOnlineUser(Pessoa p){
+    public void addOnlineUser(Pessoa p) {
         this.pessoasOnline.add(p);
 
     }
 
-    public void addPessoaLista(Pessoa p){
+    public void addPessoaLista(Pessoa p) {
         this.listaPessoas.add(p);
     }
 
-    public String parseDate(String date, int hour, int minute){
-        String sHour = ""+hour;
-        if (sHour.length()==1){
-            sHour = "0"+sHour;
+    public String parseDate(String date, int hour, int minute) {
+        String sHour = "" + hour;
+        if (sHour.length() == 1) {
+            sHour = "0" + sHour;
         }
-        String sMinute = ""+minute;
-        if (sMinute.length()==1){
-            sMinute = "0"+sMinute;
+        String sMinute = "" + minute;
+        if (sMinute.length() == 1) {
+            sMinute = "0" + sMinute;
         }
-        return date+"T"+sHour+":"+sMinute;
+        return date + "T" + sHour + ":" + sMinute;
     }
+
+    public ArrayList<Eleicao> getEleicoesFuturas() throws RemoteException {
+        Date date = new Date();
+        ArrayList<Eleicao> res = null;
+        try {
+            for (Eleicao e : getEleicoes()) {
+                if (date.before(e.getStartDate())) {
+
+                    res.add(e);
+                }
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+            return res;
+
+
+    }
+
 }
 
