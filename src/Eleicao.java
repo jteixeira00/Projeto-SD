@@ -1,6 +1,7 @@
 import javax.lang.model.element.NestingKind;
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -123,6 +124,7 @@ public class Eleicao implements Serializable{
     public int getVotosNulos() {
         return votosNulos;
     }
+
     public void addVoto(Voto v){
         this.votos.add(v);}
 
@@ -144,4 +146,16 @@ public class Eleicao implements Serializable{
     public int sizeLista(int index) throws RemoteException{
         return listasCandidatas.get(index).getSize();
     }
+
+    public String getDepartamento(){
+        return departamento;
+    }
+
+    public String dateToString(Date date){
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm");
+        String strDate = dateFormat.format(date);
+        return strDate;
+
+    }
+
 }

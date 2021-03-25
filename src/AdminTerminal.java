@@ -93,21 +93,8 @@ public class AdminTerminal
         String endM = sc.nextLine();
         int endMinute = Integer.parseInt(startH);
 
-        System.out.println("\nRestringir eleição para um único departamento?(1 - Sim | 2 - Não): ");
-        String departamento;
-        String tipoS = sc.nextLine();
-        int tipo = Integer.parseInt(tipoS);
-
-        switch (tipo){
-            case 1:
-                System.out.println("\nDepartamento: ");
-                departamento = sc.nextLine();
-                break;
-
-            default:
-                departamento = "none";
-                break;
-        }
+        System.out.println("\nDepartamento: ");
+        String departamento = sc.nextLine();
 
         System.out.println("Restringir eleição para que grupo de Pessoas?(1 - Estudantes || 2 - Docentes || 3 - Funcionários): ");
         int type = 0;
@@ -208,6 +195,32 @@ public class AdminTerminal
             default:
                 break;
         }
+
+        return check;
+    }
+
+    public boolean gerirEleicao() throws RemoteException{
+        boolean check = false;
+        System.out.println("---Gerir Eleições---\n");
+        Scanner sc = new Scanner(System.in);
+        ri.showEleicoesFuturas();
+        System.out.println("Eleição que pretende gerir (1 - ");
+        System.out.println(ri.sizeEleicoesFuturas());
+        System.out.println("): ");
+        String choiceS = sc.nextLine();
+        int choice = Integer.parseInt(choiceS);
+
+        if(choice <= ri.sizePessoas()){
+            System.out.println("\n---Alterar propriedade da Eleição---");
+            ri.showEleicoesDetalhes(choice - 1);
+            String answerS = sc.nextLine();
+            int answer  = Integer.parseInt(answerS);
+            System.out.println("Alterar para: ");
+            String change = sc.nextLine();
+            check = ri.changeEleicoesRMI(choice - 1, answer, change);
+        }
+        else
+            System.out.printf("\nInput inválido.\n");
 
         return check;
     }

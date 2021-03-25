@@ -68,7 +68,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return null;
     }
 
-
     /* ================ LOGINS LOGOUTS ======================== */
 
 
@@ -218,6 +217,12 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return false;
     }
 
+    //to-do [copiar do eleição.showCandidatos()]
+    @Override
+    public void showEleicoesFuturas() throws RemoteException{
+        ArrayList<Eleicao> res = this.getEleicoesFuturas();
+    }
+
     public ArrayList<Lista> getListasCandidatas(Eleicao e) {
         return e.getListasCandidatas();
     }
@@ -330,6 +335,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return date + "T" + sHour + ":" + sMinute;
     }
 
+    @Override
     public ArrayList<Eleicao> getEleicoesFuturas() throws RemoteException {
         Date date = new Date();
         ArrayList<Eleicao> res = null;
@@ -347,6 +353,55 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
 
     }
+
+    @Override
+    public int sizeEleicoesFuturas() throws RemoteException{
+        return getEleicoesFuturas().size();
+    }
+
+    @Override
+    public void showEleicoesDetalhes(int index) throws RemoteException {
+        Eleicao eleicao = getEleicoesFuturas().get(index);
+        System.out.println("\n---Alterar propriedade da Eleição---");
+        System.out.println("\n1 - Titulo: ");
+        System.out.println(eleicao.getTitulo());
+        System.out.println("\n2 - Descrição: ");
+        System.out.println(eleicao.getDescricao());
+        System.out.println("\n3 - Data de Inicio (dd-MM-yyyy'T'HH:mm): ");
+        System.out.println(eleicao.dateToString(eleicao.getStartDate()));
+        System.out.println("\n4 - Data de Fim (dd-MM-yyyy'T'HH:mm): ");
+        System.out.println(eleicao.dateToString(eleicao.getEndDate()));
+        System.out.println("\n5 - Restringir eleição para um único departamento: ");
+        System.out.println(eleicao.getDepartamento());
+    }
+
+    //to-do
+    @Override
+    public boolean changeEleicoesRMI(int index, int answer, String change) throws RemoteException {
+        Eleicao eleicao = getEleicoesFuturas().get(index);
+        switch (answer) {
+            case 1:
+                //alterar titulo
+                break;
+            case 2:
+                //alterar descrição
+                break;
+            case 3:
+                //alterar data de inicio
+                break;
+            case 4:
+                //alterar data de fim
+                break;
+            case 5:
+                //alterar departamento
+                break;
+            default:
+                System.out.println("Input Inválido.");
+                return false;
+        }
+        return true;
+    }
+
 
 }
 
