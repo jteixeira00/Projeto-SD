@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.util.Date;
 
 public class Pessoa implements Serializable {
 
@@ -11,6 +12,9 @@ public class Pessoa implements Serializable {
     private String validade;
     private String password;
     private String nome;
+    private String localVoto;
+    private Date timeVoto;
+
     public enum voterType{
         ALUNO,
         DOCENTE,
@@ -122,4 +126,21 @@ public class Pessoa implements Serializable {
     public void setType(voterType type) {
         this.type = type;
     }
+
+    public String getLocalVoto() {
+        return localVoto;
+    }
+
+    public void setLocalVoto(String localVoto) {
+        this.localVoto = localVoto;
+    }
+
+    public Date getTimeVoto() {
+        return timeVoto;
+    }
+
+    public void setTimeVoto(Date timeVoto) {
+        this.timeVoto = timeVoto;
+    }
+
 }

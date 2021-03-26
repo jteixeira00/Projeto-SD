@@ -225,6 +225,37 @@ public class AdminTerminal
         return check;
     }
 
+    public void votoDetalhes(Pessoa eleitor) throws RemoteException{
+        System.out.println("---Eleitor Local & Momento de Voto---");
+        ri.showVotoDetalhesRMI(eleitor);
+    }
+
+    //to-do (11)
+    public boolean mesasEstado() throws RemoteException{
+
+        return true;
+    }
+
+    //to-do (12)
+    public boolean numeroEleitores() throws RemoteException{
+
+        return true;
+    }
+
+    //n esquecer: end Eleicao
+    public void resultadosEleicao(Eleicao eleicao) throws RemoteException{
+        System.out.println("---Eleicao Terminada---");
+        ri.showVotosRMI(eleicao);
+        ri.atualizaEleicao(eleicao);
+    }
+
+    public void EleicaoEndedDetalhes() throws RemoteException{
+        System.out.println("---Detalhes Eleicoes Terminadas---");
+        ri.eleicoesEndedRMI();
+    }
+
+
+
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
         try {
             RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");

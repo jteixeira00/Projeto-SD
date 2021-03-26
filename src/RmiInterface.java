@@ -12,6 +12,7 @@ public interface RmiInterface extends Remote {
     public ArrayList<Pessoa> getPessoas() throws  RemoteException;
     public ArrayList<MulticastServer> getMesas() throws RemoteException;
     public ArrayList<Eleicao> getEleicoesFuturas() throws RemoteException;
+    public ArrayList<Eleicao> getEleicoesEnded() throws RemoteException;
     public boolean login(String numero, String password) throws RemoteException;
 
     public void logout(String numero) throws RemoteException;
@@ -44,4 +45,12 @@ public interface RmiInterface extends Remote {
     public void showEleicoesDetalhes(int index) throws RemoteException;
 
     public boolean changeEleicoesRMI(int index, int answer, String change) throws RemoteException;
+
+    public void showVotoDetalhesRMI(Pessoa eleitor) throws RemoteException;
+
+    public void showVotosRMI(Eleicao eleicao) throws RemoteException;
+
+    public void atualizaEleicao(Eleicao eleicao) throws RemoteException;
+
+    public void eleicoesEndedRMI() throws RemoteException;
 }

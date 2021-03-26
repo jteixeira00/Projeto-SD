@@ -21,6 +21,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     private ArrayList<Pessoa> pessoasOnline;
     private ArrayList<MulticastServer> listaMesas;
 
+    //implementar
+    private ArrayList<Eleicao> listaEleicoesEnded;
+
     public RmiServer() throws RemoteException {
         super();
         this.listaPessoas = new ArrayList<>();
@@ -355,6 +358,11 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
     @Override
+    public ArrayList<Eleicao> getEleicoesEnded() throws RemoteException {
+        return listaEleicoesEnded;
+    }
+
+    @Override
     public int sizeEleicoesFuturas() throws RemoteException{
         return getEleicoesFuturas().size();
     }
@@ -362,7 +370,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     @Override
     public void showEleicoesDetalhes(int index) throws RemoteException {
         Eleicao eleicao = getEleicoesFuturas().get(index);
-        System.out.println("\n---Alterar propriedade da Eleição---");
         System.out.println("\n1 - Titulo: ");
         System.out.println(eleicao.getTitulo());
         System.out.println("\n2 - Descrição: ");
@@ -400,6 +407,47 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
                 return false;
         }
         return true;
+    }
+
+    @Override
+    public void showVotoDetalhesRMI(Pessoa eleitor) throws RemoteException {
+        System.out.println("Local de Voto: ");
+        System.out.println(eleitor.getLocalVoto());
+        System.out.println("Momento de Voto: ");
+        System.out.println(eleitor.getTimeVoto());
+    }
+
+    @Override
+    public void showVotosRMI(Eleicao eleicao) throws RemoteException {
+        int count;
+        System.out.println("Resultados:\n");
+        for(Lista list : eleicao.getListasCandidatas()){
+            System.out.println(".................");
+            System.out.printf("Lista ");
+            System.out.println(list.getNome());
+            count = list.getVotos();
+            System.out.printf("\nVotos: %d | %f" + '%',count,count/eleicao.votosTotal());
+        }
+        System.out.println(".................");
+        System.out.printf("\nVotos em Branco: %d | %f" + '%',eleicao.getVotosBrancos(),eleicao.getVotosBrancos()/eleicao.votosTotal());
+        System.out.println(".................");
+        System.out.printf("\nVotos Nulos: %d | %f" + '%',eleicao.getVotosNulos(),eleicao.getVotosNulos()/eleicao.votosTotal());
+    }
+
+
+    //to-do (13 - Os detalhes dessa eleição são atualizados e podem ser consultados posteriormente.)
+    @Override
+    public void atualizaEleicao(Eleicao eleicao) throws RemoteException {
+
+    }
+
+    @Override
+    public void eleicoesEndedRMI() throws RemoteException {
+        for(int i = 0; i < listaEleicoesEnded.size();i++){
+            showEleicoesDetalhes(i);
+            showVotosRMI(listaEleicoesEnded.get(i));
+            System.out.println();
+        }
     }
 
 

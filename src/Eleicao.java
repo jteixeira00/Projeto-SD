@@ -158,4 +158,13 @@ public class Eleicao implements Serializable{
 
     }
 
+    public int votosTotal(){
+        int count = 0;
+        for(Lista list: getListasCandidatas()){
+            count += list.getVotos();
+        }
+        count += votosBrancos + votosNulos;
+        return count;
+    }
+
 }
