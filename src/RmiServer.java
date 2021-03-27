@@ -124,7 +124,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return true;
     }
 
-    //to-do
+
     @Override
     public boolean createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws RemoteException {
         Date startDate1 = null;
@@ -153,7 +153,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return true;
     }
 
-    //to-do
+
     @Override
     public boolean createUserRMI(int tipo, String nome, String numero, String dep, String fac, String contacto, String morada, String cc, String validadecc, String password) throws RemoteException {
         for (Pessoa aux : getPessoas()) {
