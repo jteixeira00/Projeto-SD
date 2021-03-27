@@ -16,6 +16,7 @@ public class Eleicao implements Serializable{
     private ArrayList<Lista> listasCandidatas;
     Pessoa.voterType tipoVoters;
     ArrayList<String> orgVoters;
+    ArrayList<MulticastServer> mesas = new ArrayList<>();
 
 
     private int votosNulos=0;
@@ -188,6 +189,10 @@ public class Eleicao implements Serializable{
         }
         count += votosBrancos + votosNulos;
         return count;
+    }
+
+    public void addMesa(MulticastServer mesa){
+        mesas.add(mesa);
     }
 
 }

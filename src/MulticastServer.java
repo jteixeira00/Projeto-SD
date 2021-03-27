@@ -16,6 +16,7 @@ public class MulticastServer extends Thread implements Serializable {
     private long SLEEP_TIME = 5000;
     private static int tableNumber;
     private static String departamento;
+    private Eleicao eleicao;
     public static void main(String[] args) {
         try {
             RmiInterface ti = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
@@ -64,6 +65,10 @@ public class MulticastServer extends Thread implements Serializable {
     }
     public String getDepartamento(){
         return departamento;
+    }
+
+    public void setEleicao(Eleicao e){
+        this.eleicao = e;
     }
 }
 

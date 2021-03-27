@@ -2,10 +2,9 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
-public class AdminTerminal
+public class AdminTerminal extends Thread
 {
     private String numero;
     private String password;
@@ -61,7 +60,7 @@ public class AdminTerminal
         return check;
     }
 
-    public boolean createEleicao() throws RemoteException {
+    public Eleicao createEleicao() throws RemoteException {
         System.out.println("---Criar Eleição---\n");
         Scanner sc = new Scanner(System.in);
 
@@ -98,15 +97,15 @@ public class AdminTerminal
 
         System.out.println("Restringir eleição para que grupo de Pessoas?(1 - Estudantes || 2 - Docentes || 3 - Funcionários): ");
         int type = 0;
-        while(type != 1 || type != 2 || type != 3) {
+        while(type != 1 && type != 2 && type != 3) {
             String typeS = sc.nextLine();
             type = Integer.parseInt(typeS);
-            if(type != 1 || type != 2 || type != 3)
+            if(type != 1 && type != 2 && type != 3)
                 System.out.println("Numero Inválido: Tente de novo\n");
         }
 
-        boolean check = ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, departamento, type);
-        return check;
+        Eleicao e = ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, departamento, type);
+        return e;
     }
 
     public boolean gerirCandidatos(Eleicao eleicao) throws RemoteException{
@@ -258,11 +257,40 @@ public class AdminTerminal
 
 
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
-        try {
-            RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
-            System.out.println("8 + 3 = " + ri.add(8, 3));
+        /*try {
+
+            //System.out.println("8 + 3 = " + ri.add(8, 3));
+
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();
         }
+
+         */
+        AdminTerminal terminal = new AdminTerminal();
+        terminal.start();
+    }
+    public void run(){
+        try {
+            this.ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+
+            //ri.printEleicao(createEleicao());
+            //ri.showEleicoesDetalhes(0);
+            //registerUser();
+            ri.showPessoas();
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
     }
 }

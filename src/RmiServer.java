@@ -1,7 +1,10 @@
+import javax.swing.plaf.multi.MultiInternalFrameUI;
 import java.io.*;
 import java.lang.reflect.Array;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.server.RemoteObjectInvocationHandler;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +33,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         this.listaEleicoes = new ArrayList<>();
         this.pessoasOnline = new ArrayList<>();
         this.listaMesas = new ArrayList<>();
+        load();
     }
 
     public double add(double a, double b) throws RemoteException {
@@ -49,6 +53,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public static void main(String args[]) {
         try {
             RmiInterface ri = new RmiServer();
+
             LocateRegistry.createRegistry(7000).rebind("rmiServer", ri);
         } catch (RemoteException ex1) {
             System.out.println("RMI SERVER EXCEPTION: " + ex1);
@@ -126,7 +131,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     //to-do
     @Override
-    public boolean createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws RemoteException {
+    public Eleicao createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws RemoteException {
         Date startDate1 = null;
         try {
             startDate1 = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(startDate, startHour, startMinute));
@@ -140,17 +145,21 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             e.printStackTrace();
         }
         Date date = new Date();
-        if (startDate1.after(endDate1) || startDate1.after(date)) {
-            return false;
+        if (startDate1.after(endDate1) || startDate1.before(date)) {
+
+            return null;
         }
 
         try {
             Eleicao e = new Eleicao(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, departamento, type);
+            this.listaEleicoes.add(e);
+            save();
+            return e;
         } catch (ParseException parseException) {
             parseException.printStackTrace();
         }
 
-        return true;
+        return null;
     }
 
     //to-do
@@ -163,9 +172,15 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
         Pessoa p = new Pessoa(tipo, nome, numero, dep, fac, contacto, morada, cc, validadecc, password);
         this.addPessoaLista(p);
+        save();
         return true;
     }
 
+
+    public void printEleicao(Eleicao e) throws RemoteException {
+        System.out.println(e.getDescricao());
+
+    }
     //to-do
     @Override
     public boolean deleteCandidateRMI(Eleicao eleicao, int choice, int delete) throws RemoteException {
@@ -180,7 +195,11 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     //to-do [copiar do eleição.showCandidatos()]
     @Override
     public void showPessoas() throws RemoteException {
-
+        for(Pessoa p: listaPessoas){
+            System.out.println(p.getNome());
+            System.out.println(p.getNumero());
+            System.out.println(p.getDepartamento());
+        }
     }
 
     @Override
@@ -342,19 +361,21 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     @Override
     public ArrayList<Eleicao> getEleicoesFuturas() throws RemoteException {
         Date date = new Date();
-        ArrayList<Eleicao> res = null;
+        ArrayList<Eleicao> res = new ArrayList<>();
         try {
             for (Eleicao e : getEleicoes()) {
                 if (date.before(e.getStartDate())) {
 
                     res.add(e);
                 }
+
             }
+            return res;
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-            return res;
 
+        return null;
 
     }
 
@@ -471,6 +492,11 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
 
         return date;
+    }
+
+    public void adicionarMesa(Eleicao e, MulticastServer mesa) throws RemoteException {
+        mesa.setEleicao(e);
+        e.addMesa(mesa);
     }
 }
 

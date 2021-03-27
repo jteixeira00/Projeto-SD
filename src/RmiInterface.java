@@ -7,7 +7,7 @@ public interface RmiInterface extends Remote {
     public String getNewAddress() throws RemoteException;
     public int getTableNumber() throws RemoteException;
 
-
+    public void printEleicao(Eleicao e) throws RemoteException;
     public ArrayList<Eleicao> getEleicoes() throws  RemoteException;
     public ArrayList<Pessoa> getPessoas() throws  RemoteException;
     public ArrayList<MulticastServer> getMesas() throws RemoteException;
@@ -18,7 +18,9 @@ public interface RmiInterface extends Remote {
     public void logout(String numero) throws RemoteException;
     public ArrayList<Eleicao> eleicoesOngoing() throws RemoteException;
 
-    public boolean createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws RemoteException;
+    public void adicionarMesa(Eleicao e, MulticastServer mesa) throws RemoteException;
+
+    public Eleicao createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws RemoteException;
 
     public boolean createUserRMI(int tipo, String nome, String numero, String dep, String fac, String contacto, String morada, String cc, String validadecc, String password) throws RemoteException;
 
