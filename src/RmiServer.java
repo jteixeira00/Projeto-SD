@@ -33,7 +33,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         this.listaEleicoes = new ArrayList<>();
         this.pessoasOnline = new ArrayList<>();
         this.listaMesas = new ArrayList<>();
-        load();
+        //load();
     }
 
     public double add(double a, double b) throws RemoteException {
@@ -194,12 +194,17 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     //to-do [copiar do eleição.showCandidatos()]
     @Override
-    public void showPessoas() throws RemoteException {
+    public String showPessoas() throws RemoteException {
+        String peeps = "";
+        int i = 1;
+        String is;
         for(Pessoa p: listaPessoas){
-            System.out.println(p.getNome());
-            System.out.println(p.getNumero());
-            System.out.println(p.getDepartamento());
+            is = String.valueOf(i);
+            System.out.println(p.getType());
+            peeps += is + " - " + p.getNome() + " || " + p.getNumero() + " || " + p.getType() + " || " + p.getDepartamento() + '\n';
+            i++;
         }
+        return peeps;
     }
 
     @Override
@@ -390,18 +395,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
     @Override
-    public void showEleicoesDetalhes(int index) throws RemoteException {
+    public String showEleicoesDetalhes(int index) throws RemoteException {
         Eleicao eleicao = getEleicoesFuturas().get(index);
-        System.out.println("\n1 - Titulo: ");
-        System.out.println(eleicao.getTitulo());
-        System.out.println("\n2 - Descrição: ");
-        System.out.println(eleicao.getDescricao());
-        System.out.println("\n3 - Data de Inicio (dd-MM-yyyy'T'HH:mm): ");
-        System.out.println(eleicao.dateToString(eleicao.getStartDate()));
-        System.out.println("\n4 - Data de Fim (dd-MM-yyyy'T'HH:mm): ");
-        System.out.println(eleicao.dateToString(eleicao.getEndDate()));
-        System.out.println("\n5 - Restringir eleição para um único departamento: ");
-        System.out.println(eleicao.getDepartamento());
+        return "\n1 - Titulo " + eleicao.getTitulo() + "\n2 - Descrição: " + eleicao.getDescricao() + "\n3 - Data de Inicio (dd-MM-yyyy'T'HH:mm): " + eleicao.dateToString(eleicao.getStartDate()) + "\n4 - Data de Fim (dd-MM-yyyy'T'HH:mm): " + eleicao.dateToString(eleicao.getEndDate()) + "\n5 - Restringir eleição para um único departamento: " + eleicao.getDepartamento();
     }
 
     //to-do

@@ -26,7 +26,7 @@ public interface RmiInterface extends Remote {
 
     public boolean deleteCandidateRMI(Eleicao eleicao, int index, int delete) throws RemoteException;
 
-    public void showPessoas() throws RemoteException;
+    public String showPessoas() throws RemoteException;
 
     public int sizePessoas() throws RemoteException;
 
@@ -44,7 +44,7 @@ public interface RmiInterface extends Remote {
 
     public int sizeEleicoesFuturas() throws RemoteException;
 
-    public void showEleicoesDetalhes(int index) throws RemoteException;
+    public String showEleicoesDetalhes(int index) throws RemoteException;
 
     public boolean changeEleicoesRMI(int index, int answer, String change) throws RemoteException;
 

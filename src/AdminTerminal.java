@@ -126,10 +126,10 @@ public class AdminTerminal extends Thread
         switch (tipo){
             case 1:
                 System.out.println("\n---Adicionar Candidatos---\n");
-                ri.showPessoas();
                 System.out.println("Pessoa que pretende adicionar (1 - ");
                 System.out.println(ri.sizePessoas());
                 System.out.println("): ");
+                System.out.printf(ri.showPessoas());
                 String addS = sc.nextLine();
                 int add = Integer.parseInt(addS);
                 if(add <= ri.sizePessoas())
@@ -211,7 +211,7 @@ public class AdminTerminal extends Thread
 
         if(choice <= ri.sizePessoas()){
             System.out.println("\n---Alterar propriedade da Eleição---");
-            ri.showEleicoesDetalhes(choice - 1);
+            System.out.printf(ri.showEleicoesDetalhes(choice - 1));
             String answerS = sc.nextLine();
             int answer  = Integer.parseInt(answerS);
             System.out.println("Alterar para: ");
@@ -284,9 +284,11 @@ public class AdminTerminal extends Thread
         try {
 
             //ri.printEleicao(createEleicao());
-            //ri.showEleicoesDetalhes(0);
-            //registerUser();
-            ri.showPessoas();
+            //System.out.printf(ri.showEleicoesDetalhes(0));
+            registerUser();
+            registerUser();
+            registerUser();
+            System.out.printf(ri.showPessoas());
 
         } catch (RemoteException e) {
             e.printStackTrace();
