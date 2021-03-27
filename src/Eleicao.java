@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Eleicao implements Serializable{
-    private final String titulo;
-    private final String descricao;
-    private final String departamento;
-    private final Date startDate;
-    private final Date endDate;
+    private String titulo;
+    private String descricao;
+    private String departamento;
+    private Date startDate;
+    private Date endDate;
     private ArrayList<Lista> listasCandidatas;
     Pessoa.voterType tipoVoters;
     ArrayList<String> orgVoters;
@@ -81,6 +81,27 @@ public class Eleicao implements Serializable{
         return titulo;
     }
 
+    public void setTitulo(String newTitle){
+        this.titulo = newTitle;
+    }
+
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public void setDepartamento(String departamento) {
+        this.departamento = departamento;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
     public String getDescricao() {
         return descricao;
     }
@@ -92,6 +113,8 @@ public class Eleicao implements Serializable{
     public Date getEndDate() {
         return endDate;
     }
+
+
 
     public Pessoa.voterType getTipoVoters() {
         return tipoVoters;

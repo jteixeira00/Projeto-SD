@@ -217,6 +217,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     //to-do
     @Override
     public boolean deleteMesaRMI(int del) throws RemoteException {
+        this.listaMesas.remove(del);
         return false;
     }
 
@@ -389,19 +390,34 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         switch (answer) {
             case 1:
                 //alterar titulo
+                eleicao.setTitulo(change);
                 break;
             case 2:
                 //alterar descrição
+                eleicao.setDescricao(change);
                 break;
             case 3:
-                //alterar data de inicio
+                //alterar data inicio
+                try {
+                    eleicao.setStartDate(parseDateString(change));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 break;
             case 4:
                 //alterar data de fim
+                try {
+                    eleicao.setEndDate(parseDateString(change));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 break;
-            case 5:
+            /*case 5:
                 //alterar departamento
+                eleicao.
                 break;
+
+            */
             default:
                 System.out.println("Input Inválido.");
                 return false;
@@ -450,6 +466,11 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
     }
 
+    public Date parseDateString(String string) throws RemoteException, ParseException {
+        Date date = new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(string);
 
+
+        return date;
+    }
 }
 

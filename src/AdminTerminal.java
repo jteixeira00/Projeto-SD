@@ -217,6 +217,7 @@ public class AdminTerminal
             int answer  = Integer.parseInt(answerS);
             System.out.println("Alterar para: ");
             String change = sc.nextLine();
+            //to-do pedir a data ao utilizador no formato dd-MM-yyyy HH:mm ou entao pedir data hora e minuto separado
             check = ri.changeEleicoesRMI(choice - 1, answer, change);
         }
         else
