@@ -43,6 +43,8 @@ public class Eleicao implements Serializable{
         this.endDate = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(endDate, endHour, endMinute));
         Date date = new Date();
 
+        this.listasCandidatas = new ArrayList<>();
+
         this.departamento = departamento;
 
 
@@ -134,7 +136,11 @@ public class Eleicao implements Serializable{
     }
 
     public ArrayList<Lista> getListasCandidatas() {
-        return listasCandidatas;
+            return listasCandidatas;
+    }
+
+    public void addListasCandidatas(Lista lista) {
+        listasCandidatas.add(lista);
     }
 
     public void setListasCandidatas(ArrayList<Lista> listasCandidatas) {
@@ -152,18 +158,22 @@ public class Eleicao implements Serializable{
     public void addVoto(Voto v){
         this.votos.add(v);}
 
-    public void showCandidatos(int index) throws RemoteException {
-        ArrayList<Pessoa> candidatos = listasCandidatas.get(index).getMembros();
+    public String showListasCandidatas() throws RemoteException {
+        String lista = "";
+        int indx;
+        String indxS;
+        for(int i = 0; i < listasCandidatas.size(); i++) {
+            indx = i + 1;
+            indxS = Integer.toString(indx);
+            lista += indxS + " - " + listasCandidatas.get(i).getNome() + '\n';
 
-        for(int i = 0; i < candidatos.size(); i++) {
-            System.out.println(i + 1);
-            System.out.println(" - ");
-            System.out.println(candidatos.get(i).getNome());
-            System.out.println("\n");
         }
+        return lista;
     }
 
     public int sizeCandidatos() throws RemoteException{
+        if (listasCandidatas == null)
+            return 0;
         return listasCandidatas.size();
     }
 
