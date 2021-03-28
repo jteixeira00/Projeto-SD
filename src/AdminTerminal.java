@@ -104,59 +104,64 @@ public class AdminTerminal extends Thread
                 System.out.println("Numero Inválido: Tente de novo\n");
         }
 
-        Eleicao e = ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, departamento, type);
-        return e;
+        return ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, departamento, type);
     }
 
-    public boolean gerirCandidatos(Eleicao eleicao) throws RemoteException{
+    public boolean gerirCandidatos(Eleicao eleicao, int choice) throws RemoteException{
         boolean check = false;
-        System.out.println("---Gerir Candidatos---\n");
+        System.out.println("---Gerir Candidatos---");
         Scanner sc = new Scanner(System.in);
-        System.out.println("Lista que pretende gerir (1 - ");
-        System.out.println(eleicao.sizeCandidatos());
-        System.out.println("): ");
-        String choiceS = sc.nextLine();
-        int choice = Integer.parseInt(choiceS);
 
-        System.out.println("\n1 - Adicionar candidatos || 2 - Remover candidatos:  ");
+        System.out.println("1 - Adicionar candidatos || 2 - Remover candidatos:  ");
         String tipoS = sc.nextLine();
         int tipo = Integer.parseInt(tipoS);
         int size = eleicao.sizeLista(choice - 1);
-
         switch (tipo){
             case 1:
-                System.out.println("\n---Adicionar Candidatos---\n");
-                System.out.println("Pessoa que pretende adicionar (1 - ");
-                System.out.println(ri.sizePessoas());
-                System.out.println("): ");
+                System.out.println("---Adicionar Candidatos---");
+                System.out.printf("\nPessoa(s) que pretende adicionar (1 - %d): \n", ri.sizePessoas());
                 System.out.printf(ri.showPessoas());
-                String addS = sc.nextLine();
-                int add = Integer.parseInt(addS);
-                if(add <= ri.sizePessoas())
-                    check = ri.addCandidateRMI(eleicao,choice - 1,add);
-                else
-                    System.out.printf("\nCandidato inválido.\n");
+                System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
+                while(true){
+                    String addS = sc.nextLine();
+                    int add = Integer.parseInt(addS);
+                    if (add <= ri.sizePessoas() && add > 0)
+                        check = ri.addCandidateRMI(eleicao, choice - 1, add);
+                    else {
+                        if(add == 0)
+                            break;
+                        System.out.println("Candidato inválido.");
+                        break;
+                    }
+                }
                 break;
 
             case 2:
-                System.out.println("\n---Remover Candidatos---\n");
+                System.out.println("---Remover Candidatos---");
                 if(size == 0){
                     System.out.println("Lista Vazia - Impossivel Remover Candidatos");
-                    break;
                 }
-                eleicao.showCandidatos(choice - 1);
-                System.out.println("Candidato que pretende eliminar (1 - ");
-                System.out.println(size);
-                System.out.println("): ");
-                String deletS = sc.nextLine();
-                int delet = Integer.parseInt(deletS);
-                if(delet <= size)
-                    check = ri.deleteCandidateRMI(eleicao,choice - 1,delet);
-                else
-                    System.out.printf("\nCandidato inválido.\n");
+                else {
+                    System.out.printf("\nCandidato que pretende eliminar (1 - %d): \n", size);
+                    System.out.printf(eleicao.getListasCandidatas().get(choice - 1).showCandidatos());
+                    System.out.println("0 - SAIR DE REMOVER CANDIDATOS");
+                    while(true) {
+                        String deletS = sc.nextLine();
+                        int delet = Integer.parseInt(deletS);
+                        if (delet <= size)
+                            check = ri.deleteCandidateRMI(eleicao, choice - 1, delet);
+                        else {
+                            if(delet == 0)
+                                break;
+                            System.out.println("Candidato inválido.");
+                            break;
+                        }
+                    }
+                }
                 break;
 
             default:
+                System.out.println("Opção Inválida");
                 break;
         }
 
@@ -198,26 +203,81 @@ public class AdminTerminal extends Thread
         return check;
     }
 
+    //mandar as op para o RMI
+    public void gerirListas(Eleicao eleicao) throws RemoteException{
+        System.out.println("---Gerir Listas---");
+        Scanner sc = new Scanner(System.in);
+        System.out.println("1 - Criar lista || 2 - Remover Lista || 3 - Gerir Candidatos: ");
+        String choiceS = sc.nextLine();
+        int choice = Integer.parseInt(choiceS);
+        switch (choice){
+            case  1:
+                createLista(eleicao);
+                break;
+            case 2:
+                if(eleicao.sizeCandidatos() == 0)
+                    System.out.println("Eleição sem listas.");
+                else{
+                    int size = eleicao.sizeCandidatos();
+                    System.out.printf("\nLista que pretende eliminar (1 - %d): \n",size);
+                    System.out.print(eleicao.showListasCandidatas());
+                    System.out.println();
+                    choiceS = sc.nextLine();
+                    choice = Integer.parseInt(choiceS);
+                    ri.eliminarListaCandidatos(eleicao,choice - 1);
+                }
+                break;
+            case 3:
+                if(eleicao.sizeCandidatos() == 0)
+                    System.out.println("Eleição sem listas.");
+                else {
+                    int size = eleicao.sizeCandidatos();
+                    System.out.printf("\nLista que pretende gerir (1 - %d): \n", size);
+                    System.out.print(eleicao.showListasCandidatas());
+                    System.out.println();
+                    choiceS = sc.nextLine();
+                    choice = Integer.parseInt(choiceS);
+                    gerirCandidatos(eleicao, choice - 1);
+
+                }
+                break;
+            default:
+                System.out.println("Input inválido");
+                break;
+        }
+
+
+
+    }
+
     public boolean gerirEleicao() throws RemoteException{
         boolean check = false;
         System.out.println("---Gerir Eleições---\n");
         Scanner sc = new Scanner(System.in);
-        ri.showEleicoesFuturas();
-        System.out.println("Eleição que pretende gerir (1 - ");
-        System.out.println(ri.sizeEleicoesFuturas());
-        System.out.println("): ");
+        System.out.print(ri.showEleicoesFuturas());
+        System.out.printf("Eleição que pretende gerir (1 - %d): ",ri.sizeEleicoesFuturas());
         String choiceS = sc.nextLine();
         int choice = Integer.parseInt(choiceS);
 
-        if(choice <= ri.sizePessoas()){
+        if(choice <= ri.sizeEleicoesFuturas()){
             System.out.println("\n---Alterar propriedade da Eleição---");
             System.out.printf(ri.showEleicoesDetalhes(choice - 1));
+            System.out.println("\n6 - Gerir listas");
             String answerS = sc.nextLine();
             int answer  = Integer.parseInt(answerS);
-            System.out.println("Alterar para: ");
-            String change = sc.nextLine();
-            //to-do pedir a data ao utilizador no formato dd-MM-yyyy HH:mm ou entao pedir data hora e minuto separado
-            check = ri.changeEleicoesRMI(choice - 1, answer, change);
+            if(answer == 6)
+                gerirListas(ri.getEleicoesFuturas().get(choice - 1));
+            else if (answer > 0 && answer <= 4){
+                System.out.println("Alterar para: ");
+                String change = sc.nextLine();
+                //to-do pedir a data ao utilizador no formato dd-MM-yyyy HH:mm ou entao pedir data hora e minuto separado
+                check = ri.changeEleicoesRMI(choice - 1, answer, change);
+            }
+            else {
+                System.out.printf("\nInput inválido.\n");
+            }
+
+
         }
         else
             System.out.printf("\nInput inválido.\n");
@@ -228,6 +288,42 @@ public class AdminTerminal extends Thread
     public void votoDetalhes(Pessoa eleitor) throws RemoteException{
         System.out.println("---Eleitor Local & Momento de Voto---");
         ri.showVotoDetalhesRMI(eleitor);
+    }
+
+    public Lista createLista(Eleicao eleicao) throws RemoteException{
+        System.out.println("---Criar Lista---");
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Nome da lista: ");
+        String nome = sc.nextLine();
+        ri.createListaRMI(eleicao,nome);
+
+
+        System.out.println("Adicionar candidatos: Sim - 1 || Não - 2");
+        String choiceS = sc.nextLine();
+        int choice = Integer.parseInt(choiceS);
+        switch (choice){
+            case 1:
+                System.out.printf("\nPessoa(s) que pretende adicionar (1 - %d): \n", ri.sizePessoas());
+                System.out.printf(ri.showPessoas());
+                System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
+                while(true){
+                    String addS = sc.nextLine();
+                    int add = Integer.parseInt(addS);
+                    if (add <= ri.sizePessoas() && add > 0)
+                        ri.addCandidateRMI(eleicao, -1, add);
+                    else {
+                        if(add == 0)
+                            break;
+                        System.out.println("Candidato inválido.");
+                        break;
+                    }
+                }
+                break;
+            default:
+                System.out.println("Lista criada com 0 candidatos");
+        }
+        return null;
     }
 
     //to-do (11)
@@ -285,10 +381,10 @@ public class AdminTerminal extends Thread
 
             //ri.printEleicao(createEleicao());
             //System.out.printf(ri.showEleicoesDetalhes(0));
-            registerUser();
-            registerUser();
-            registerUser();
-            System.out.printf(ri.showPessoas());
+
+            createEleicao();
+            gerirEleicao();
+            gerirEleicao();
 
         } catch (RemoteException e) {
             e.printStackTrace();

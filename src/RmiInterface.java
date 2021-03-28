@@ -40,7 +40,7 @@ public interface RmiInterface extends Remote {
 
     public boolean deleteMesaRMI(int del) throws RemoteException;
 
-    public void showEleicoesFuturas() throws RemoteException;
+    public String showEleicoesFuturas() throws RemoteException;
 
     public int sizeEleicoesFuturas() throws RemoteException;
 
@@ -59,4 +59,7 @@ public interface RmiInterface extends Remote {
     public void addMesa(MulticastServer m) throws RemoteException;
 
     public String identificarUser(String input) throws RemoteException;
+    public Eleicao createListaRMI(Eleicao eleicao, String nome) throws RemoteException;
+
+    public void eliminarListaCandidatos(Eleicao eleicao, int i) throws RemoteException;
 }

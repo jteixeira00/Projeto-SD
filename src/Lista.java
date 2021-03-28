@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class Lista implements Serializable {
@@ -42,5 +43,18 @@ public class Lista implements Serializable {
 
     public int getSize() {
         return membros.size();
+    }
+
+    public String showCandidatos() throws RemoteException {
+        String lista = "";
+        int indx;
+        String indxS;
+        for(int i = 0; i < membros.size(); i++) {
+            indx = i + 1;
+            indxS = Integer.toString(indx);
+            lista += indxS + " - " + membros.get(i).getNome() + '\n';
+
+        }
+        return lista;
     }
 }
