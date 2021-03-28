@@ -57,4 +57,6 @@ public interface RmiInterface extends Remote {
     public void eleicoesEndedRMI() throws RemoteException;
 
     public void addMesa(MulticastServer m) throws RemoteException;
+
+    public String identificarUser(String input) throws RemoteException;
 }

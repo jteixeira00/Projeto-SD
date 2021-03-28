@@ -497,5 +497,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public void addMesa(MulticastServer m) throws RemoteException{
         listaMesas.add(m);
     }
+
+    public String identificarUser(String input){
+        return "";
+    }
 }
 

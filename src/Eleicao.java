@@ -39,8 +39,8 @@ public class Eleicao implements Serializable{
 
         this.titulo = titulo;
         this.descricao = descricao;
-        this.startDate = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(startDate, startHour,startMinute));
-        this.endDate = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm").parse(parseDate(endDate, endHour, endMinute));
+        this.startDate = new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(parseDate(startDate, startHour,startMinute));
+        this.endDate = new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(parseDate(endDate, endHour, endMinute));
         Date date = new Date();
 
         this.departamento = departamento;
@@ -57,7 +57,7 @@ public class Eleicao implements Serializable{
         if (sMinute.length()==1){
             sMinute = "0"+sMinute;
         }
-        return date+"T"+sHour+":"+sMinute;
+        return date+" "+sHour+":"+sMinute;
     }
 
     public void addOrg(String org){

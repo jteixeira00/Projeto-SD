@@ -8,6 +8,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Scanner;
 
 
 public class MulticastServer extends Thread implements Serializable {
@@ -55,7 +56,10 @@ public class MulticastServer extends Thread implements Serializable {
         long counter = 0;
         System.out.println(this.getName() + " running in address " + MULTICAST_ADDRESS + " in department " + departamento);
         try {
+            RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
             socket = new MulticastSocket();  // create socket without binding it (only for sending)
+            Scanner sc = new Scanner(System.in);
+            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             /*
             while (true) {
                 String message = this.getName() + " packet " + counter++;
@@ -66,14 +70,31 @@ public class MulticastServer extends Thread implements Serializable {
                 try { sleep((long) (Math.random() * SLEEP_TIME)); } catch (InterruptedException e) { }
             }
             */
-        } catch (IOException e) {
+
+            System.out.println("Para indetificar um eleitor, insira o número da UC");
+            System.out.println(ri.identificarUser(sc.nextLine()));
+
+            String message = "type|request";
+            byte[] buffer = message.getBytes();
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+            socket.send(packet);
+            while(true){
+                String reply = new String(packet.getData(), 0, packet.getLength());
+
+                //testa se mensagem recebida tem o formato "type|available;uuid|x"
+                if(reply.split("\\|",0)[1].equals("available;uuid")){
+                    break;
+                }
+
+            }
+
+
+        } catch (IOException | NotBoundException e) {
             e.printStackTrace();
         } finally {
             socket.close();
         }
     }
-
-
 
     public static void setDepartamento(String s){
         departamento = s;
