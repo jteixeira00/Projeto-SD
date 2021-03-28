@@ -72,21 +72,28 @@ public class MulticastServer extends Thread implements Serializable {
             */
 
             System.out.println("Para indetificar um eleitor, insira o número da UC");
-            System.out.println(ri.identificarUser(sc.nextLine()));
+            System.out.println(ri.identificarUser(sc.nextLine())); //falta dar handle das exceptions
 
             String message = "type|request";
             byte[] buffer = message.getBytes();
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+            //envia mensagem a pedir um terminal livre
             socket.send(packet);
-            while(true){
-                String reply = new String(packet.getData(), 0, packet.getLength());
-
+            String reply;
+            do {
+                reply = new String(packet.getData(), 0, packet.getLength());
                 //testa se mensagem recebida tem o formato "type|available;uuid|x"
-                if(reply.split("\\|",0)[1].equals("available;uuid")){
-                    break;
-                }
 
-            }
+            } while (!reply.split("\\|", 0)[1].equals("available;uuid"));
+            //recebe mensagem com um terminal livre
+
+            String uuid = reply.split("\\|", 0)[2].split(";",0)[0];
+            message = "uuid|"+uuid+";type|unlock";
+            buffer = message.getBytes();
+            packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+            socket.send(packet);
+            //desbloqueia esse terminal
+
 
 
         } catch (IOException | NotBoundException e) {
