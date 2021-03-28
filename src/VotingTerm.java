@@ -40,5 +40,7 @@ public class VotingTerm extends Thread{
             socket.close();
         }
     }
+
+
 }
 
