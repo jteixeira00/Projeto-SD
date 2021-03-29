@@ -24,13 +24,13 @@ public interface RmiInterface extends Remote {
 
     public boolean createUserRMI(int tipo, String nome, String numero, String dep, String fac, String contacto, String morada, String cc, String validadecc, String password) throws RemoteException;
 
-    public boolean deleteCandidateRMI(Eleicao eleicao, int index, int delete) throws RemoteException;
+    public boolean deleteCandidateRMI(int indx, int index, int delete) throws RemoteException;
 
     public String showPessoas() throws RemoteException;
 
     public int sizePessoas() throws RemoteException;
 
-    public boolean addCandidateRMI(Eleicao eleicao, int lista, int add) throws RemoteException;
+    public boolean addCandidateRMI(int indx, int lista, int add) throws RemoteException;
 
     public boolean criaMesaRMI(String departamento) throws RemoteException;
 
@@ -54,12 +54,13 @@ public interface RmiInterface extends Remote {
 
     public void atualizaEleicao(Eleicao eleicao) throws RemoteException;
 
-    public void eleicoesEndedRMI() throws RemoteException;
+    public String eleicoesEndedRMI() throws RemoteException;
 
     public void addMesa(MulticastServer m) throws RemoteException;
 
     public String identificarUser(String input) throws RemoteException;
-    public Eleicao createListaRMI(Eleicao eleicao, String nome) throws RemoteException;
 
-    public void eliminarListaCandidatos(Eleicao eleicao, int i) throws RemoteException;
+    public Eleicao createListaRMI(int indx, String nome) throws RemoteException;
+
+    public void eliminarListaCandidatos(int indx, int i) throws RemoteException;
 }

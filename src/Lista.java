@@ -8,7 +8,11 @@ public class Lista implements Serializable {
     private int votos = 0;
 
     public Lista(ArrayList<Pessoa> membros, String nome) {
-        this.membros = membros;
+        if(membros == null)
+            this.membros = new ArrayList<>();
+        else
+            this.membros = membros;
+
         this.nome = nome;
     }
 
@@ -42,6 +46,8 @@ public class Lista implements Serializable {
     }
 
     public int getSize() {
+        if(membros == null)
+            return 0;
         return membros.size();
     }
 

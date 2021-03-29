@@ -181,15 +181,13 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         System.out.println(e.getDescricao());
 
     }
-    //to-do
+
     @Override
-    public boolean deleteCandidateRMI(Eleicao eleicao, int choice, int delete) throws RemoteException {
-        /*
-        ArrayList<Lista> aux = eleicao.getListasCandidatas();
-        aux.remove(delete);
-        eleicao.setListasCandidatas(aux);
-         */
-        return false;
+    public boolean deleteCandidateRMI(int indx, int choice, int delete) throws RemoteException {
+        ArrayList<Lista> aux = getEleicoesFuturas().get(indx).getListasCandidatas();
+        aux.get(choice).getMembros().remove(delete);
+        getEleicoesFuturas().get(indx).setListasCandidatas(aux);
+        return true;
     }
 
     //to-do [copiar do eleição.showCandidatos()]
@@ -212,12 +210,13 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return listaPessoas.size();
     }
 
-    //to-do
     @Override
-    public boolean addCandidateRMI(Eleicao eleicao, int choice, int add) throws RemoteException {
-        //ArrayList<Lista> aux = eleicao.getListasCandidatas();
-
-        return false;
+    public boolean addCandidateRMI(int indx, int choice, int addm) throws RemoteException {
+        ArrayList<Lista> aux = getEleicoesFuturas().get(indx).getListasCandidatas();
+        Pessoa p = listaPessoas.get(addm);
+        aux.get(choice).getMembros().add(p);
+        getEleicoesFuturas().get(indx).setListasCandidatas(aux);
+        return true;
     }
 
     //to-do
@@ -406,10 +405,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     @Override
     public String showEleicoesDetalhes(int index) throws RemoteException {
         Eleicao eleicao = getEleicoesFuturas().get(index);
-        return "\n1 - Titulo " + eleicao.getTitulo() + "\n2 - Descrição: " + eleicao.getDescricao() + "\n3 - Data de Inicio (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getStartDate()) + "\n4 - Data de Fim (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getEndDate()) + "\n5 - Restringir eleição para um único departamento: " + eleicao.getDepartamento();
+        return "\n1 - Titulo: " + eleicao.getTitulo() + "\n2 - Descrição: " + eleicao.getDescricao() + "\n3 - Data de Inicio (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getStartDate()) + "\n4 - Data de Fim (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getEndDate()) + "\n5 - Restringir eleição para um único departamento: " + eleicao.getDepartamento();
     }
 
-    //to-do
     @Override
     public boolean changeEleicoesRMI(int index, int answer, String change) throws RemoteException {
         Eleicao eleicao = getEleicoesFuturas().get(index);
@@ -439,12 +437,11 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
                 }
                 break;
 
-            /*case 5:
+            case 5:
                 //alterar departamento
-                eleicao.
+                eleicao.setDepartamento(change);
                 break;
 
-            */
             default:
                 System.out.println("Input Inválido.");
                 return false;
@@ -485,12 +482,18 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
     @Override
-    public void eleicoesEndedRMI() throws RemoteException {
-        for(int i = 0; i < listaEleicoesEnded.size();i++){
-            showEleicoesDetalhes(i);
-            showVotosRMI(listaEleicoesEnded.get(i));
-            System.out.println();
+    public String eleicoesEndedRMI() throws RemoteException {
+        if(listaEleicoesEnded != null) {
+            for (int i = 0; i < listaEleicoesEnded.size(); i++) {
+                showEleicoesDetalhes(i);
+                showVotosRMI(listaEleicoesEnded.get(i));
+                System.out.println();
+            }
         }
+        else{
+            return "Impossivel Realizar Operação: Eleições Passadas Inexistentes.\n";
+        }
+        return "";
     }
 
     public Date parseDateString(String string) throws RemoteException, ParseException {
@@ -514,7 +517,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
     @Override
-    public Eleicao createListaRMI(Eleicao eleicao, String nome) throws RemoteException {
+    public Eleicao createListaRMI(int inx, String nome) throws RemoteException {
+        Eleicao eleicao = getEleicoesFuturas().get(inx);
         Lista list = new Lista(null,nome);
         eleicao.addListasCandidatas(list);
         return eleicao;
@@ -522,8 +526,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     //to-do
     @Override
-    public void eliminarListaCandidatos(Eleicao eleicao, int i) throws RemoteException{
-
+    public void eliminarListaCandidatos(int indx, int i) throws RemoteException{
+        getEleicoesFuturas().get(indx).getListasCandidatas().remove(i);
     }
 
 }
