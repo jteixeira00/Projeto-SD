@@ -34,7 +34,8 @@ public class VotingTerm extends Thread{
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
             System.out.println("Terminal de voto conectado à mesa nº "+s);
-            String message;
+            String messagestr;
+            MessageProtocol message;
             while (true) {
 
                 //aguarda uma mensagem a pedir um terminal livre
@@ -42,13 +43,15 @@ public class VotingTerm extends Thread{
                     byte[] buffer = new byte[256];
                     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                     socket.receive(packet);
-                    message = new String(packet.getData(), 0, packet.getLength());
-                    System.out.println(message);
-                }while(!message.equals("type|request"));
+                    messagestr = new String(packet.getData(), 0, packet.getLength());
+                    System.out.println(messagestr);
+                    message = new MessageProtocol(messagestr);
+
+                }while(!message.getType().equals("request"));
 
                 //responde a informar que está disponivel
-                message = "type|available;uuid|"+ uuid.toString();
-                byte[] buffer = message.getBytes();
+                messagestr = "type|available;uuid|"+ uuid.toString();
+                byte[] buffer = messagestr.getBytes();
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
                 socket.send(packet);
 
@@ -57,19 +60,20 @@ public class VotingTerm extends Thread{
                     buffer = new byte[256];
                     packet = new DatagramPacket(buffer, buffer.length);
                     socket.receive(packet);
-                    message = new String(packet.getData(), 0, packet.getLength());
-                    System.out.println(message);
-                }while(!message.split(";")[1].equals("type|unlock"));
+                    messagestr = new String(packet.getData(), 0, packet.getLength());
+                    System.out.println(messagestr);
+                    message = new MessageProtocol(messagestr);
+                }while(!message.getType().equals("unlock"));
 
-                if(message.split("\\|")[1].equals(uuid.toString()+";type"){
+                if(message.getUuid().equals(uuid.toString())){
                     System.out.println("UC Number:");
                     String ucnumber = in.nextLine();
                     System.out.println("Password");
                     String password = in.nextLine();
 
                     //envia login info
-                    message = "uuid|"+uuid.toString()+";type|login;number|"+ucnumber+";password|"+password;
-                    buffer = message.getBytes();
+                    messagestr = "uuid|"+uuid.toString()+";type|login;number|"+ucnumber+";password|"+password;
+                    buffer = messagestr.getBytes();
                     packet = new DatagramPacket(buffer, buffer.length, group, PORT);
                     socket.send(packet);
 
@@ -78,10 +82,22 @@ public class VotingTerm extends Thread{
                         buffer = new byte[512];
                         packet = new DatagramPacket(buffer, buffer.length);
                         socket.receive(packet);
-                        message = new String(packet.getData(), 0, packet.getLength());
-                    }while(!message.split(";")[0].equals("uuid|"+uuid.toString()) && !message.split(";")[1].equals("type|status"));
+                        messagestr = new String(packet.getData(), 0, packet.getLength());
+                        message = new MessageProtocol(messagestr);
+                    }while(!message.getUuid().equals(uuid.toString()) && !message.getType().equals("status"));
 
-                    if(message.split(";")[0].equals("logged|on")){
+                    if(message.getLogged().equals("on")){
+                        System.out.println("Escolha a lista em que pretende votar:");
+                        do {
+                            buffer = new byte[1024];
+                            packet = new DatagramPacket(buffer, buffer.length);
+                            socket.receive(packet);
+                            messagestr = new String(packet.getData(), 0, packet.getLength());
+                            message = new MessageProtocol(messagestr);
+                        }while (!message.getType().equals("item_list") && !message.getUuid().equals(this.uuid.toString()));
+
+
+
 
                     }
                     else{
