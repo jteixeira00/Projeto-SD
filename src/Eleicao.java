@@ -178,6 +178,8 @@ public class Eleicao implements Serializable{
     }
 
     public int sizeLista(int index) throws RemoteException{
+        if (listasCandidatas.get(index) == null)
+            return 0;
         return listasCandidatas.get(index).getSize();
     }
 

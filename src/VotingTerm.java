@@ -61,7 +61,7 @@ public class VotingTerm extends Thread{
                     System.out.println(message);
                 }while(!message.split(";")[1].equals("type|unlock"));
 
-                if(message.split("\\|")[1].equals(uuid.toString()+";type"){
+                if(message.split("\\|")[1].equals(uuid.toString()+";type")){
                     System.out.println("UC Number:");
                     String ucnumber = in.nextLine();
                     System.out.println("Password");

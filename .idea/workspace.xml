@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="72664580-6fa9-4ee8-ac8b-09ffc4ff70ed" name="Default Changelist" comment="" />
+    <list default="true" id="72664580-6fa9-4ee8-ac8b-09ffc4ff70ed" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/MulticastServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/MulticastServer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/VotingTerm.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/VotingTerm.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pessoas.data" beforeDir="false" afterPath="$PROJECT_DIR$/pessoas.data" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AdminTerminal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/AdminTerminal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Eleicao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Eleicao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Lista.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Lista.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RmiInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RmiInterface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RmiServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RmiServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/VotingTerm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/VotingTerm.java" afterDir="false" />
+    </list>
     <list id="acb246f5-625e-44ba-95a6-dddabb3f1aeb" name="Changes by dinis" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +108,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
-  <component name="RunManager" selected="Application.VotingTerm">
+  <component name="RunManager" selected="Application.AdminTerminal">
     <configuration name="AdminTerminal" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="AdminTerminal" />
       <module name="Projeto-SD" />
@@ -136,12 +148,23 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.VotingTerm" />
-        <item itemvalue="Application.MulticastServer" />
-        <item itemvalue="Application.RmiServer" />
         <item itemvalue="Application.AdminTerminal" />
+        <item itemvalue="Application.RmiServer" />
+        <item itemvalue="Application.MulticastServer" />
+        <item itemvalue="Application.VotingTerm" />
       </list>
     </recent_temporary>
   </component>
