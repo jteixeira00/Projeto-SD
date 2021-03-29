@@ -394,8 +394,24 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     @Override
     public ArrayList<Eleicao> getEleicoesEnded() throws RemoteException {
-        return listaEleicoesEnded;
-    }
+            Date date = new Date();
+            ArrayList<Eleicao> res = new ArrayList<>();
+            System.out.println(getEleicoes().size());
+            try {
+                for (Eleicao e : getEleicoes()) {
+                    if (date.after(e.getEndDate())) {
+                        res.add(e);
+                    }
+
+                }
+                return res;
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+
+        }
 
     @Override
     public int sizeEleicoesFuturas() throws RemoteException{
@@ -450,28 +466,37 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
     @Override
-    public void showVotoDetalhesRMI(Pessoa eleitor) throws RemoteException {
-        System.out.println("Local de Voto: ");
-        System.out.println(eleitor.getLocalVoto());
-        System.out.println("Momento de Voto: ");
-        System.out.println(eleitor.getTimeVoto());
+    public String showVotoDetalhesRMI(Pessoa eleitor) throws RemoteException {
+        return "Local de Voto: " + eleitor.getLocalVoto() + "\nMomento de Voto: " + eleitor.getTimeVoto();
     }
 
     @Override
-    public void showVotosRMI(Eleicao eleicao) throws RemoteException {
+    public String showVotosRMI(Eleicao eleicao) throws RemoteException {
         int count;
-        System.out.println("Resultados:\n");
+        int percent;
+        String countS;
+        String percentS;
+        String str = "Resultados:\n";
         for(Lista list : eleicao.getListasCandidatas()){
-            System.out.println(".................");
-            System.out.printf("Lista ");
-            System.out.println(list.getNome());
             count = list.getVotos();
-            System.out.printf("\nVotos: %d | %f" + '%',count,count/eleicao.votosTotal());
+            percent = count/eleicao.votosTotal();
+            countS = Integer.toString(count);
+            percentS = Integer.toString(percent);
+            str += ".................\nLista " + list.getNome() + "\nVotos: " + countS + " | " + percentS + "%";
         }
-        System.out.println(".................");
-        System.out.printf("\nVotos em Branco: %d | %f" + '%',eleicao.getVotosBrancos(),eleicao.getVotosBrancos()/eleicao.votosTotal());
-        System.out.println(".................");
-        System.out.printf("\nVotos Nulos: %d | %f" + '%',eleicao.getVotosNulos(),eleicao.getVotosNulos()/eleicao.votosTotal());
+        count = eleicao.getVotosBrancos();
+        percent = count/eleicao.votosTotal();
+        countS = Integer.toString(count);
+        percentS = Integer.toString(percent);
+        str += "\n................." + "\nVotos em Branco: " + countS + " | " + percentS + "%";
+
+        count = eleicao.getVotosNulos();
+        percent = count/eleicao.votosTotal();
+        countS = Integer.toString(count);
+        percentS = Integer.toString(percent);
+        str += "\n................." + "\nVotos Nulos: " + countS + " | " + percentS + "%";
+
+        return str;
     }
 
 
@@ -483,23 +508,20 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     @Override
     public String eleicoesEndedRMI() throws RemoteException {
-        if(listaEleicoesEnded != null) {
-            for (int i = 0; i < listaEleicoesEnded.size(); i++) {
-                showEleicoesDetalhes(i);
-                showVotosRMI(listaEleicoesEnded.get(i));
-                System.out.println();
+        String str = "";
+        if(getEleicoesEnded().size() != 0) {
+            for (int i = 0; i < getEleicoesEnded().size(); i++) {
+                str += "\n" + showEleicoesDetalhes(i) + "\n" + showVotosRMI(getEleicoesEnded().get(i));;
             }
         }
         else{
             return "Impossivel Realizar Operação: Eleições Passadas Inexistentes.\n";
         }
-        return "";
+        return str;
     }
 
     public Date parseDateString(String string) throws RemoteException, ParseException {
         Date date = new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(string);
-
-
         return date;
     }
 

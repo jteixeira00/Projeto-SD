@@ -288,7 +288,7 @@ public class AdminTerminal extends Thread
 
     public void votoDetalhes(Pessoa eleitor) throws RemoteException{
         System.out.println("---Eleitor Local & Momento de Voto---");
-        ri.showVotoDetalhesRMI(eleitor);
+        System.out.print(ri.showVotoDetalhesRMI(eleitor));
     }
 
     public Lista createLista(Eleicao eleicao, int indx) throws RemoteException{
