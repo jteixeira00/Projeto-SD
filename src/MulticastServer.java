@@ -57,42 +57,40 @@ public class MulticastServer extends Thread implements Serializable {
         System.out.println(this.getName() + " running in address " + MULTICAST_ADDRESS + " in department " + departamento);
         try {
             RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
-            socket = new MulticastSocket();  // create socket without binding it (only for sending)
+            socket = new MulticastSocket(PORT);  // create socket without binding it (only for sending)
             Scanner sc = new Scanner(System.in);
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-            /*
-            while (true) {
-                String message = this.getName() + " packet " + counter++;
+            socket.joinGroup(group);
+
+            while(true) {
+                System.out.println("Para indetificar um eleitor, insira o número da UC");
+                System.out.println(ri.identificarUser(sc.nextLine())); //falta dar handle das exceptions
+
+                String message = "type|request";
                 byte[] buffer = message.getBytes();
-                InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+                //envia mensagem a pedir um terminal livre
                 socket.send(packet);
-                try { sleep((long) (Math.random() * SLEEP_TIME)); } catch (InterruptedException e) { }
+                String reply;
+                do {
+
+                    buffer = new byte[256];
+                    packet = new DatagramPacket(buffer, buffer.length);
+
+                    socket.receive(packet);
+                    reply = new String(packet.getData(), 0, packet.getLength());
+                    System.out.println(reply);
+                    //testa se mensagem recebida tem o formato "type|available;uuid|x"
+
+                } while (!reply.split("\\|", 0)[1].equals("available;uuid"));
+                //recebe mensagem com um terminal livre
+                String uuid = reply.split("\\|", 0)[2].split(";", 0)[0];
+                message = "uuid|" + uuid + ";type|unlock";
+                buffer = message.getBytes();
+                packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+                socket.send(packet);
+                //desbloqueia esse terminal
             }
-            */
-
-            System.out.println("Para indetificar um eleitor, insira o número da UC");
-            System.out.println(ri.identificarUser(sc.nextLine())); //falta dar handle das exceptions
-
-            String message = "type|request";
-            byte[] buffer = message.getBytes();
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
-            //envia mensagem a pedir um terminal livre
-            socket.send(packet);
-            String reply;
-            do {
-                reply = new String(packet.getData(), 0, packet.getLength());
-                //testa se mensagem recebida tem o formato "type|available;uuid|x"
-
-            } while (!reply.split("\\|", 0)[1].equals("available;uuid"));
-            //recebe mensagem com um terminal livre
-
-            String uuid = reply.split("\\|", 0)[2].split(";",0)[0];
-            message = "uuid|"+uuid+";type|unlock";
-            buffer = message.getBytes();
-            packet = new DatagramPacket(buffer, buffer.length, group, PORT);
-            socket.send(packet);
-            //desbloqueia esse terminal
 
 
 
