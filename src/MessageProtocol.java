@@ -3,7 +3,7 @@ import java.util.HashMap;
 public class MessageProtocol {
 
 
-    String uuid, type, logged, username, password, msg;
+    String uuid, type, logged, username, password, msg, time;
     int item_count;
     HashMap<Integer, String> candidatos = new HashMap<Integer, String>();
 

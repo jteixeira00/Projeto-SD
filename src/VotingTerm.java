@@ -3,6 +3,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -88,6 +89,7 @@ public class VotingTerm extends Thread{
 
                     if(message.getLogged().equals("on")){
                         System.out.println("Escolha a lista em que pretende votar:");
+                        //recebe as listas candidatas
                         do {
                             buffer = new byte[1024];
                             packet = new DatagramPacket(buffer, buffer.length);
@@ -95,7 +97,18 @@ public class VotingTerm extends Thread{
                             messagestr = new String(packet.getData(), 0, packet.getLength());
                             message = new MessageProtocol(messagestr);
                         }while (!message.getType().equals("item_list") && !message.getUuid().equals(this.uuid.toString()));
-
+                        //imprime as listas candidatas
+                        if(message.getCandidatos().size()>0){
+                            System.out.println("0 - Voto Nulo");
+                            System.out.println("1 - Voto Branco");
+                            for(Map.Entry<Integer, String> candidato : message.getCandidatos().entrySet()){
+                                Integer key = candidato.getKey()+1;
+                                String nome = candidato.getValue();
+                                System.out.println(key + " - " + nome+"\n");
+                            }
+                        }
+                        int choice = Integer.parseInt(in.nextLine());
+                        messagestr = "id|"+uuid.toString()+";type|voto;choice|"+choice+";time|";
 
 
 
