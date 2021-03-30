@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public interface RmiInterface extends Remote {
     public double add(double a, double b) throws RemoteException;
     public String getNewAddress() throws RemoteException;
+    public String getSecondaryAddress() throws RemoteException;
     public int getTableNumber() throws RemoteException;
 
     public void printEleicao(Eleicao e) throws RemoteException;

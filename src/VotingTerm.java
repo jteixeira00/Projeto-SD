@@ -2,7 +2,6 @@ import java.net.MulticastSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
@@ -12,6 +11,9 @@ public class VotingTerm extends Thread{
 
     private static String MULTICAST_ADDRESS = "224.3.2.";
     private int PORT = 4321;
+    private static String SECONDARY_MULTICAST;
+    private int PORT2 = 4322;
+
     private UUID uuid;
     public void setUuid() {
         this.uuid = UUID.randomUUID();
@@ -20,6 +22,7 @@ public class VotingTerm extends Thread{
 
     public static void main(String[] args){
         VotingTerm client = new VotingTerm();
+
         client.start();
     }
 
@@ -31,14 +34,16 @@ public class VotingTerm extends Thread{
             Scanner in = new Scanner(System.in);
             String s = in.nextLine();
             MULTICAST_ADDRESS = MULTICAST_ADDRESS+s;
-            socket = new MulticastSocket(PORT);  // create socket and bind it
-            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-            socket.joinGroup(group);
-            System.out.println("Terminal de voto conectado à mesa nº "+s);
+            SECONDARY_MULTICAST = MULTICAST_ADDRESS;
+            SECONDARY_MULTICAST = SECONDARY_MULTICAST.replace(".2.", ".3.");
+
             String messagestr;
             MessageProtocol message;
             while (true) {
-
+                socket = new MulticastSocket(PORT);  // create socket and bind it
+                InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
+                socket.joinGroup(group);
+                System.out.println("Terminal de voto conectado à mesa nº "+s);
                 //aguarda uma mensagem a pedir um terminal livre
                 do {
                     byte[] buffer = new byte[256];
@@ -66,11 +71,18 @@ public class VotingTerm extends Thread{
                     message = new MessageProtocol(messagestr);
                 }while(!message.getType().equals("unlock"));
 
+
+
                 if(message.getUuid().equals(uuid.toString())){
                     System.out.println("UC Number:");
                     String ucnumber = in.nextLine();
                     System.out.println("Password");
                     String password = in.nextLine();
+
+                    //conecta-se à segunda rede multicast
+                    socket = new MulticastSocket(PORT2);
+                    group = InetAddress.getByName(SECONDARY_MULTICAST);
+                    socket.joinGroup(group);
 
                     //envia login info
                     messagestr = "uuid|"+uuid.toString()+";type|login;number|"+ucnumber+";password|"+password;
@@ -108,13 +120,27 @@ public class VotingTerm extends Thread{
                             }
                         }
                         int choice = Integer.parseInt(in.nextLine());
-                        messagestr = "id|"+uuid.toString()+";type|voto;choice|"+choice+";time|";
+                        messagestr = "id|"+uuid.toString()+";type|voto;choice|"+choice+";time|"; //adicionar hora
+                        buffer = messagestr.getBytes();
+                        packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+                        socket.send(packet);
 
+                        do{
+                            buffer = new byte[1024];
+                            packet = new DatagramPacket(buffer, buffer.length);
+                            socket.receive(packet);
+                            messagestr = new String(packet.getData(), 0, packet.getLength());
+                            message = new MessageProtocol(messagestr);
+                        }while(!message.getType().equals("success"));
+
+                        System.out.println("Success! Logging you off.");
+                        run();
+                        //somehow limpar o ecrã?
 
 
                     }
                     else{
-                        //login failed«
+                        //login failed
                     }
 
                 }

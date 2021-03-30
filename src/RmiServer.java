@@ -17,6 +17,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public ArrayList<String> addressPool;
     public int addressEnd = 1;
     public String baseAddress = "224.3.2.";
+    public String secondaryAddress = "224.3.3.";
 
 
     private ArrayList<Eleicao> listaEleicoes;
@@ -42,7 +43,10 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     @Override
     public String getNewAddress() throws RemoteException {
-        return baseAddress + Integer.toString(addressEnd);
+        return baseAddress + addressEnd;
+    }
+    public String getSecondaryAddress() throws RemoteException{
+        return secondaryAddress + addressEnd;
     }
 
     public int getTableNumber() throws RemoteException {

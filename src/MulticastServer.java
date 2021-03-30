@@ -1,9 +1,6 @@
 import java.io.Serializable;
-import java.net.MulticastSocket;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
+import java.net.*;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
@@ -12,8 +9,9 @@ import java.util.Scanner;
 
 
 public class MulticastServer extends Thread implements Serializable {
-    private static String MULTICAST_ADDRESS;
+    private static String MULTICAST_ADDRESS, SECONDARY_MULTICAST_ADDRESS;
     private int PORT = 4321;
+    private static int PORT2 = 4322;
     private long SLEEP_TIME = 5000;
     private static int tableNumber;
     private static String departamento;
@@ -23,6 +21,7 @@ public class MulticastServer extends Thread implements Serializable {
         try {
             RmiInterface ti = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
             MULTICAST_ADDRESS = ti.getNewAddress();
+            SECONDARY_MULTICAST_ADDRESS = ti.getSecondaryAddress();
             tableNumber = ti.getTableNumber();
 
         }
@@ -32,7 +31,7 @@ public class MulticastServer extends Thread implements Serializable {
         setDepartamento(args[0]);
         MulticastServer server = new MulticastServer();
         server.start();
-        client cliente = new client();
+        client cliente = new client(SECONDARY_MULTICAST_ADDRESS, PORT2);
         cliente.start();
     }
 
@@ -116,16 +115,57 @@ public class MulticastServer extends Thread implements Serializable {
 
 
 class client extends Thread{
-    public client(){
+    private String MULTICAST_ADDRESS;
+    private int PORT;
+    public client(String MULTICAST_ADDRESS, int PORT){
         super();
+        this.MULTICAST_ADDRESS = MULTICAST_ADDRESS;
+        this.PORT = PORT;
     }
+
     public void run(){
+        MulticastSocket socket = null;
         try {
             RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
-            System.out.println("8 + 3 = " + ri.add(8, 3));
+
         } catch (NotBoundException|MalformedURLException|RemoteException e) {
             e.printStackTrace();
         }
+
+        try {
+            socket = new MulticastSocket(PORT);  // create socket without binding it (only for sending)
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Scanner sc = new Scanner(System.in);
+        InetAddress group = null;
+
+        try {
+            group = InetAddress.getByName(MULTICAST_ADDRESS);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        try {
+            socket.joinGroup(group);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        while(true){
+            byte[] buffer = new byte[1024];
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+            try {
+                socket.receive(packet);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String messagestr = new String(packet.getData(), 0, packet.getLength());
+            MessageProtocol message = new MessageProtocol(messagestr);
+
+
+
+        }
+
     }
 }
 
