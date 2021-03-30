@@ -259,28 +259,67 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     //to-do
     @Override
-    public boolean criaMesaRMI(String departamento) throws RemoteException {
-
-        return false;
+    public boolean criaMesaRMI(int indexE, int indexM) throws RemoteException {
+        getEleicoesFuturas().get(indexE).addMesa(getMesas().get(indexM));
+        getMesas().get(indexM).setEleicao(getEleicoesFuturas().get(indexE));
+        return true;
     }
 
-    //to-do [copiar do eleição.showCandidatos()]
+
     @Override
-    public void showMesas() throws RemoteException {
-
+    public String showMesas() throws RemoteException {
+        String str = "";
+        String number;
+        int i = 0;
+        for(MulticastServer m: listaMesas){
+            i++;
+            number = String.valueOf(i);
+            str += number + " - " + m.getDepartamento() + "\n";
+        }
+        return str;
     }
 
-    //to-do
+    @Override
+    public String showMesasEleicao(int indx) throws RemoteException {
+        String str = "";
+        String number;
+        int i = 0;
+        for(MulticastServer m: getEleicoesFuturas().get(indx).getMesas()){
+            i++;
+            number = String.valueOf(i);
+            str += number + " - " + m.getDepartamento() + "\n";
+        }
+        return str;
+    }
+
+
     @Override
     public int sizeMesas() throws RemoteException {
+        if(listaMesas == null)
+            return 0;
         return listaMesas.size();
     }
 
-    //to-do
     @Override
-    public boolean deleteMesaRMI(int del) throws RemoteException {
-        this.listaMesas.remove(del);
-        return false;
+    public int sizeMesasEleicao(int indx) throws RemoteException {
+        if(getEleicoesFuturas().get(indx).getMesas() == null)
+            return 0;
+        return getEleicoesFuturas().get(indx).getMesas().size();
+    }
+
+
+    @Override
+    public boolean deleteMesaRMI(int indexE,int indexM) throws RemoteException {
+
+        for(MulticastServer m: listaMesas){
+            if(m.getDepartamento().equals(getEleicoesFuturas().get(indexE).getMesas().get(indexM).getDepartamento())){
+                m.setEleicao(null);
+            }
+        }
+
+        getEleicoesFuturas().get(indexE).getMesas().remove(indexM);
+
+        return true;
     }
 
     @Override

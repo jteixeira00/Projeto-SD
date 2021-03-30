@@ -174,40 +174,44 @@ public class AdminTerminal extends Thread
     }
 
 
-    public boolean gerirMesas() throws RemoteException{
+    public boolean gerirMesas(int indexE) throws RemoteException{
         boolean check = false;
         System.out.println("---Gerir Mesas---\n");
-        Scanner sc = new Scanner(System.in);
-        System.out.println("\n1 - Adicionar mesa || 2 - Remover mesa:  ");
-        String tipoS = sc.nextLine();
-        int tipo = Integer.parseInt(tipoS);
+        if(ri.sizeMesas() != 0) {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("\n1 - Adicionar mesa || 2 - Remover mesa:  ");
+            String tipoS = sc.nextLine();
+            int tipo = Integer.parseInt(tipoS);
 
-        switch (tipo){
-            case 1:
-                //mostrar lista de mesas e associar eleicao + mesa & mesa + eleicao || gerirMesas(index)
-                //ri.criaMesaRMI(indexE,indexM);
-                System.out.println("\n---Adicionar Mesa---\n");
-                System.out.println("Departamento da Mesa: ");
-                String departamento = sc.nextLine();
-                //verificar se o departamento já tem mesa
-                check = ri.criaMesaRMI(departamento);
-                break;
+            switch (tipo) {
+                case 1:
+                    //mostrar lista de mesas e associar eleicao + mesa & mesa + eleicao || gerirMesas(index)
+                    //ri.criaMesaRMI(indexE,indexM);
+                    System.out.printf("\n---Adicionar Mesa---\n");
+                    System.out.printf("Mesa que pretende adicionar (1 - %d): \n",ri.sizeMesas());
+                    System.out.println(ri.showMesas());
+                    String addS = sc.nextLine();
+                    int add = Integer.parseInt(addS);
+                    check = ri.criaMesaRMI(indexE, add - 1);
+                    break;
 
-            case 2:
-                System.out.println("\n---Remover Mesa---\n");
-                ri.showMesas();
-                System.out.println("Mesa que pretende remover (1 - ");
-                System.out.println(ri.sizeMesas());
-                System.out.println("): ");
-                String delS = sc.nextLine();
-                int del = Integer.parseInt(delS);
-                check = ri.deleteMesaRMI(del);
-                break;
+                case 2:
+                    System.out.printf("\n---Remover Mesa---\n");
+                    if(ri.sizeMesasEleicao(indexE) != 0) {
+                        System.out.printf("Mesa que pretende remover (1 - %d): \n", ri.sizeMesasEleicao(indexE));
+                        System.out.println(ri.showMesasEleicao(indexE));
+                        String delS = sc.nextLine();
+                        int del = Integer.parseInt(delS);
+                        check = ri.deleteMesaRMI(indexE, del - 1);
+                    }
+                    else System.out.println("Impossivel Remover Mesas: Sem mesas adicionadas");
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
+            }
         }
-
+        else System.out.println("Impossivel Gerir Mesas: Não existem mesas criadas.");
         return check;
     }
 
@@ -271,6 +275,7 @@ public class AdminTerminal extends Thread
             System.out.println("\n---Alterar propriedade da Eleição---");
             System.out.printf(ri.showEleicoesDetalhes(choice - 1));
             System.out.println("\n6 - Gerir listas");
+            System.out.println("\n7 - Gerir Mesas");
             String answerS = sc.nextLine();
             int answer  = Integer.parseInt(answerS);
             if(answer == 6)
@@ -280,6 +285,9 @@ public class AdminTerminal extends Thread
                 String change = sc.nextLine();
                 //to-do pedir a data ao utilizador no formato dd-MM-yyyy HH:mm ou entao pedir data hora e minuto separado
                 check = ri.changeEleicoesRMI(choice - 1, answer, change);
+            }
+            else if (answer == 7){
+                gerirMesas(choice - 1);
             }
             else {
                 System.out.printf("\nInput inválido.\n");

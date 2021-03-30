@@ -16,6 +16,7 @@ public class Eleicao implements Serializable{
     private ArrayList<Lista> listasCandidatas;
     Pessoa.voterType tipoVoters;
     ArrayList<String> orgVoters;
+
     ArrayList<MulticastServer> mesas = new ArrayList<>();
 
 
@@ -206,5 +207,14 @@ public class Eleicao implements Serializable{
     public void addMesa(MulticastServer mesa){
         mesas.add(mesa);
     }
+
+    public ArrayList<MulticastServer> getMesas() {
+        return mesas;
+    }
+
+    public void setMesas(ArrayList<MulticastServer> mesas) {
+        this.mesas = mesas;
+    }
+
 
 }

@@ -32,13 +32,13 @@ public interface RmiInterface extends Remote {
 
     public boolean addCandidateRMI(int indx, int lista, int add) throws RemoteException;
 
-    public boolean criaMesaRMI(String departamento) throws RemoteException;
+    public boolean criaMesaRMI(int indexE, int indexM) throws RemoteException;
 
-    public void showMesas() throws RemoteException;
+    public String showMesas() throws RemoteException;
 
     public int sizeMesas() throws RemoteException;
 
-    public boolean deleteMesaRMI(int del) throws RemoteException;
+    public boolean deleteMesaRMI(int indexE, int indexM) throws RemoteException;
 
     public String showEleicoesFuturas() throws RemoteException;
 
@@ -65,4 +65,9 @@ public interface RmiInterface extends Remote {
     public void eliminarListaCandidatos(int indx, int i) throws RemoteException;
 
     public String showEleicoesDetalhesEnded(int index) throws RemoteException;
+
+    public String showMesasEleicao(int indx) throws RemoteException;
+
+    public int sizeMesasEleicao(int indx) throws RemoteException;
+
 }
