@@ -264,6 +264,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     //to-do
     @Override
     public boolean criaMesaRMI(String departamento) throws RemoteException {
+
         return false;
     }
 

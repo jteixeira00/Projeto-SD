@@ -3,23 +3,27 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Scanner;
+import java.util.jar.JarOutputStream;
 
 public class AdminTerminal extends Thread
 {
-    private String numero;
-    private String password;
     private RmiInterface ri;
 
     public boolean loginUser() throws RemoteException    {
         while(true) {
-            boolean check = ri.login(this.numero, this.password);
+            System.out.println("\n---Login User---\n");
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Numero: ");
+            String numero = sc.nextLine();
+            System.out.println("Numero: ");
+            String password = sc.nextLine();
+            boolean check = ri.login(numero, password);
             if (!check) {
-                System.err.println("Login Failed: username or password is incorrect.");
+                System.err.println("Login Failed: numero ou password incorretas.");
             } else {
                 return true;
             }
         }
-
     }
 
     public boolean registerUser() throws RemoteException {
@@ -169,6 +173,7 @@ public class AdminTerminal extends Thread
         return check;
     }
 
+
     public boolean gerirMesas() throws RemoteException{
         boolean check = false;
         System.out.println("---Gerir Mesas---\n");
@@ -179,6 +184,8 @@ public class AdminTerminal extends Thread
 
         switch (tipo){
             case 1:
+                //mostrar lista de mesas e associar eleicao + mesa & mesa + eleicao || gerirMesas(index)
+                //ri.criaMesaRMI(indexE,indexM);
                 System.out.println("\n---Adicionar Mesa---\n");
                 System.out.println("Departamento da Mesa: ");
                 String departamento = sc.nextLine();

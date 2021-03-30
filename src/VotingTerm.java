@@ -2,6 +2,10 @@ import java.net.MulticastSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
@@ -120,7 +124,14 @@ public class VotingTerm extends Thread{
                             }
                         }
                         int choice = Integer.parseInt(in.nextLine());
-                        messagestr = "id|"+uuid.toString()+";type|voto;choice|"+choice+";time|"; //adicionar hora
+
+                         Date date = new Date();
+                        String pattern = "MM/dd/yyyy HH:mm";
+                        DateFormat df = new SimpleDateFormat(pattern);
+                        String dataString = df.format(date);
+
+                        messagestr = "id|"+uuid.toString()+";type|voto;choice|"+choice+";time|"+dataString;
+                     
                         buffer = messagestr.getBytes();
                         packet = new DatagramPacket(buffer, buffer.length, group, PORT);
                         socket.send(packet);
@@ -132,6 +143,8 @@ public class VotingTerm extends Thread{
                             messagestr = new String(packet.getData(), 0, packet.getLength());
                             message = new MessageProtocol(messagestr);
                         }while(!message.getType().equals("success"));
+
+                       
 
                         System.out.println("Success! Logging you off.");
                         run();
