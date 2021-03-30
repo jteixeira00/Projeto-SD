@@ -129,6 +129,45 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return true;
     }
 
+    /*public boolean checkData(Date start, Date end, Date now) throws RemoteException{
+        if(start.after(end)) {
+            return false;
+        }
+        if (start.getYear() == now.getYear()){
+            System.out.println("Year");
+            if(start.getMonth() == now.getMonth()){
+                System.out.println("Month");
+                if(start.getDay() == now.getDay()) {
+                    System.out.println("Day");
+                    if (start.getHours() == now.getHours()) {
+                        System.out.println("Hours");
+                        System.out.println(start.getHours());
+                        System.out.println(now.getMinutes());
+                        return start.getMinutes() >= now.getMinutes();
+                    } else return start.getHours() > now.getHours();
+                }
+                else return start.getDay() > now.getDay();
+            }
+            else return start.getMonth() > now.getMonth();
+        }
+        else return start.getYear() > now.getYear();
+    }*/
+
+    /*public boolean dataAfter(Date end, Date now) throws RemoteException {
+        if (end.getYear() == now.getYear()){
+            if(end.getMonth() == now.getMonth()){
+                if(end.getDay() == now.getDay()) {
+                    if (end.getHours() == now.getHours()) {
+                        return end.getMinutes() > now.getMinutes();
+                    } else return end.getHours() > now.getHours();
+                }
+                else return end.getDay() > now.getDay();
+            }
+            else return end.getMonth() > now.getMonth();
+        }
+        else return end.getYear() > now.getYear();
+    }*/
+
 
     @Override
     public Eleicao createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws RemoteException {
@@ -146,7 +185,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
         Date date = new Date();
         if (startDate1.after(endDate1) || startDate1.before(date)) {
-
             return null;
         }
 
@@ -337,8 +375,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
     }
 
-
-
     /* === AUX METHODS === */
 
     public Pessoa getPessoabyNumber(String numero) {
@@ -396,10 +432,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public ArrayList<Eleicao> getEleicoesEnded() throws RemoteException {
             Date date = new Date();
             ArrayList<Eleicao> res = new ArrayList<>();
-            System.out.println(getEleicoes().size());
             try {
                 for (Eleicao e : getEleicoes()) {
-                    if (date.after(e.getEndDate())) {
+                    if (e.getEndDate().before(date) || e.getEndDate().equals(date)) {
                         res.add(e);
                     }
 
@@ -421,6 +456,12 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     @Override
     public String showEleicoesDetalhes(int index) throws RemoteException {
         Eleicao eleicao = getEleicoesFuturas().get(index);
+        return "\n1 - Titulo: " + eleicao.getTitulo() + "\n2 - Descrição: " + eleicao.getDescricao() + "\n3 - Data de Inicio (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getStartDate()) + "\n4 - Data de Fim (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getEndDate()) + "\n5 - Restringir eleição para um único departamento: " + eleicao.getDepartamento();
+    }
+
+    @Override
+    public String showEleicoesDetalhesEnded(int index) throws RemoteException {
+        Eleicao eleicao = getEleicoesEnded().get(index);
         return "\n1 - Titulo: " + eleicao.getTitulo() + "\n2 - Descrição: " + eleicao.getDescricao() + "\n3 - Data de Inicio (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getStartDate()) + "\n4 - Data de Fim (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getEndDate()) + "\n5 - Restringir eleição para um único departamento: " + eleicao.getDepartamento();
     }
 
@@ -476,26 +517,38 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         int percent;
         String countS;
         String percentS;
-        String str = "Resultados:\n";
-        for(Lista list : eleicao.getListasCandidatas()){
-            count = list.getVotos();
-            percent = count/eleicao.votosTotal();
+        String str = "\nResultados:\n";
+        if(eleicao.getListasCandidatas().size() != 0) {
+            for (Lista list : eleicao.getListasCandidatas()) {
+                count = list.getVotos();
+                if (eleicao.votosTotal() == 0)
+                    percent = 0;
+                else
+                    percent = count / eleicao.votosTotal();
+                countS = Integer.toString(count);
+                percentS = Integer.toString(percent);
+                str += ".................\nLista " + list.getNome() + "\nVotos: " + countS + " | " + percentS + "%\n.................\n";
+            }
+            count = eleicao.getVotosBrancos();
+            if (eleicao.votosTotal() == 0)
+                percent = 0;
+            else
+                percent = count / eleicao.votosTotal();
             countS = Integer.toString(count);
             percentS = Integer.toString(percent);
-            str += ".................\nLista " + list.getNome() + "\nVotos: " + countS + " | " + percentS + "%";
+            str += "\n................." + "\nVotos em Branco: " + countS + " | " + percentS + "%";
+
+            count = eleicao.getVotosNulos();
+            if (eleicao.votosTotal() == 0)
+                percent = 0;
+            else
+                percent = count / eleicao.votosTotal();
+            countS = Integer.toString(count);
+            percentS = Integer.toString(percent);
+            str += "\n................." + "\nVotos Nulos: " + countS + " | " + percentS + "%";
         }
-        count = eleicao.getVotosBrancos();
-        percent = count/eleicao.votosTotal();
-        countS = Integer.toString(count);
-        percentS = Integer.toString(percent);
-        str += "\n................." + "\nVotos em Branco: " + countS + " | " + percentS + "%";
-
-        count = eleicao.getVotosNulos();
-        percent = count/eleicao.votosTotal();
-        countS = Integer.toString(count);
-        percentS = Integer.toString(percent);
-        str += "\n................." + "\nVotos Nulos: " + countS + " | " + percentS + "%";
-
+        else
+            str = "\nResultados:\nSem Listas Candidatas\n";
         return str;
     }
 
@@ -511,7 +564,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         String str = "";
         if(getEleicoesEnded().size() != 0) {
             for (int i = 0; i < getEleicoesEnded().size(); i++) {
-                str += "\n" + showEleicoesDetalhes(i) + "\n" + showVotosRMI(getEleicoesEnded().get(i));;
+                str += showEleicoesDetalhesEnded(i) + "\n" + showVotosRMI(getEleicoesEnded().get(i));
             }
         }
         else{
