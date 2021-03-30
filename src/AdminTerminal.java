@@ -79,18 +79,18 @@ public class AdminTerminal extends Thread
 
         System.out.println("Minuto de Inicio: ");
         String startM = sc.nextLine();
-        int startMinute = Integer.parseInt(startH);
+        int startMinute = Integer.parseInt(startM);
 
         System.out.println("Data de Fim (dd-MM-yyyy): ");
         String endDate = sc.nextLine();
 
         System.out.println("Hora de Fim: ");
         String endH = sc.nextLine();
-        int endHour = Integer.parseInt(startH);
+        int endHour = Integer.parseInt(endH);
 
         System.out.println("Minuto de Fim: ");
         String endM = sc.nextLine();
-        int endMinute = Integer.parseInt(startH);
+        int endMinute = Integer.parseInt(endM);
 
         System.out.println("Departamento: ");
         String departamento = sc.nextLine();

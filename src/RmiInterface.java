@@ -63,4 +63,6 @@ public interface RmiInterface extends Remote {
     public Eleicao createListaRMI(int indx, String nome) throws RemoteException;
 
     public void eliminarListaCandidatos(int indx, int i) throws RemoteException;
+
+    public String showEleicoesDetalhesEnded(int index) throws RemoteException;
 }
