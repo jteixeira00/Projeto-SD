@@ -20,6 +20,12 @@ public class MulticastServer extends Thread implements Serializable {
     private static String departamento;
     private ArrayList<Eleicao> eleicaoLista;
 
+    //11 - estado mesas
+    private boolean active = false;
+
+    //12 - nº votos
+    private int countVotos = 0;
+
 
 
     public static void main(String[] args) {
@@ -107,9 +113,6 @@ public class MulticastServer extends Thread implements Serializable {
     public String getDepartamento(){
         return departamento;
     }
-    public void setEleicaoLista(ArrayList<Eleicao> e){
-        this.eleicaoLista = e;
-    }
 
     public ArrayList<Eleicao> getEleicaoLista(){
         return eleicaoLista;
@@ -119,6 +122,25 @@ public class MulticastServer extends Thread implements Serializable {
         eleicaoLista.add(eleicao);
     }
 
+    //11 - estado mesas
+    public void setMesaON(){
+        active = true;
+    }
+    public void setMesaOFF(){
+        active = false;
+    }
+    public boolean getEstado(){
+        return active;
+    }
+
+    //12 - nº votos
+    public void addCountVotos(){
+        countVotos++;
+    }
+
+    public int getCountVotos(){
+        return countVotos;
+    }
 
 }
 
@@ -199,6 +221,8 @@ class client extends Thread{
         }
 
     }
+
+
 }
 
 

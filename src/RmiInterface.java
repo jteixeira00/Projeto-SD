@@ -49,11 +49,9 @@ public interface RmiInterface extends Remote {
 
     public boolean changeEleicoesRMI(int index, int answer, String change) throws RemoteException;
 
-    public String showVotoDetalhesRMI(Pessoa eleitor) throws RemoteException;
+    public String showVotoDetalhesRMI(int indx) throws RemoteException;
 
     public String showVotosRMI(Eleicao eleicao) throws RemoteException;
-
-    public void atualizaEleicao(Eleicao eleicao) throws RemoteException;
 
     public String eleicoesEndedRMI() throws RemoteException;
 
@@ -70,5 +68,9 @@ public interface RmiInterface extends Remote {
     public String showMesasEleicao(int indx) throws RemoteException;
 
     public int sizeMesasEleicao(int indx) throws RemoteException;
+
+    public String showMesasEstados() throws RemoteException;
+
+    public String showMesasCount() throws RemoteException;
 
 }
