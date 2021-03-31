@@ -26,10 +26,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     private ArrayList<Pessoa> pessoasOnline;
     private ArrayList<MulticastServer> listaMesas;
 
-    private ArrayList<AdminTerminalInterface> terminais = new ArrayList<>();
-    //implementar
-    private ArrayList<Eleicao> listaEleicoesEnded;
-
     public RmiServer() throws RemoteException {
         super();
         this.listaPessoas = new ArrayList<>();
@@ -245,7 +241,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return true;
     }
 
-    //to-do [copiar do eleição.showCandidatos()]
+
     @Override
     public String showPessoas() throws RemoteException {
         String peeps = "";
@@ -274,7 +270,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return true;
     }
 
-    //to-do
+    //adiciona mesa a eleição e vice-versa
     @Override
     public boolean criaMesaRMI(int indexE, int indexM) throws RemoteException {
         getEleicoesFuturas().get(indexE).addMesa(getMesas().get(indexM));
@@ -564,7 +560,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
     @Override
-    public String showVotoDetalhesRMI(Pessoa eleitor) throws RemoteException {
+    public String showVotoDetalhesRMI(int indx) throws RemoteException {
+        Pessoa eleitor = listaPessoas.get(indx);
         return "Local de Voto: " + eleitor.getLocalVoto() + "\nMomento de Voto: " + eleitor.getTimeVoto();
     }
 
@@ -609,13 +606,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return str;
     }
 
-
-    //to-do (13 - Os detalhes dessa eleição são atualizados e podem ser consultados posteriormente.)
-    @Override
-    public void atualizaEleicao(Eleicao eleicao) throws RemoteException {
-
-    }
-
     @Override
     public String eleicoesEndedRMI() throws RemoteException {
         String str = "";
@@ -656,7 +646,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return eleicao;
     }
 
-    //to-do
     @Override
     public void eliminarListaCandidatos(int indx, int i) throws RemoteException{
         getEleicoesFuturas().get(indx).getListasCandidatas().remove(i);
@@ -666,5 +655,24 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public void subscribe(AdminTerminalInterface admin) throws RemoteException{
         terminais.add(admin);
     }
+    @Override
+    public String showMesasEstados() throws RemoteException{
+        String str = "";
+        for(MulticastServer m : listaMesas){
+            str += "Departamento: " + m.getDepartamento() + "   Estado: " + m.getEstado() + "\n";
+        }
+        return str;
+    }
+
+    @Override
+    public String showMesasCount() throws RemoteException{
+        String str = "";
+        for(MulticastServer m : listaMesas){
+            str += "Departamento: " + m.getDepartamento() + "   Nº de Votos: " + m.getCountVotos() + "\n";
+        }
+        return str;
+    }
+
+
 }
 

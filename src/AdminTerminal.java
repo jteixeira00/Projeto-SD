@@ -301,10 +301,28 @@ public class AdminTerminal extends Thread
         return check;
     }
 
-    public void votoDetalhes(Pessoa eleitor) throws RemoteException{
+    public void votoDetalhes() throws RemoteException{
         System.out.println("---Eleitor Local & Momento de Voto---");
-        System.out.print(ri.showVotoDetalhesRMI(eleitor));
+        Scanner sc = new Scanner(System.in);
+        System.out.printf("\nEscolha um eleitor (1 - %d): \n", ri.sizePessoas());
+        System.out.print(ri.showPessoas());
+        System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
+        String indxS = sc.nextLine();
+        int indx = Integer.parseInt(indxS);
+        if (indx <= ri.sizePessoas() && indx > 0)
+            System.out.print(ri.showVotoDetalhesRMI(indx - 1));
+        else {
+            if(indx == 0)
+                System.out.print("");
+            else
+                System.out.println("Candidato inválido.");
+
+            }
+
+
     }
+
+
 
     public Lista createLista(Eleicao eleicao, int indx) throws RemoteException{
         System.out.println("---Criar Lista---");
@@ -342,23 +360,16 @@ public class AdminTerminal extends Thread
         return null;
     }
 
-    //to-do (11)
+    //(11) ?
     public boolean mesasEstado() throws RemoteException{
-
+        System.out.print(ri.showMesasEstados());
         return true;
     }
 
-    //to-do (12)
+    //(12) ?
     public boolean numeroEleitores() throws RemoteException{
-
+        System.out.print(ri.showMesasCount());
         return true;
-    }
-
-    //n esquecer: end Eleicao
-    public void resultadosEleicao(Eleicao eleicao) throws RemoteException{
-        System.out.println("---Eleicao Terminada---");
-        ri.showVotosRMI(eleicao);
-        ri.atualizaEleicao(eleicao);
     }
 
     public void eleicaoEndedDetalhes() throws RemoteException{
@@ -404,6 +415,9 @@ public class AdminTerminal extends Thread
                 System.out.println("2 - Criar Utilizador");
                 System.out.println("3 - Gerir Eleições");
                 System.out.println("4 - Eleições Passadas");
+                System.out.println("5 - Local e Momento de Voto de um Eleitor");
+                System.out.println("6 - Estado Mesas");
+                System.out.println("7 - Número de votos por Mesa");
                 System.out.println("0 - SAIR");
                 answerS = sc.nextLine();
                 answer = Integer.parseInt(answerS);
@@ -422,6 +436,15 @@ public class AdminTerminal extends Thread
                         break;
                     case 4:
                         eleicaoEndedDetalhes();
+                        break;
+                    case 5:
+                        votoDetalhes();
+                        break;
+                    case 6:
+                        mesasEstado();
+                        break;
+                    case 7:
+                        numeroEleitores();
                         break;
                     case 0:
                         break;
