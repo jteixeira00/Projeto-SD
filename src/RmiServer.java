@@ -24,7 +24,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     private ArrayList<Eleicao> listaEleicoes;
     private ArrayList<Pessoa> listaPessoas;
     private ArrayList<Pessoa> pessoasOnline;
-    private ArrayList<MulticastServer> listaMesas;
+    private ArrayList<Mesa> listaMesas;
     private ArrayList<AdminTerminalInterface> terminais = new ArrayList<>();
 
     public RmiServer() throws RemoteException {
@@ -282,7 +282,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         String str = "";
         String number;
         int i = 0;
-        for(MulticastServer m: listaMesas){
+        for(Mesa m: listaMesas){
             i++;
             number = String.valueOf(i);
             str += number + " - " + m.getDepartamento() + "\n";
@@ -322,9 +322,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     @Override
     public boolean deleteMesaRMI(int indexE,int indexM) throws RemoteException {
 
-        for(MulticastServer m: listaMesas){
+        for(Mesa m: listaMesas){
             if(m.getDepartamento().equals(getEleicoesFuturas().get(indexE).getMesas().get(indexM).getDepartamento())){
-                m.getEleicaoLista().remove(getEleicoesFuturas().get(indexE));
+                m.getEleicoes().remove(getEleicoesFuturas().get(indexE));
             }
         }
 
@@ -368,7 +368,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
             stream = new FileInputStream("mesas.data");
             is3 = new ObjectInputStream(stream);
-            this.listaMesas = (ArrayList<MulticastServer>) is3.readObject();
+            this.listaMesas = (ArrayList<Mesa>) is3.readObject();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -629,7 +629,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
 
-    public void addMesa(MulticastServer m) throws RemoteException{
+    public void addMesa(Mesa m) throws RemoteException{
         System.out.println(m.getDepartamento());
         listaMesas.add(m);
         System.out.println(listaMesas);
@@ -656,11 +656,11 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public void subscribe(AdminTerminalInterface admin) throws RemoteException{
         terminais.add(admin);
     }
-
+    /*
     @Override
     public String showMesasEstados() throws RemoteException{
         String str = "";
-        for(MulticastServer m : listaMesas){
+        for(Mesa m : listaMesas){
             str += "Departamento: " + m.getDepartamento() + "   Estado: " + m.getEstado() + "\n";
         }
         return str;
@@ -669,12 +669,12 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     @Override
     public String showMesasCount() throws RemoteException{
         String str = "";
-        for(MulticastServer m : listaMesas){
+        for(Mesa m : listaMesas){
             str += "Departamento: " + m.getDepartamento() + "   Nº de Votos: " + m.getCountVotos() + "\n";
         }
         return str;
     }
 
-
+    */
 }
 

@@ -65,7 +65,7 @@ public interface RmiInterface extends Remote {
 
     public String eleicoesEndedRMI() throws RemoteException;
 
-    public void addMesa(MulticastServer m) throws RemoteException;
+    public void addMesa(Mesa m) throws RemoteException;
 
     public String identificarUser(String input) throws RemoteException;
 
@@ -85,8 +85,8 @@ public interface RmiInterface extends Remote {
 
     public Pessoa getPessoabyNumber(String numero) throws RemoteException;
 
-    public String showMesasEstados() throws RemoteException;
+    //public String showMesasEstados() throws RemoteException;
 
-    public String showMesasCount() throws RemoteException;
+   // public String showMesasCount() throws RemoteException;
 
 }

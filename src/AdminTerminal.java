@@ -361,6 +361,7 @@ public class AdminTerminal extends Thread
     }
 
     //(11) ?
+    /*
     public boolean mesasEstado() throws RemoteException{
         System.out.print(ri.showMesasEstados());
         return true;
@@ -371,7 +372,7 @@ public class AdminTerminal extends Thread
         System.out.print(ri.showMesasCount());
         return true;
     }
-
+       */
     public void eleicaoEndedDetalhes() throws RemoteException{
         System.out.println("\n---Detalhes Eleicoes Terminadas---\n");
         System.out.print(ri.eleicoesEndedRMI());
@@ -441,10 +442,10 @@ public class AdminTerminal extends Thread
                         votoDetalhes();
                         break;
                     case 6:
-                        mesasEstado();
+                        //mesasEstado();
                         break;
                     case 7:
-                        numeroEleitores();
+                        //numeroEleitores();
                         break;
                     case 0:
                         break;

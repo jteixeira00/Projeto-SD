@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 
-public class MulticastServer extends Thread implements Serializable {
+public class MulticastServer extends Thread implements Serializable, MulticastInterface{
     private static String MULTICAST_ADDRESS, SECONDARY_MULTICAST_ADDRESS;
     private int PORT = 4321;
     private static int PORT2 = 4322;
@@ -45,6 +45,13 @@ public class MulticastServer extends Thread implements Serializable {
         setDepartamento(args[0]);
         MulticastServer server = new MulticastServer();
         server.start();
+        Mesa mesa = new Mesa(departamento);
+        try {
+            RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+            ri.addMesa(mesa);
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
+            e.printStackTrace();
+        }
         client cliente = new client(SECONDARY_MULTICAST_ADDRESS, PORT2, server);
         cliente.start();
     }
@@ -60,12 +67,7 @@ public class MulticastServer extends Thread implements Serializable {
         long counter = 0;
         System.out.println(this.getName() + " running in address " + MULTICAST_ADDRESS + " in department " + departamento);
         try {
-            try {
-                RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
-                ri.addMesa(this);
-            } catch (NotBoundException | MalformedURLException | RemoteException e) {
-                e.printStackTrace();
-            }
+
             RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
             socket = new MulticastSocket(PORT);  // create socket without binding it (only for sending)
             Scanner sc = new Scanner(System.in);
@@ -107,8 +109,6 @@ public class MulticastServer extends Thread implements Serializable {
                 //desbloqueia esse terminal
             }
 
-
-
         } catch (IOException | NotBoundException e) {
             e.printStackTrace();
         } finally {
@@ -119,11 +119,12 @@ public class MulticastServer extends Thread implements Serializable {
     public static void setDepartamento(String s){
         departamento = s;
     }
-    public String getDepartamento(){
+    @Override
+    public String getDepartamento() throws RemoteException{
         return departamento;
     }
 
-    public ArrayList<Eleicao> getEleicaoLista(){
+    public ArrayList<Eleicao> getEleicaoLista() throws RemoteException{
         return eleicaoLista;
     }
 
@@ -144,7 +145,7 @@ public class MulticastServer extends Thread implements Serializable {
     public void setMesaOFF(){
         active = false;
     }
-    public boolean getEstado(){
+    public boolean getEstado() throws RemoteException{
         return active;
     }
 
@@ -153,7 +154,7 @@ public class MulticastServer extends Thread implements Serializable {
         countVotos++;
     }
 
-    public int getCountVotos(){
+    public int getCountVotos() throws  RemoteException{
         return countVotos;
     }
 
