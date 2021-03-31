@@ -1,10 +1,12 @@
 import java.io.Serializable;
 import java.net.*;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.Scanner;
 
 
@@ -16,6 +18,8 @@ public class MulticastServer extends Thread implements Serializable {
     private static int tableNumber;
     private static String departamento;
     private Eleicao eleicao;
+
+
 
     public static void main(String[] args) {
         try {
@@ -43,11 +47,7 @@ public class MulticastServer extends Thread implements Serializable {
         try {
             RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
             ri.addMesa(this);
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();
         }
 
@@ -117,6 +117,7 @@ public class MulticastServer extends Thread implements Serializable {
 class client extends Thread{
     private String MULTICAST_ADDRESS;
     private int PORT;
+    private HashMap<String, String> usersLoggedIn = new HashMap<String,String>();
     public client(String MULTICAST_ADDRESS, int PORT){
         super();
         this.MULTICAST_ADDRESS = MULTICAST_ADDRESS;
@@ -125,13 +126,13 @@ class client extends Thread{
 
     public void run(){
         MulticastSocket socket = null;
+        RmiInterface ri = null;
         try {
-            RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+           ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
 
         } catch (NotBoundException|MalformedURLException|RemoteException e) {
             e.printStackTrace();
         }
-
         try {
             socket = new MulticastSocket(PORT);  // create socket without binding it (only for sending)
         } catch (IOException e) {
@@ -146,7 +147,9 @@ class client extends Thread{
             e.printStackTrace();
         }
         try {
-            socket.joinGroup(group);
+            if (socket != null) {
+                socket.joinGroup(group);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -163,6 +166,26 @@ class client extends Thread{
             MessageProtocol message = new MessageProtocol(messagestr);
 
 
+            if(message.getType().equals("login")){
+                try {
+                    if(ri.login(message.getUsername(), message.getPassword())){
+                        messagestr = "uuid|"+message.getUuid()+";status|on";
+                        //usersLoggedIn.put(message.getUuid(), message.getUsername());
+                    }
+                    else{
+                        messagestr = "uuid|"+message.getUuid()+";status|failure";
+                    }
+                    buffer = messagestr.getBytes();
+                    packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+                    socket.send(packet);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            if(message.getType().equals("voto")){
+
+            }
 
         }
 
