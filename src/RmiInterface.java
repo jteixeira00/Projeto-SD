@@ -4,19 +4,29 @@ import java.util.ArrayList;
 
 public interface RmiInterface extends Remote {
     public double add(double a, double b) throws RemoteException;
+
     public String getNewAddress() throws RemoteException;
+
     public String getSecondaryAddress() throws RemoteException;
+
     public int getTableNumber() throws RemoteException;
 
     public void printEleicao(Eleicao e) throws RemoteException;
-    public ArrayList<Eleicao> getEleicoes() throws  RemoteException;
-    public ArrayList<Pessoa> getPessoas() throws  RemoteException;
+
+    public ArrayList<Eleicao> getEleicoes() throws RemoteException;
+
+    public ArrayList<Pessoa> getPessoas() throws RemoteException;
+
     public ArrayList<MulticastServer> getMesas() throws RemoteException;
+
     public ArrayList<Eleicao> getEleicoesFuturas() throws RemoteException;
+
     public ArrayList<Eleicao> getEleicoesEnded() throws RemoteException;
+
     public boolean login(String numero, String password) throws RemoteException;
 
     public void logout(String numero) throws RemoteException;
+
     public ArrayList<Eleicao> eleicoesOngoing() throws RemoteException;
 
     public void adicionarMesa(Eleicao e, MulticastServer mesa) throws RemoteException;
@@ -71,4 +81,9 @@ public interface RmiInterface extends Remote {
 
     public int sizeMesasEleicao(int indx) throws RemoteException;
 
+    public boolean votar(Eleicao e, int choiceLista, Pessoa p, String departamento) throws RemoteException;
+
+    public void subscribe(AdminTerminalInterface admin) throws RemoteException;
+
+    public Pessoa getPessoabyNumber(String numero) throws RemoteException;
 }
