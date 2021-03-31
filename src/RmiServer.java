@@ -265,7 +265,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     @Override
     public boolean criaMesaRMI(int indexE, int indexM) throws RemoteException {
         getEleicoesFuturas().get(indexE).addMesa(getMesas().get(indexM));
-        getMesas().get(indexM).setEleicao(getEleicoesFuturas().get(indexE));
+        getMesas().get(indexM).addEleicaoLista(getEleicoesFuturas().get(indexE));
         return true;
     }
 
@@ -317,7 +317,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
         for(MulticastServer m: listaMesas){
             if(m.getDepartamento().equals(getEleicoesFuturas().get(indexE).getMesas().get(indexM).getDepartamento())){
-                m.setEleicao(null);
+                m.getEleicaoLista().remove(getEleicoesFuturas().get(indexE));
             }
         }
 
@@ -623,7 +623,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
     public void adicionarMesa(Eleicao e, MulticastServer mesa) throws RemoteException {
-        mesa.setEleicao(e);
+        mesa.addEleicaoLista(e);
         e.addMesa(mesa);
     }
 
