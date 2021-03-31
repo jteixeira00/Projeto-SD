@@ -37,7 +37,7 @@ public class MulticastServer extends Thread implements Serializable {
             SECONDARY_MULTICAST_ADDRESS = ti.getSecondaryAddress();
             tableNumber = ti.getTableNumber();
             MulticastServer m = new MulticastServer();
-            ti.subscribe((AdminTerminalInterface) m);
+            //ti.subscribe((AdminTerminalInterface) m);
         }
         catch (NotBoundException|MalformedURLException|RemoteException e) {
             e.printStackTrace();
@@ -54,17 +54,18 @@ public class MulticastServer extends Thread implements Serializable {
     }
 
     public void run() {
-        try {
-            RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
-            ri.addMesa(this);
-        } catch (NotBoundException | MalformedURLException | RemoteException e) {
-            e.printStackTrace();
-        }
+
 
         MulticastSocket socket = null;
         long counter = 0;
         System.out.println(this.getName() + " running in address " + MULTICAST_ADDRESS + " in department " + departamento);
         try {
+            try {
+                RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+                ri.addMesa(this);
+            } catch (NotBoundException | MalformedURLException | RemoteException e) {
+                e.printStackTrace();
+            }
             RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
             socket = new MulticastSocket(PORT);  // create socket without binding it (only for sending)
             Scanner sc = new Scanner(System.in);
@@ -129,11 +130,12 @@ public class MulticastServer extends Thread implements Serializable {
     public void addEleicaoLista(Eleicao eleicao){
         eleicaoLista.add(eleicao);
     }
-    public void displayEleicoes(){
+    public void displayEleicoes() {
         int i = 1;
-        for(Eleicao e: eleicaoLista){
+        for (Eleicao e : eleicaoLista) {
             System.out.println(i++ + " - " + e.getTitulo());
         }
+    }
 
     //11 - estado mesas
     public void setMesaON(){

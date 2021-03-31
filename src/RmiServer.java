@@ -25,6 +25,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     private ArrayList<Pessoa> listaPessoas;
     private ArrayList<Pessoa> pessoasOnline;
     private ArrayList<MulticastServer> listaMesas;
+    private ArrayList<AdminTerminalInterface> terminais = new ArrayList<>();
 
     public RmiServer() throws RemoteException {
         super();
@@ -53,8 +54,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
 
     public static void main(String args[]) {
-        System.getProperties().put("java.security.policy", "policy.all");
-        System.setSecurityManager(new RMISecurityManager());
         try {
             RmiInterface ri = new RmiServer();
 
@@ -249,7 +248,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         String is;
         for(Pessoa p: listaPessoas){
             is = String.valueOf(i);
-            System.out.println(p.getType());
             peeps += is + " - " + p.getNome() + " || " + p.getNumero() + " || " + p.getType() + " || " + p.getDepartamento() + '\n';
             i++;
         }
@@ -630,8 +628,11 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         e.addMesa(mesa);
     }
 
+
     public void addMesa(MulticastServer m) throws RemoteException{
+        System.out.println(m.getDepartamento());
         listaMesas.add(m);
+        System.out.println(listaMesas);
     }
 
     public String identificarUser(String input){
@@ -655,6 +656,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public void subscribe(AdminTerminalInterface admin) throws RemoteException{
         terminais.add(admin);
     }
+
     @Override
     public String showMesasEstados() throws RemoteException{
         String str = "";
