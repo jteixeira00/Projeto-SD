@@ -1,3 +1,5 @@
+import com.sun.org.apache.xpath.internal.operations.Mult;
+
 import java.io.Serializable;
 import java.net.*;
 import java.io.IOException;
@@ -34,7 +36,8 @@ public class MulticastServer extends Thread implements Serializable {
             MULTICAST_ADDRESS = ti.getNewAddress();
             SECONDARY_MULTICAST_ADDRESS = ti.getSecondaryAddress();
             tableNumber = ti.getTableNumber();
-
+            MulticastServer m = new MulticastServer();
+            ti.subscribe((AdminTerminalInterface) m);
         }
         catch (NotBoundException|MalformedURLException|RemoteException e) {
             e.printStackTrace();
@@ -42,7 +45,7 @@ public class MulticastServer extends Thread implements Serializable {
         setDepartamento(args[0]);
         MulticastServer server = new MulticastServer();
         server.start();
-        client cliente = new client(SECONDARY_MULTICAST_ADDRESS, PORT2);
+        client cliente = new client(SECONDARY_MULTICAST_ADDRESS, PORT2, server);
         cliente.start();
     }
 
@@ -67,10 +70,15 @@ public class MulticastServer extends Thread implements Serializable {
             Scanner sc = new Scanner(System.in);
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
+            int choice;
 
             while(true) {
                 System.out.println("Para indetificar um eleitor, insira o número da UC");
                 System.out.println(ri.identificarUser(sc.nextLine())); //falta dar handle das exceptions
+
+                System.out.println("Escolha a eleição em que quer votar:");
+                displayEleicoes();
+                choice = Integer.parseInt(sc.nextLine());
 
                 String message = "type|request";
                 byte[] buffer = message.getBytes();
@@ -91,7 +99,7 @@ public class MulticastServer extends Thread implements Serializable {
                 } while (!reply.split("\\|", 0)[1].equals("available;uuid"));
                 //recebe mensagem com um terminal livre
                 String uuid = reply.split("\\|", 0)[2].split(";", 0)[0];
-                message = "uuid|" + uuid + ";type|unlock";
+                message = "uuid|" + uuid + ";type|unlock;eleicao|"+(choice-1);
                 buffer = message.getBytes();
                 packet = new DatagramPacket(buffer, buffer.length, group, PORT);
                 socket.send(packet);
@@ -121,6 +129,11 @@ public class MulticastServer extends Thread implements Serializable {
     public void addEleicaoLista(Eleicao eleicao){
         eleicaoLista.add(eleicao);
     }
+    public void displayEleicoes(){
+        int i = 1;
+        for(Eleicao e: eleicaoLista){
+            System.out.println(i++ + " - " + e.getTitulo());
+        }
 
     //11 - estado mesas
     public void setMesaON(){
@@ -148,11 +161,13 @@ public class MulticastServer extends Thread implements Serializable {
 class client extends Thread{
     private String MULTICAST_ADDRESS;
     private int PORT;
-    private HashMap<String, String> usersLoggedIn = new HashMap<String,String>();
-    public client(String MULTICAST_ADDRESS, int PORT){
+    private MulticastServer server;
+    //private HashMap<String, String> usersLoggedIn = new HashMap<String,String>();
+    public client(String MULTICAST_ADDRESS, int PORT, MulticastServer server){
         super();
         this.MULTICAST_ADDRESS = MULTICAST_ADDRESS;
         this.PORT = PORT;
+        this.server = server;
     }
 
     public void run(){
@@ -216,6 +231,11 @@ class client extends Thread{
             }
             if(message.getType().equals("voto")){
 
+                try {
+                    ri.votar(server.getEleicaoLista().get(message.getEleicao()), message.getChoice(), ri.getPessoabyNumber(message.getUsername()), server.getDepartamento());
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
 
         }

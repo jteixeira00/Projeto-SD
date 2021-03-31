@@ -43,6 +43,7 @@ public class VotingTerm extends Thread{
 
             String messagestr;
             MessageProtocol message;
+            int eleicao;
             while (true) {
                 socket = new MulticastSocket(PORT);  // create socket and bind it
                 InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
@@ -74,7 +75,7 @@ public class VotingTerm extends Thread{
                     System.out.println(messagestr);
                     message = new MessageProtocol(messagestr);
                 }while(!message.getType().equals("unlock"));
-
+                eleicao = message.getEleicao();
 
 
                 if(message.getUuid().equals(uuid.toString())){
@@ -103,6 +104,11 @@ public class VotingTerm extends Thread{
                         message = new MessageProtocol(messagestr);
                     }while(!message.getUuid().equals(uuid.toString()) && !message.getType().equals("status"));
 
+                    //pedir listas candidatas
+
+                    //BIG TO DO
+
+
                     if(message.getLogged().equals("on")){
                         System.out.println("Escolha a lista em que pretende votar:");
                         //recebe as listas candidatas
@@ -130,7 +136,7 @@ public class VotingTerm extends Thread{
                         DateFormat df = new SimpleDateFormat(pattern);
                         String dataString = df.format(date);
 
-                        messagestr = "id|"+uuid.toString()+";type|voto;choice|"+choice+";time|"+dataString;
+                        messagestr = "id|"+uuid.toString()+";type|voto;choice|"+choice+";time|"+dataString+";eleicao|"+eleicao+";username|"+ucnumber;
                      
                         buffer = messagestr.getBytes();
                         packet = new DatagramPacket(buffer, buffer.length, group, PORT);

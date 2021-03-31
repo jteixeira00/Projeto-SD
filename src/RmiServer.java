@@ -1,6 +1,7 @@
 import javax.swing.plaf.multi.MultiInternalFrameUI;
 import java.io.*;
 import java.lang.reflect.Array;
+import java.rmi.RMISecurityManager;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -52,6 +53,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
 
     public static void main(String args[]) {
+        System.getProperties().put("java.security.policy", "policy.all");
+        System.setSecurityManager(new RMISecurityManager());
         try {
             RmiInterface ri = new RmiServer();
 
@@ -114,19 +117,28 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
 
-    public boolean votar(Eleicao e, Lista l, Pessoa p, String departamento) {
-        Voto v = new Voto(l, p, departamento);
-        try {
-            if (!this.eleicoesOngoing().contains(e)) {
+    public boolean votar(Eleicao e, int choiceLista, Pessoa p, String departamento) throws RemoteException{
+        if(choiceLista == 0){
+            e.addVotoNulo();
+        }
+
+        if(choiceLista== 1){
+            e.addVotoBranco();
+        }
+        else {
+            Voto v = new Voto(e.getListasCandidatas().get(choiceLista), p, departamento);
+            try {
+                if (!this.eleicoesOngoing().contains(e)) {
+                    return false;
+                }
+            } catch (RemoteException remoteException) {
+                remoteException.printStackTrace();
                 return false;
             }
-        } catch (RemoteException remoteException) {
-            remoteException.printStackTrace();
-            return false;
+            e.addVoto(v);
+            e.getListasCandidatas().get(choiceLista).addVoto();
+            save();
         }
-        e.addVoto(v);
-        l.addVoto();
-        save();
         return true;
     }
 
@@ -418,7 +430,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     /* === AUX METHODS === */
 
-    public Pessoa getPessoabyNumber(String numero) {
+    public Pessoa getPessoabyNumber(String numero) throws RemoteException{
         for (Pessoa p : this.listaPessoas) {
             if (p.getNumero().equals(numero)) {
                 return p;
@@ -639,6 +651,10 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         getEleicoesFuturas().get(indx).getListasCandidatas().remove(i);
     }
 
+
+    public void subscribe(AdminTerminalInterface admin) throws RemoteException{
+        terminais.add(admin);
+    }
     @Override
     public String showMesasEstados() throws RemoteException{
         String str = "";

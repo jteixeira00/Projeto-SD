@@ -4,7 +4,14 @@ public class MessageProtocol {
 
 
     String uuid, type, logged, username, password, msg, time;
-    int item_count, choice;
+    int item_count;
+    int choice;
+
+    public int getEleicao() {
+        return eleicao;
+    }
+
+    int eleicao;
     HashMap<Integer, String> candidatos = new HashMap<Integer, String>();
 
 
@@ -34,6 +41,9 @@ public class MessageProtocol {
                     break;
                 case "choice":
                     this.choice = Integer.parseInt(s);
+                    break;
+                case "eleicao":
+                    this.eleicao = Integer.parseInt(s);
                     break;
             }
 

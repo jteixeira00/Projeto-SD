@@ -118,6 +118,13 @@ public class Eleicao implements Serializable{
         return endDate;
     }
 
+    public void addVotoNulo(){
+        votosNulos++;
+    }
+
+    public void addVotoBranco(){
+        votosBrancos++;
+    }
 
 
     public Pessoa.voterType getTipoVoters() {
