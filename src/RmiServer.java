@@ -142,46 +142,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return true;
     }
 
-    /*public boolean checkData(Date start, Date end, Date now) throws RemoteException{
-        if(start.after(end)) {
-            return false;
-        }
-        if (start.getYear() == now.getYear()){
-            System.out.println("Year");
-            if(start.getMonth() == now.getMonth()){
-                System.out.println("Month");
-                if(start.getDay() == now.getDay()) {
-                    System.out.println("Day");
-                    if (start.getHours() == now.getHours()) {
-                        System.out.println("Hours");
-                        System.out.println(start.getHours());
-                        System.out.println(now.getMinutes());
-                        return start.getMinutes() >= now.getMinutes();
-                    } else return start.getHours() > now.getHours();
-                }
-                else return start.getDay() > now.getDay();
-            }
-            else return start.getMonth() > now.getMonth();
-        }
-        else return start.getYear() > now.getYear();
-    }*/
-
-    /*public boolean dataAfter(Date end, Date now) throws RemoteException {
-        if (end.getYear() == now.getYear()){
-            if(end.getMonth() == now.getMonth()){
-                if(end.getDay() == now.getDay()) {
-                    if (end.getHours() == now.getHours()) {
-                        return end.getMinutes() > now.getMinutes();
-                    } else return end.getHours() > now.getHours();
-                }
-                else return end.getDay() > now.getDay();
-            }
-            else return end.getMonth() > now.getMonth();
-        }
-        else return end.getYear() > now.getYear();
-    }*/
-
-
     @Override
     public Eleicao createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws RemoteException {
         Date startDate1 = null;
@@ -238,6 +198,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         ArrayList<Lista> aux = getEleicoesFuturas().get(indx).getListasCandidatas();
         aux.get(choice).getMembros().remove(delete);
         getEleicoesFuturas().get(indx).setListasCandidatas(aux);
+        save();
         return true;
     }
 
@@ -271,14 +232,21 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
         aux.get(choice).getMembros().add(p);
         getEleicoesFuturas().get(indx).setListasCandidatas(aux);
+        save();
         return true;
     }
 
     //adiciona mesa a eleição e vice-versa
     @Override
     public boolean criaMesaRMI(int indexE, int indexM) throws RemoteException {
+        for(Mesa m: getEleicoesFuturas().get(indexE).getMesas()){
+            if(m.getDepartamento().equals(listaMesas.get(indexM).getDepartamento())){
+                return false;
+            }
+        }
         getEleicoesFuturas().get(indexE).addMesa(listaMesas.get(indexM));
         listaMesas.get(indexM).addEleicao(getEleicoesFuturas().get(indexE));
+        save();
         return true;
     }
 
@@ -342,7 +310,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
 
         getEleicoesFuturas().get(indexE).getMesas().remove(indexM);
-
+        save();
         return true;
     }
 
@@ -369,39 +337,42 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public  void load() {
         ObjectInputStream is1 = null;
         ObjectInputStream is2 = null;
-        //ObjectInputStream is3 = null;
-        try {
-            FileInputStream stream = new FileInputStream("eleicoes.data");
-            is1 = new ObjectInputStream(stream);
-            this.listaEleicoes = (ArrayList<Eleicao>) is1.readObject();
-
-
-            stream = new FileInputStream("pessoas.data");
-            is2 = new ObjectInputStream(stream);
-            this.listaPessoas = (ArrayList<Pessoa>) is2.readObject();
-
-            //stream = new FileInputStream("mesas.data");
-            //is3 = new ObjectInputStream(stream);
-            //this.listaMesas = (ArrayList<Mesa>) is3.readObject();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
+        ObjectInputStream is3 = null;
+        File f = new File("eleicoes.ser");
+        if(f.exists() && !f.isDirectory()) {
             try {
-                if (is1 != null) {
-                    is1.close();
-                }
-                if (is2 != null) {
-                    is2.close();
-                }
-                /*
-                if (is3 != null) {
-                    is3.close();
-                }
+                FileInputStream stream = new FileInputStream("eleicoes.ser");
+                is1 = new ObjectInputStream(stream);
+                this.listaEleicoes = (ArrayList<Eleicao>) is1.readObject();
 
-                 */
-            } catch (IOException e) {
+
+                stream = new FileInputStream("pessoas.ser");
+                is2 = new ObjectInputStream(stream);
+                this.listaPessoas = (ArrayList<Pessoa>) is2.readObject();
+
+                stream = new FileInputStream("mesas.ser");
+                is3 = new ObjectInputStream(stream);
+                this.listaMesas = (ArrayList<Mesa>) is3.readObject();
+
+            } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (is1 != null) {
+                        is1.close();
+                    }
+                    if (is2 != null) {
+                        is2.close();
+                    }
+
+                    if (is3 != null) {
+                        is3.close();
+                    }
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -412,15 +383,15 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         ObjectOutputStream os3 = null;
 
         try {
-            FileOutputStream stream = new FileOutputStream("eleicoes.data");
+            FileOutputStream stream = new FileOutputStream("eleicoes.ser");
             os1 = new ObjectOutputStream(stream);
             os1.writeObject(this.listaEleicoes);
 
-            stream = new FileOutputStream("pessoas.data");
+            stream = new FileOutputStream("pessoas.ser");
             os2 = new ObjectOutputStream(stream);
             os2.writeObject(this.listaPessoas);
 
-            stream = new FileOutputStream("mesas.data");
+            stream = new FileOutputStream("mesas.ser");
             os3 = new ObjectOutputStream(stream);
             os3.writeObject(this.listaMesas);
 
@@ -456,11 +427,11 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     public void addOnlineUser(Pessoa p) {
         this.pessoasOnline.add(p);
-
     }
 
     public void addPessoaLista(Pessoa p) {
         this.listaPessoas.add(p);
+        save();
     }
 
     public String parseDate(String date, int hour, int minute) {
@@ -570,6 +541,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             default:
                 return false;
         }
+        save();
         return true;
     }
 
@@ -645,13 +617,16 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public void adicionarMesa(Eleicao e, Mesa mesa) throws RemoteException {
         mesa.addEleicao(e);
         e.addMesa(mesa);
+        save();
     }
 
 
     public void addMesa(Mesa m) throws RemoteException{
         listaMesas.add(m);
+        save();
     }
 
+    //to-do
     public String identificarUser(String input){
         return "";
     }
@@ -666,12 +641,14 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
         Lista list = new Lista(null,nome);
         eleicao.addListasCandidatas(list);
+        save();
         return true;
     }
 
     @Override
     public void eliminarListaCandidatos(int indx, int i) throws RemoteException{
         getEleicoesFuturas().get(indx).getListasCandidatas().remove(i);
+        save();
     }
 
 
@@ -694,25 +671,5 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return str;
     }
 
-    /*
-    @Override
-    public String showMesasEstados() throws RemoteException{
-        String str = "";
-        for(Mesa m : listaMesas){
-            str += "Departamento: " + m.getDepartamento() + "   Estado: " + m.getEstado() + "\n";
-        }
-        return str;
-    }
-
-    @Override
-    public String showMesasCount() throws RemoteException{
-        String str = "";
-        for(Mesa m : listaMesas){
-            str += "Departamento: " + m.getDepartamento() + "   Nº de Votos: " + m.getCountVotos() + "\n";
-        }
-        return str;
-    }
-
-    */
 }
 

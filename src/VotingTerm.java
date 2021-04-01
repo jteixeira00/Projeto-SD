@@ -116,7 +116,7 @@ public class VotingTerm extends Thread{
                         System.out.println("Escolha a lista em que pretende votar:");
 
                         //pedir listas candidatas
-                        messagestr = "uuid|"+uuid.toString()+"type|listas";
+                        messagestr = "uuid|"+uuid.toString()+";type|listas";
                         buffer = messagestr.getBytes();
                         packet = new DatagramPacket(buffer, buffer.length, group, PORT2);
                         System.out.println(messagestr);
