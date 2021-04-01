@@ -19,4 +19,5 @@ public class Mesa implements Serializable {
         this.departamento = departamento;
         eleicoes = new ArrayList<>();
     }
+
 }
