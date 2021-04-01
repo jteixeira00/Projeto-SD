@@ -271,6 +271,16 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     //adiciona mesa a eleição e vice-versa
     @Override
     public boolean criaMesaRMI(int indexE, int indexM) throws RemoteException {
+        System.out.println("opah wtf");
+        if(getEleicoesFuturas()==null){
+            System.out.println("null");
+        }
+        if(getEleicoesFuturas().size() == 0){
+            System.out.println("000000");
+        }
+        //System.out.println(getEleicoesFuturas().size());
+
+
         getEleicoesFuturas().get(indexE).addMesa(getMesas().get(indexM));
         getMesas().get(indexM).addEleicaoLista(getEleicoesFuturas().get(indexE));
         return true;

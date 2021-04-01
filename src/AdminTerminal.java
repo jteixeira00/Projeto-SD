@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -5,7 +6,7 @@ import java.rmi.RemoteException;
 import java.util.Scanner;
 import java.util.jar.JarOutputStream;
 
-public class AdminTerminal extends Thread
+public class AdminTerminal extends Thread implements AdminTerminalInterface, Serializable
 {
     private RmiInterface ri;
 
@@ -391,16 +392,18 @@ public class AdminTerminal extends Thread
 
          */
         AdminTerminal terminal = new AdminTerminal();
+        try {
+            RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+            ri.subscribe((AdminTerminalInterface) terminal );
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
+            e.printStackTrace();
+        }
         terminal.start();
     }
     public void run(){
         try {
             this.ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();
         }
 
@@ -458,6 +461,11 @@ public class AdminTerminal extends Thread
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+
+    }
+
+    @Override
+    public void placeholder() throws RemoteException {
 
     }
 }
