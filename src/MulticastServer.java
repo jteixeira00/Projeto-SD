@@ -36,8 +36,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
             MULTICAST_ADDRESS = ti.getNewAddress();
             SECONDARY_MULTICAST_ADDRESS = ti.getSecondaryAddress();
             tableNumber = ti.getTableNumber();
-            MulticastServer m = new MulticastServer();
-            //ti.subscribe((AdminTerminalInterface) m);
+
         }
         catch (NotBoundException|MalformedURLException|RemoteException e) {
             e.printStackTrace();
@@ -131,6 +130,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
     public void addEleicaoLista(Eleicao eleicao){
         eleicaoLista.add(eleicao);
     }
+
     public void displayEleicoes() {
         int i = 1;
         for (Eleicao e : eleicaoLista) {
