@@ -29,7 +29,7 @@ public interface RmiInterface extends Remote {
 
     public ArrayList<Eleicao> eleicoesOngoing() throws RemoteException;
 
-    public void adicionarMesa(Eleicao e, MulticastServer mesa) throws RemoteException;
+    public void adicionarMesa(Eleicao e, Mesa mesa) throws RemoteException;
 
     public Eleicao createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws RemoteException;
 

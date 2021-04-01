@@ -275,7 +275,7 @@ public class AdminTerminal extends Thread
             System.out.println("\n---Alterar propriedade da Eleição---");
             System.out.printf(ri.showEleicoesDetalhes(choice - 1));
             System.out.println("\n6 - Gerir listas");
-            System.out.println("\n7 - Gerir Mesas");
+            System.out.println("7 - Gerir Mesas");
             String answerS = sc.nextLine();
             int answer  = Integer.parseInt(answerS);
             if(answer == 6)

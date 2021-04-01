@@ -116,6 +116,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
 
+
     public boolean votar(Eleicao e, int choiceLista, Pessoa p, String departamento) throws RemoteException{
         if(choiceLista == 0){
             e.addVotoNulo();
@@ -271,8 +272,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     //adiciona mesa a eleição e vice-versa
     @Override
     public boolean criaMesaRMI(int indexE, int indexM) throws RemoteException {
-        getEleicoesFuturas().get(indexE).addMesa(getMesas().get(indexM));
-        getMesas().get(indexM).addEleicaoLista(getEleicoesFuturas().get(indexE));
+        getEleicoesFuturas().get(indexE).addMesa(listaMesas.get(indexM));
+        listaMesas.get(indexM).addEleicao(getEleicoesFuturas().get(indexE));
         return true;
     }
 
@@ -295,7 +296,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         String str = "";
         String number;
         int i = 0;
-        for(MulticastServer m: getEleicoesFuturas().get(indx).getMesas()){
+        for(Mesa m: getEleicoesFuturas().get(indx).getMesas()){
             i++;
             number = String.valueOf(i);
             str += number + " - " + m.getDepartamento() + "\n";
@@ -623,8 +624,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return date;
     }
 
-    public void adicionarMesa(Eleicao e, MulticastServer mesa) throws RemoteException {
-        mesa.addEleicaoLista(e);
+    public void adicionarMesa(Eleicao e, Mesa mesa) throws RemoteException {
+        mesa.addEleicao(e);
         e.addMesa(mesa);
     }
 
