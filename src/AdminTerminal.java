@@ -16,7 +16,7 @@ public class AdminTerminal extends Thread implements AdminTerminalInterface, Ser
             Scanner sc = new Scanner(System.in);
             System.out.println("Numero: ");
             String numero = sc.nextLine();
-            System.out.println("Numero: ");
+            System.out.println("Password: ");
             String password = sc.nextLine();
             boolean check = ri.login(numero, password);
             if (!check) {
@@ -62,6 +62,8 @@ public class AdminTerminal extends Thread implements AdminTerminalInterface, Ser
         String faculdade = sc.nextLine();
 
         boolean check = ri.createUserRMI(tipo, nome, uni, departamento, faculdade, numeroTelefonico, morada, cc, validade, password);
+        if(!check)
+            System.out.println("Impossivel Criar Pessoa: Número de UC ou Número de CC já registado");
         return check;
     }
 
@@ -130,8 +132,12 @@ public class AdminTerminal extends Thread implements AdminTerminalInterface, Ser
                 while(true){
                     String addS = sc.nextLine();
                     int add = Integer.parseInt(addS);
-                    if (add <= ri.sizePessoas() && add > 0)
-                        check = ri.addCandidateRMI(indx, 0,add - 1);
+                    if (add <= ri.sizePessoas() && add > 0) {
+                        check = ri.addCandidateRMI(indx, 0, add - 1);
+                        if(!check)
+                            System.out.println("Erro: Candidato já adicionado.");
+                    }
+
                     else {
                         if(add == 0)
                             break;
@@ -216,7 +222,6 @@ public class AdminTerminal extends Thread implements AdminTerminalInterface, Ser
         return check;
     }
 
-
     public void gerirListas(Eleicao eleicao, int indx) throws RemoteException{
         System.out.println("---Gerir Listas---");
         Scanner sc = new Scanner(System.in);
@@ -261,6 +266,19 @@ public class AdminTerminal extends Thread implements AdminTerminalInterface, Ser
 
 
 
+    }
+
+    public String nomeHere(Eleicao eleicao){
+        String str = "type|item_list;item_count|" + eleicao.getListasCandidatas().size();
+        int i = 0;
+        for(Lista l : eleicao.getListasCandidatas()){
+            str += ";item_" + i + "_name|";
+            for(Pessoa p : l.getMembros()){
+                str += p.getNome() + "\n";
+            }
+            i++;
+        }
+        return str;
     }
 
     public boolean gerirEleicao() throws RemoteException{
@@ -324,39 +342,43 @@ public class AdminTerminal extends Thread implements AdminTerminalInterface, Ser
     }
 
 
-
-    public Lista createLista(Eleicao eleicao, int indx) throws RemoteException{
+    public Lista createLista(Eleicao eleicao, int indx) throws RemoteException {
         System.out.println("---Criar Lista---");
         Scanner sc = new Scanner(System.in);
 
         System.out.println("Nome da lista: ");
         String nome = sc.nextLine();
-        ri.createListaRMI(indx,nome);
+        boolean check = ri.createListaRMI(indx, nome);
 
-
-        System.out.println("Adicionar candidatos: Sim - 1 || Não - 2");
-        String choiceS = sc.nextLine();
-        int choice = Integer.parseInt(choiceS);
-        switch (choice){
-            case 1:
-                System.out.printf("\nPessoa(s) que pretende adicionar (1 - %d): \n", ri.sizePessoas());
-                System.out.printf(ri.showPessoas());
-                System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
-                while(true){
-                    String addS = sc.nextLine();
-                    int add = Integer.parseInt(addS);
-                    if (add <= ri.sizePessoas() && add > 0)
-                        ri.addCandidateRMI(indx, 0, add-1);
-                    else {
-                        if(add == 0)
+        if (!check) {
+            System.out.println("Erro: Lista já criada com esse nome");
+        } else {
+            System.out.println("Adicionar candidatos: Sim - 1 || Não - 2");
+            String choiceS = sc.nextLine();
+            int choice = Integer.parseInt(choiceS);
+            switch (choice) {
+                case 1:
+                    System.out.printf("\nPessoa(s) que pretende adicionar (1 - %d): \n", ri.sizePessoas());
+                    System.out.print(ri.showPessoas());
+                    System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
+                    while (true) {
+                        String addS = sc.nextLine();
+                        int add = Integer.parseInt(addS);
+                        if (add <= ri.sizePessoas() && add > 0)
+                            ri.addCandidateRMI(indx, 0, add - 1);
+                        else {
+                            if (add == 0)
+                                break;
+                            System.out.println("Candidato inválido.");
                             break;
-                        System.out.println("Candidato inválido.");
-                        break;
+                        }
                     }
-                }
-                break;
-            default:
-                System.out.println("Lista criada com 0 candidatos");
+                    break;
+                case 2:
+                    System.out.println("Lista criada com 0 candidatos");
+                default:
+                    System.out.println("Input Inválido: Lista criada com 0 candidatos");
+            }
         }
         return null;
     }

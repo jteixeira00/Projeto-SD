@@ -260,10 +260,15 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return listaPessoas.size();
     }
 
+    //indx - Eleicao || choice - lista || addm - pessoa
     @Override
     public boolean addCandidateRMI(int indx, int choice, int addm) throws RemoteException {
         ArrayList<Lista> aux = getEleicoesFuturas().get(indx).getListasCandidatas();
         Pessoa p = listaPessoas.get(addm);
+        for(Pessoa pep : getEleicoesFuturas().get(indx).getListasCandidatas().get(choice).getMembros()){
+            if(pep == p)
+                return false;
+        }
         aux.get(choice).getMembros().add(p);
         getEleicoesFuturas().get(indx).setListasCandidatas(aux);
         return true;
@@ -362,6 +367,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             FileInputStream stream = new FileInputStream("eleicoes.data");
             is1 = new ObjectInputStream(stream);
             this.listaEleicoes = (ArrayList<Eleicao>) is1.readObject();
+
 
             stream = new FileInputStream("pessoas.data");
             is2 = new ObjectInputStream(stream);
@@ -641,11 +647,16 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
     @Override
-    public Eleicao createListaRMI(int inx, String nome) throws RemoteException {
+    public boolean createListaRMI(int inx, String nome) throws RemoteException {
         Eleicao eleicao = getEleicoesFuturas().get(inx);
+        for(Lista l : eleicao.getListasCandidatas()){
+            if(l.getNome().equals(nome)){
+                return false;
+            }
+        }
         Lista list = new Lista(null,nome);
         eleicao.addListasCandidatas(list);
-        return eleicao;
+        return true;
     }
 
     @Override
