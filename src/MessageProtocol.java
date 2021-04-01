@@ -3,7 +3,7 @@ import java.util.HashMap;
 public class MessageProtocol {
 
 
-    String uuid, type, logged, username, password, msg, time;
+    String uuid = "", type = "", logged = "", username = "", password = "", msg = "", time = "";
     int item_count;
     int choice;
 
@@ -27,7 +27,7 @@ public class MessageProtocol {
                 case "logged":
                     this.logged = s.split("\\|")[1];
                     break;
-                case "username":
+                case "number":
                     this.username = s.split("\\|")[1];
                     break;
                 case "password":
@@ -40,10 +40,10 @@ public class MessageProtocol {
                     this.item_count = Integer.parseInt(s.split("\\|")[1]);
                     break;
                 case "choice":
-                    this.choice = Integer.parseInt(s);
+                    this.choice = Integer.parseInt(s.split("\\|")[1]);
                     break;
                 case "eleicao":
-                    this.eleicao = Integer.parseInt(s);
+                    this.eleicao = Integer.parseInt(s.split("\\|")[1]);
                     break;
             }
 
@@ -77,6 +77,7 @@ public class MessageProtocol {
     }
 
     public String getPassword() {
+
         return password;
     }
 

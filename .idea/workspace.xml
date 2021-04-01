@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="72664580-6fa9-4ee8-ac8b-09ffc4ff70ed" name="Default Changelist" comment="" />
-
     <list id="acb246f5-625e-44ba-95a6-dddabb3f1aeb" name="Changes by dinis" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,7 +96,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
-  <component name="RunManager" selected="Application.MulticastServer">
+  <component name="RunManager" selected="Application.AdminTerminal">
     <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
@@ -150,10 +149,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.MulticastServer" />
         <item itemvalue="Application.AdminTerminal" />
-        <item itemvalue="Application.RmiServer" />
         <item itemvalue="Application.VotingTerm" />
+        <item itemvalue="Application.MulticastServer" />
+        <item itemvalue="Application.RmiServer" />
       </list>
     </recent_temporary>
   </component>
@@ -186,7 +185,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$PROJECT_DIR$/../../../../../Program Files/AdoptOpenJDK/jdk-8.0.282.8-hotspot/src.zip!/java/lang/Thread.java</url>
           <line>745</line>
-          <properties class="java.lang.Thread">
+          <properties class="java.lang.Thread" method="run">
             <option name="EMULATED" value="true" />
           </properties>
           <option name="timeStamp" value="2" />

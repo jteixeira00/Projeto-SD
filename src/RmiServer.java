@@ -33,7 +33,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         this.listaEleicoes = new ArrayList<>();
         this.pessoasOnline = new ArrayList<>();
         this.listaMesas = new ArrayList<>();
-        //load();
+        load();
     }
 
     public double add(double a, double b) throws RemoteException {
@@ -56,7 +56,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public static void main(String args[]) {
         try {
             RmiInterface ri = new RmiServer();
-
             LocateRegistry.createRegistry(7000).rebind("rmiServer", ri);
         } catch (RemoteException ex1) {
             System.out.println("RMI SERVER EXCEPTION: " + ex1);
@@ -86,6 +85,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public boolean login(String numero, String password) throws RemoteException {
         System.out.println("Procurando utilizador com nº " + numero);
         Pessoa p = getPessoabyNumber(numero);
+        System.out.println(p.getNumero());
         if (p.getPassword().equals(password)) {
             //check if user already online
             if (this.pessoasOnline.contains(p)) {
@@ -290,7 +290,14 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
         return str;
     }
-
+    public Mesa getMesaByName(String dep) throws RemoteException{
+        for (Mesa m: listaMesas){
+            if( m.getDepartamento().equals(dep)){
+                return m;
+            }
+        }
+        return  null;
+    }
     @Override
     public String showMesasEleicao(int indx) throws RemoteException {
         String str = "";
@@ -354,10 +361,10 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
     /* ====================== FILES =========================== */
-    public void load() {
+    public  void load() {
         ObjectInputStream is1 = null;
         ObjectInputStream is2 = null;
-        ObjectInputStream is3 = null;
+        //ObjectInputStream is3 = null;
         try {
             FileInputStream stream = new FileInputStream("eleicoes.data");
             is1 = new ObjectInputStream(stream);
@@ -367,9 +374,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             is2 = new ObjectInputStream(stream);
             this.listaPessoas = (ArrayList<Pessoa>) is2.readObject();
 
-            stream = new FileInputStream("mesas.data");
-            is3 = new ObjectInputStream(stream);
-            this.listaMesas = (ArrayList<Mesa>) is3.readObject();
+            //stream = new FileInputStream("mesas.data");
+            //is3 = new ObjectInputStream(stream);
+            //this.listaMesas = (ArrayList<Mesa>) is3.readObject();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -381,9 +388,12 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
                 if (is2 != null) {
                     is2.close();
                 }
+                /*
                 if (is3 != null) {
                     is3.close();
                 }
+
+                 */
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -657,6 +667,22 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public void subscribe(AdminTerminalInterface admin) throws RemoteException{
         terminais.add(admin);
     }
+
+    public String generateLista(int eleicaoC, String dep) throws RemoteException{
+
+        Eleicao eleicao = getMesaByName(dep).getEleicoes().get(eleicaoC);
+        String str = "type|item_list;item_count|" + eleicao.getListasCandidatas().size();
+        int i = 0;
+        for(Lista l : eleicao.getListasCandidatas()){
+            str += ";item_" + i + "_name|";
+            for(Pessoa p : l.getMembros()){
+                str += p.getNome() + "\n";
+            }
+            i++;
+        }
+        return str;
+    }
+
     /*
     @Override
     public String showMesasEstados() throws RemoteException{

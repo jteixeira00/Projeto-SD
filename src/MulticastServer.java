@@ -21,6 +21,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
     private static int tableNumber;
     private static String departamento;
     private ArrayList<Eleicao> eleicaoLista;
+    private static Mesa mesa;
 
     //11 - estado mesas
     private boolean active = false;
@@ -44,14 +45,14 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
         setDepartamento(args[0]);
         MulticastServer server = new MulticastServer();
         server.start();
-        Mesa mesa = new Mesa(departamento);
+        mesa = new Mesa(departamento);
         try {
             RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
             ri.addMesa(mesa);
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();
         }
-        client cliente = new client(SECONDARY_MULTICAST_ADDRESS, PORT2, server);
+        client cliente = new client(SECONDARY_MULTICAST_ADDRESS, PORT2, server, departamento);
         cliente.start();
     }
 
@@ -79,7 +80,8 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 System.out.println(ri.identificarUser(sc.nextLine())); //falta dar handle das exceptions
 
                 System.out.println("Escolha a eleição em que quer votar:");
-                displayEleicoes();
+
+                displayEleicoes(ri.getMesaByName(departamento));
                 choice = Integer.parseInt(sc.nextLine());
 
                 String message = "type|request";
@@ -131,9 +133,9 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
         eleicaoLista.add(eleicao);
     }
 
-    public void displayEleicoes() {
+    public void displayEleicoes(Mesa mesaByName) {
         int i = 1;
-        for (Eleicao e : eleicaoLista) {
+        for (Eleicao e : mesaByName.getEleicoes()) {
             System.out.println(i++ + " - " + e.getTitulo());
         }
     }
@@ -158,6 +160,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
         return countVotos;
     }
 
+
 }
 
 
@@ -165,87 +168,85 @@ class client extends Thread{
     private String MULTICAST_ADDRESS;
     private int PORT;
     private MulticastServer server;
+    private String departamento;
     //private HashMap<String, String> usersLoggedIn = new HashMap<String,String>();
-    public client(String MULTICAST_ADDRESS, int PORT, MulticastServer server){
+    public client(String MULTICAST_ADDRESS, int PORT, MulticastServer server, String departamento){
         super();
         this.MULTICAST_ADDRESS = MULTICAST_ADDRESS;
         this.PORT = PORT;
+        this.departamento = departamento;
         this.server = server;
     }
 
-    public void run(){
+    public void run() {
+        System.out.println(MULTICAST_ADDRESS);
         MulticastSocket socket = null;
         RmiInterface ri = null;
         try {
-           ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+            ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
 
-        } catch (NotBoundException|MalformedURLException|RemoteException e) {
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();
         }
         try {
             socket = new MulticastSocket(PORT);  // create socket without binding it (only for sending)
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Scanner sc = new Scanner(System.in);
-        InetAddress group = null;
-
-        try {
+            Scanner sc = new Scanner(System.in);
+            InetAddress group = null;
             group = InetAddress.getByName(MULTICAST_ADDRESS);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        try {
-            if (socket != null) {
-                socket.joinGroup(group);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        while(true){
-            byte[] buffer = new byte[1024];
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-            try {
-                socket.receive(packet);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String messagestr = new String(packet.getData(), 0, packet.getLength());
-            MessageProtocol message = new MessageProtocol(messagestr);
-
-
-            if(message.getType().equals("login")){
+            socket.joinGroup(group);
+            while (true) {
+                byte[] buffer = new byte[1024];
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 try {
-                    if(ri.login(message.getUsername(), message.getPassword())){
-                        messagestr = "uuid|"+message.getUuid()+";status|on";
-                        //usersLoggedIn.put(message.getUuid(), message.getUsername());
-                    }
-                    else{
-                        messagestr = "uuid|"+message.getUuid()+";status|failure";
-                    }
-                    buffer = messagestr.getBytes();
-                    packet = new DatagramPacket(buffer, buffer.length, group, PORT);
-                    socket.send(packet);
+                    socket.receive(packet);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                String messagestr = new String(packet.getData(), 0, packet.getLength());
+                System.out.println(messagestr);
+                MessageProtocol message = new MessageProtocol(messagestr);
 
-            }
-            if(message.getType().equals("voto")){
 
-                try {
-                    ri.votar(server.getEleicaoLista().get(message.getEleicao()), message.getChoice(), ri.getPessoabyNumber(message.getUsername()), server.getDepartamento());
-                } catch (RemoteException e) {
-                    e.printStackTrace();
+                if (message.getType().equals("login")) {
+                    try {
+                        if (ri.login(message.getUsername(), message.getPassword())) {
+                            messagestr = "uuid|" + message.getUuid() + ";type|status;logged|on";
+
+                            //usersLoggedIn.put(message.getUuid(), message.getUsername());
+                        } else {
+                            messagestr = "uuid|" + message.getUuid() + ";type|status;logged|failure";
+                        }
+                        buffer = messagestr.getBytes();
+                        packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+                        socket.send(packet);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                 }
+                if (message.getType().equals("voto")) {
+
+                    try {
+                        ri.votar(server.getEleicaoLista().get(message.getEleicao()), message.getChoice(), ri.getPessoabyNumber(message.getUsername()), server.getDepartamento());
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(message.getType().equals("listas")){
+                    messagestr = "uuid|"+message.getUuid()+";"+ri.generateLista(message.getEleicao(), departamento);
+                    buffer = messagestr.getBytes();
+                    packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+                    socket.send(packet);
+                }
+
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+
 
         }
 
     }
-
-
 }
 
 

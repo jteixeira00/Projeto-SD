@@ -45,6 +45,7 @@ public class VotingTerm extends Thread{
             MessageProtocol message;
             int eleicao;
             while (true) {
+
                 socket = new MulticastSocket(PORT);  // create socket and bind it
                 InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
                 socket.joinGroup(group);
@@ -92,7 +93,8 @@ public class VotingTerm extends Thread{
                     //envia login info
                     messagestr = "uuid|"+uuid.toString()+";type|login;number|"+ucnumber+";password|"+password;
                     buffer = messagestr.getBytes();
-                    packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+                    packet = new DatagramPacket(buffer, buffer.length, group, PORT2);
+                    System.out.println(messagestr);
                     socket.send(packet);
 
                     //recebe o status (sucesso no login ou nao)
@@ -101,16 +103,25 @@ public class VotingTerm extends Thread{
                         packet = new DatagramPacket(buffer, buffer.length);
                         socket.receive(packet);
                         messagestr = new String(packet.getData(), 0, packet.getLength());
+                        System.out.println(messagestr);
                         message = new MessageProtocol(messagestr);
-                    }while(!message.getUuid().equals(uuid.toString()) && !message.getType().equals("status"));
 
-                    //pedir listas candidatas
+                    }while((!message.getUuid().equals(uuid.toString())) || (!message.getType().equals("status")) || (message.getType().equals("login")));
 
-                    //BIG TO DO
+
+
 
 
                     if(message.getLogged().equals("on")){
                         System.out.println("Escolha a lista em que pretende votar:");
+
+                        //pedir listas candidatas
+                        messagestr = "uuid|"+uuid.toString()+"type|listas";
+                        buffer = messagestr.getBytes();
+                        packet = new DatagramPacket(buffer, buffer.length, group, PORT2);
+                        System.out.println(messagestr);
+                        socket.send(packet);
+
                         //recebe as listas candidatas
                         do {
                             buffer = new byte[1024];
@@ -118,7 +129,8 @@ public class VotingTerm extends Thread{
                             socket.receive(packet);
                             messagestr = new String(packet.getData(), 0, packet.getLength());
                             message = new MessageProtocol(messagestr);
-                        }while (!message.getType().equals("item_list") && !message.getUuid().equals(this.uuid.toString()));
+                        }while (!message.getType().equals("item_list") || !message.getUuid().equals(this.uuid.toString()));
+
                         //imprime as listas candidatas
                         if(message.getCandidatos().size()>0){
                             System.out.println("0 - Voto Nulo");
@@ -136,10 +148,10 @@ public class VotingTerm extends Thread{
                         DateFormat df = new SimpleDateFormat(pattern);
                         String dataString = df.format(date);
 
-                        messagestr = "id|"+uuid.toString()+";type|voto;choice|"+choice+";time|"+dataString+";eleicao|"+eleicao+";username|"+ucnumber;
+                        messagestr = "id|"+uuid.toString()+";type|voto;choice|"+choice+";time|"+dataString+";eleicao|"+eleicao+";number|"+ucnumber;
                      
                         buffer = messagestr.getBytes();
-                        packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+                        packet = new DatagramPacket(buffer, buffer.length, group, PORT2);
                         socket.send(packet);
 
                         do{

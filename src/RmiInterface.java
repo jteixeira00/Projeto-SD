@@ -82,6 +82,8 @@ public interface RmiInterface extends Remote {
     public boolean votar(Eleicao e, int choiceLista, Pessoa p, String departamento) throws RemoteException;
 
     public void subscribe(AdminTerminalInterface admin) throws RemoteException;
+    public String generateLista(int eleicaoC, String dep) throws RemoteException;
+    public Mesa getMesaByName(String dep) throws RemoteException;
 
     public Pessoa getPessoabyNumber(String numero) throws RemoteException;
 
