@@ -417,8 +417,6 @@ public class AdminTerminal extends Thread
                 System.out.println("3 - Gerir Eleições");
                 System.out.println("4 - Eleições Passadas");
                 System.out.println("5 - Local e Momento de Voto de um Eleitor");
-                System.out.println("6 - Estado Mesas");
-                System.out.println("7 - Número de votos por Mesa");
                 System.out.println("0 - SAIR");
                 answerS = sc.nextLine();
                 answer = Integer.parseInt(answerS);
@@ -440,12 +438,6 @@ public class AdminTerminal extends Thread
                         break;
                     case 5:
                         votoDetalhes();
-                        break;
-                    case 6:
-                        //mesasEstado();
-                        break;
-                    case 7:
-                        //numeroEleitores();
                         break;
                     case 0:
                         break;

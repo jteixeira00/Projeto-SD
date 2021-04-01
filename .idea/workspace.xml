@@ -7,9 +7,6 @@
       <change beforePath="$PROJECT_DIR$/mesas.data" beforeDir="false" afterPath="$PROJECT_DIR$/mesas.data" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pessoas.data" beforeDir="false" afterPath="$PROJECT_DIR$/pessoas.data" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/AdminTerminal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/AdminTerminal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Eleicao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Eleicao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Mesa.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Mesa.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RmiInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RmiInterface.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RmiServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RmiServer.java" afterDir="false" />
     </list>
     <list id="acb246f5-625e-44ba-95a6-dddabb3f1aeb" name="Changes by dinis" comment="" />
@@ -163,8 +160,8 @@
       <list>
         <item itemvalue="Application.AdminTerminal" />
         <item itemvalue="Application.VotingTerm" />
-        <item itemvalue="Application.MulticastServer" />
         <item itemvalue="Application.RmiServer" />
+        <item itemvalue="Application.MulticastServer" />
       </list>
     </recent_temporary>
   </component>
@@ -181,7 +178,7 @@
       <workItem from="1617031425281" duration="593000" />
       <workItem from="1617114773052" duration="11321000" />
       <workItem from="1617202755958" duration="9950000" />
-      <workItem from="1617285451719" duration="1241000" />
+      <workItem from="1617285451719" duration="2108000" />
     </task>
     <servers />
   </component>

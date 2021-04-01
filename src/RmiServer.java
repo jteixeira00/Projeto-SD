@@ -552,7 +552,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
                 break;
 
             default:
-                System.out.println("Input Inválido.");
                 return false;
         }
         return true;
@@ -561,6 +560,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     @Override
     public String showVotoDetalhesRMI(int indx) throws RemoteException {
         Pessoa eleitor = listaPessoas.get(indx);
+        if(eleitor.getTimeVoto() == null){
+            return "O eleitor ainda não votou.";
+        }
         return "Local de Voto: " + eleitor.getLocalVoto() + "\nMomento de Voto: " + eleitor.getTimeVoto();
     }
 
@@ -631,9 +633,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
 
     public void addMesa(Mesa m) throws RemoteException{
-        System.out.println(m.getDepartamento());
         listaMesas.add(m);
-        System.out.println(listaMesas);
     }
 
     public String identificarUser(String input){
