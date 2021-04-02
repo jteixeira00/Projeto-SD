@@ -9,6 +9,7 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -32,17 +33,23 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
 
 
     public static void main(String[] args) {
+        setDepartamento(args[0]);
         try {
             RmiInterface ti = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
             MULTICAST_ADDRESS = ti.getNewAddress();
             SECONDARY_MULTICAST_ADDRESS = ti.getSecondaryAddress();
-            tableNumber = ti.getTableNumber();
+
+            tableNumber = ti.getTableNumber(args[0]);
+            try {
+                ti.notifyOfNewTable(args[0]);
+            }
+            catch (RemoteException e){}
 
         }
         catch (NotBoundException|MalformedURLException|RemoteException e) {
             e.printStackTrace();
         }
-        setDepartamento(args[0]);
+
         MulticastServer server = new MulticastServer();
         server.start();
         mesa = new Mesa(departamento);
@@ -70,13 +77,14 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
 
             RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
             socket = new MulticastSocket(PORT);  // create socket without binding it (only for sending)
+            socket.setSoTimeout(1000);
             Scanner sc = new Scanner(System.in);
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
             int choice;
 
             while(true) {
-                System.out.println("Para indetificar um eleitor, insira o número da UC");
+                System.out.println("Para identificar um eleitor, insira o número da UC");
                 System.out.println(ri.identificarUser(sc.nextLine())); //falta dar handle das exceptions
 
                 System.out.println("Escolha a eleição em que quer votar:");
@@ -89,15 +97,21 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
                 //envia mensagem a pedir um terminal livre
                 socket.send(packet);
-                String reply;
+                String reply = null;
                 do {
 
                     buffer = new byte[256];
                     packet = new DatagramPacket(buffer, buffer.length);
-
-                    socket.receive(packet);
-                    reply = new String(packet.getData(), 0, packet.getLength());
-                    System.out.println(reply);
+                    try {
+                        socket.receive(packet);
+                        reply = new String(packet.getData(), 0, packet.getLength());
+                        System.out.println(reply);
+                    }
+                    catch (SocketTimeoutException e){
+                        System.out.println("Timeout exceeded, no available terminals!");
+                        run();
+                        return;
+                    }
                     //testa se mensagem recebida tem o formato "type|available;uuid|x"
 
                 } while (!reply.split("\\|", 0)[1].equals("available;uuid"));
@@ -135,8 +149,13 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
 
     public void displayEleicoes(Mesa mesaByName) {
         int i = 1;
+        Date date = new Date();
         for (Eleicao e : mesaByName.getEleicoes()) {
-            System.out.println(i++ + " - " + e.getTitulo());
+            //System.out.println(e.getTitulo());
+            if(e.getEndDate().after(date) && e.getStartDate().before(date)) {
+
+                System.out.println(i++ + " - " + e.getTitulo());
+            }
         }
     }
 
@@ -169,6 +188,7 @@ class client extends Thread{
     private int PORT;
     private MulticastServer server;
     private String departamento;
+    private int tableCount =0;
     //private HashMap<String, String> usersLoggedIn = new HashMap<String,String>();
     public client(String MULTICAST_ADDRESS, int PORT, MulticastServer server, String departamento){
         super();
@@ -179,7 +199,7 @@ class client extends Thread{
     }
 
     public void run() {
-        System.out.println(MULTICAST_ADDRESS);
+        //System.out.println(MULTICAST_ADDRESS);
         MulticastSocket socket = null;
         RmiInterface ri = null;
         try {
@@ -215,6 +235,11 @@ class client extends Thread{
                             //usersLoggedIn.put(message.getUuid(), message.getUsername());
                         } else {
                             messagestr = "uuid|" + message.getUuid() + ";type|status;logged|failure";
+                            buffer = messagestr.getBytes();
+                            packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+                            socket.send(packet);
+                            run();
+                            return;
                         }
                         buffer = messagestr.getBytes();
                         packet = new DatagramPacket(buffer, buffer.length, group, PORT);
@@ -226,8 +251,15 @@ class client extends Thread{
                 }
                 if (message.getType().equals("voto")) {
 
+
+
                     try {
-                        ri.votar(server.getEleicaoLista().get(message.getEleicao()), message.getChoice(), ri.getPessoabyNumber(message.getUsername()), server.getDepartamento());
+                        if(ri.votar(message.getEleicao(), message.getChoice(), message.getUsername(), server.getDepartamento(), ++tableCount)){
+                            messagestr = "uuid|"+message.getUuid()+";type|success";
+                            buffer = messagestr.getBytes();
+                            packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+                            socket.send(packet);
+                        };
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }

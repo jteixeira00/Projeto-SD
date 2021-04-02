@@ -9,7 +9,7 @@ public interface RmiInterface extends Remote {
 
     public String getSecondaryAddress() throws RemoteException;
 
-    public int getTableNumber() throws RemoteException;
+    public int getTableNumber(String arg) throws RemoteException;
 
     public void printEleicao(Eleicao e) throws RemoteException;
 
@@ -79,12 +79,12 @@ public interface RmiInterface extends Remote {
 
     public int sizeMesasEleicao(int indx) throws RemoteException;
 
-    public boolean votar(Eleicao e, int choiceLista, Pessoa p, String departamento) throws RemoteException;
+    public boolean votar(int eleicao, int choiceLista, String number, String departamento, int tableCount) throws RemoteException;
 
     public void subscribe(AdminTerminalInterface admin) throws RemoteException;
     public String generateLista(int eleicaoC, String dep) throws RemoteException;
     public Mesa getMesaByName(String dep) throws RemoteException;
-
+    public void notifyOfNewTable(String arg) throws RemoteException;
     public Pessoa getPessoabyNumber(String numero) throws RemoteException;
 
     //public String showMesasEstados() throws RemoteException;
