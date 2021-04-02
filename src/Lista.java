@@ -36,9 +36,9 @@ public class Lista implements Serializable {
         //to do
     }
 
-    public boolean addVoto(){
+    public void addVoto(){
         this.votos++;
-        return true;
+
     }
 
     public int getVotos() {

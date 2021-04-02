@@ -20,8 +20,8 @@ public class Eleicao implements Serializable{
     ArrayList<Mesa> mesas = new ArrayList<>();
 
 
-    private int votosNulos=0;
-    private int votosBrancos = 0;
+    private int votosNulos;
+    private int votosBrancos;
     private ArrayList<Voto> votos;
 
     Eleicao(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws ParseException {
@@ -43,7 +43,8 @@ public class Eleicao implements Serializable{
         this.startDate = new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(parseDate(startDate, startHour,startMinute));
         this.endDate = new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(parseDate(endDate, endHour, endMinute));
         Date date = new Date();
-
+        this.votosBrancos = 0;
+        this.votosNulos = 0;
         this.listasCandidatas = new ArrayList<>();
 
         this.departamento = departamento;
@@ -148,7 +149,7 @@ public class Eleicao implements Serializable{
     }
 
     public void addListasCandidatas(Lista lista) {
-        listasCandidatas.add(0,lista);
+        listasCandidatas.add(0, lista);
     }
 
     public void setListasCandidatas(ArrayList<Lista> listasCandidatas) {

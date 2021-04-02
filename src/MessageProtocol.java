@@ -51,7 +51,7 @@ public class MessageProtocol {
         if(this.type.equals("item_list")){
             for(String s:string.split(";")){
                 String ss = s.split("\\|")[0];
-                if(s.split("\\|")[0].matches("item_%d_name")){
+                if(ss.matches("item_[0-9*]_name")){
                     candidatos.put(Integer.parseInt(s.split("\\|")[0].replaceAll("[^0-9]", "")), s.split("\\|")[1]);
                 }
             }

@@ -2,13 +2,23 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 import java.util.jar.JarOutputStream;
 
-public class AdminTerminal extends Thread implements AdminTerminalInterface, Serializable
+public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalInterface, Serializable
 {
     private RmiInterface ri;
+    public AdminTerminal() throws RemoteException {
+        super();
+        try {
+            this.ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 
     public boolean loginUser() throws RemoteException    {
         while(true) {
@@ -133,7 +143,7 @@ public class AdminTerminal extends Thread implements AdminTerminalInterface, Ser
                     String addS = sc.nextLine();
                     int add = Integer.parseInt(addS);
                     if (add <= ri.sizePessoas() && add > 0) {
-                        check = ri.addCandidateRMI(indx, 0, add - 1);
+                        check = ri.addCandidateRMI(indx, choice, add - 1);
                         if(!check)
                             System.out.println("Erro: Candidato já adicionado.");
                     }
@@ -161,7 +171,7 @@ public class AdminTerminal extends Thread implements AdminTerminalInterface, Ser
                         String deletS = sc.nextLine();
                         int delet = Integer.parseInt(deletS);
                         if (delet <= size && delet > 0)
-                            check = ri.deleteCandidateRMI(indx, 0, delet - 1);
+                            check = ri.deleteCandidateRMI(indx, choice, delet - 1);
                         else {
                             if(delet == 0)
                                 break;
@@ -312,7 +322,6 @@ public class AdminTerminal extends Thread implements AdminTerminalInterface, Ser
                 System.out.printf("\nInput inválido.\n");
             }
 
-
         }
         else
             System.out.printf("\nInput inválido.\n");
@@ -383,19 +392,7 @@ public class AdminTerminal extends Thread implements AdminTerminalInterface, Ser
         return null;
     }
 
-    //(11) ?
-    /*
-    public boolean mesasEstado() throws RemoteException{
-        System.out.print(ri.showMesasEstados());
-        return true;
-    }
 
-    //(12) ?
-    public boolean numeroEleitores() throws RemoteException{
-        System.out.print(ri.showMesasCount());
-        return true;
-    }
-       */
     public void eleicaoEndedDetalhes() throws RemoteException{
         System.out.println("\n---Detalhes Eleicoes Terminadas---\n");
         System.out.print(ri.eleicoesEndedRMI());
@@ -404,30 +401,11 @@ public class AdminTerminal extends Thread implements AdminTerminalInterface, Ser
 
 
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
-        /*try {
 
-            //System.out.println("8 + 3 = " + ri.add(8, 3));
-
-        } catch (NotBoundException | MalformedURLException | RemoteException e) {
-            e.printStackTrace();
-        }
-
-         */
         AdminTerminal terminal = new AdminTerminal();
-        try {
-            RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
-            ri.subscribe((AdminTerminalInterface) terminal );
-        } catch (NotBoundException | MalformedURLException | RemoteException e) {
-            e.printStackTrace();
-        }
-        terminal.start();
-    }
-    public void run(){
-        try {
-            this.ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
-        } catch (NotBoundException | MalformedURLException | RemoteException e) {
-            e.printStackTrace();
-        }
+
+
+        terminal.ri.subscribe((AdminTerminalInterface) terminal );
 
 
         try {
@@ -447,22 +425,22 @@ public class AdminTerminal extends Thread implements AdminTerminalInterface, Ser
                 answer = Integer.parseInt(answerS);
                 switch (answer){
                     case 1:
-                        createEleicao();
+                        terminal.createEleicao();
                         break;
                     case 2:
-                        registerUser();
+                        terminal.registerUser();
                         break;
                     case 3:
-                        if(ri.getEleicoes().size() == 0)
+                        if(terminal.ri.getEleicoes().size() == 0)
                             System.out.println("Não existem eleições que possam ser geridas.");
                         else
-                            gerirEleicao();
+                            terminal.gerirEleicao();
                         break;
                     case 4:
-                        eleicaoEndedDetalhes();
+                        terminal.eleicaoEndedDetalhes();
                         break;
                     case 5:
-                        votoDetalhes();
+                        terminal.votoDetalhes();
                         break;
                     case 0:
                         break;
@@ -475,11 +453,22 @@ public class AdminTerminal extends Thread implements AdminTerminalInterface, Ser
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
     public void placeholder() throws RemoteException {
 
+    }
+
+    public void voteUpdate(String departamento, int count) throws RemoteException{
+        System.out.println("[UPDATE] New Vote in department "+ departamento + ", total count in that table: " + count);
+    }
+
+    public void tableUpdate(String dep) throws RemoteException{
+        System.out.println("[UPDATE] Table at "+dep+" connected");
+    }
+
+    public void tableDisconnectedUpdate(String dep) throws RemoteException{
+        System.out.println("[UPDATE] Table at "+ dep+" exited gracefully");
     }
 }

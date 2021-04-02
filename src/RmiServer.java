@@ -1,11 +1,6 @@
-import javax.swing.plaf.multi.MultiInternalFrameUI;
 import java.io.*;
-import java.lang.reflect.Array;
-import java.rmi.RMISecurityManager;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.server.RemoteObjectInvocationHandler;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,8 +14,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public int addressEnd = 1;
     public String baseAddress = "224.3.2.";
     public String secondaryAddress = "224.3.3.";
-
-
     private ArrayList<Eleicao> listaEleicoes;
     private ArrayList<Pessoa> listaPessoas;
     private ArrayList<Pessoa> pessoasOnline;
@@ -48,12 +41,23 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return secondaryAddress + addressEnd;
     }
 
-    public int getTableNumber() throws RemoteException {
+    public int getTableNumber(String arg) throws RemoteException {
+
         return addressEnd++;
     }
 
+    public void notifyOfNewTable(String arg) throws RemoteException{
+        for(AdminTerminalInterface a:getTerminais()){
+            try{
+                a.tableUpdate(arg);}
+            catch(RemoteException e){
+                //ignore
+            }
+        }
 
+    }
     public static void main(String args[]) {
+
         try {
             RmiInterface ri = new RmiServer();
             LocateRegistry.createRegistry(7000).rebind("rmiServer", ri);
@@ -62,7 +66,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
     }
 
-
+    public ArrayList<AdminTerminalInterface> getTerminais(){
+        return terminais;
+    }
     @Override
     public ArrayList<Eleicao> getEleicoes() throws RemoteException {
         return listaEleicoes;
@@ -117,7 +123,9 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
 
 
-    public boolean votar(Eleicao e, int choiceLista, Pessoa p, String departamento) throws RemoteException{
+    public boolean votar(int eleicao, int choiceLista, String number, String departamento, int tableCount) throws RemoteException{
+        Eleicao e = getMesaByName(departamento).getEleicoes().get(eleicao);
+        Pessoa p = getPessoabyNumber(number);
         if(choiceLista == 0){
             e.addVotoNulo();
         }
@@ -126,7 +134,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             e.addVotoBranco();
         }
         else {
-            Voto v = new Voto(e.getListasCandidatas().get(choiceLista), p, departamento);
+            Voto v = new Voto(p, departamento);
+            e.getListasCandidatas().get(choiceLista-2).addVoto();
             try {
                 if (!this.eleicoesOngoing().contains(e)) {
                     return false;
@@ -137,8 +146,19 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             }
             e.addVoto(v);
             e.getListasCandidatas().get(choiceLista).addVoto();
-            save();
+
         }
+
+        for(AdminTerminalInterface ad: terminais){
+
+            try{
+                System.out.println("at least i tried");
+                ad.voteUpdate(departamento, tableCount);}
+            catch(RemoteException e1){
+                //ignore
+            }
+        }
+        save();
         return true;
     }
 
@@ -266,6 +286,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public Mesa getMesaByName(String dep) throws RemoteException{
         for (Mesa m: listaMesas){
             if( m.getDepartamento().equals(dep)){
+                System.out.println(m.getDepartamento());
                 return m;
             }
         }
@@ -339,23 +360,57 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         ObjectInputStream is2 = null;
         ObjectInputStream is3 = null;
         File f = new File("eleicoes.ser");
-        if(f.exists() && !f.isDirectory()) {
+        File f2 = new File("pessoas.ser");
+        File f3 = new File("mesas.ser");
+
+        if(f2.exists() && !f2.isDirectory()){
+            try {
+                FileInputStream stream = new FileInputStream("pessoas.ser");
+                is2 = new ObjectInputStream(stream);
+                this.listaPessoas = (ArrayList<Pessoa>) is2.readObject();
+            }catch(Exception e){
+                e.printStackTrace();
+            }finally {
+                if (is2 != null) {
+                    try {
+                        is2.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        if(f3.exists() && !f3.isDirectory()){
+            try {
+                FileInputStream stream = new FileInputStream("mesas.ser");
+                is3 = new ObjectInputStream(stream);
+                this.listaMesas = (ArrayList<Mesa>) is3.readObject();
+            } catch(Exception e){
+                e.printStackTrace();
+
+            } finally {
+                if (is2 != null) {
+                    try {
+                        is2.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        if(f.exists() && !f.isDirectory()  ) {
             try {
                 FileInputStream stream = new FileInputStream("eleicoes.ser");
                 is1 = new ObjectInputStream(stream);
                 this.listaEleicoes = (ArrayList<Eleicao>) is1.readObject();
 
 
-                stream = new FileInputStream("pessoas.ser");
-                is2 = new ObjectInputStream(stream);
-                this.listaPessoas = (ArrayList<Pessoa>) is2.readObject();
 
-                stream = new FileInputStream("mesas.ser");
-                is3 = new ObjectInputStream(stream);
-                this.listaMesas = (ArrayList<Mesa>) is3.readObject();
+
 
             } catch (Exception e) {
-                e.printStackTrace();
+
             } finally {
                 try {
                     if (is1 != null) {
@@ -377,7 +432,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
     }
 
-    public void save() {
+    synchronized public void save() {
         ObjectOutputStream os1 = null;
         ObjectOutputStream os2 = null;
         ObjectOutputStream os3 = null;
@@ -622,6 +677,11 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
 
     public void addMesa(Mesa m) throws RemoteException{
+        for(Mesa m2: listaMesas){
+            if(m2.getDepartamento().equals(m.getDepartamento())){
+                return;
+            }
+        }
         listaMesas.add(m);
         save();
     }
@@ -659,16 +719,25 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     public String generateLista(int eleicaoC, String dep) throws RemoteException{
 
         Eleicao eleicao = getMesaByName(dep).getEleicoes().get(eleicaoC);
-        String str = "type|item_list;item_count|" + eleicao.getListasCandidatas().size();
+        for(Eleicao e: getMesaByName(dep).getEleicoes()){
+            System.out.println("eleição: " + e.getTitulo());
+            for(Lista l: e.getListasCandidatas()){
+                System.out.println("lista "+ l.getNome());
+            }
+        }
+        StringBuilder str = new StringBuilder("type|item_list;item_count|" + eleicao.getListasCandidatas().size());
         int i = 0;
         for(Lista l : eleicao.getListasCandidatas()){
-            str += ";item_" + i + "_name|";
+            System.out.println(l.getNome());
+            str.append(";item_").append(i).append("_name|");
             for(Pessoa p : l.getMembros()){
-                str += p.getNome() + "\n";
+                System.out.println(p.getNome());
+                str.append(p.getNome()).append(",");
             }
             i++;
         }
-        return str;
+        System.out.println(str);
+        return str.toString();
     }
 
 }

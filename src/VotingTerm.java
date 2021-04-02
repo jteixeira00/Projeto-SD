@@ -129,26 +129,29 @@ public class VotingTerm extends Thread{
                             socket.receive(packet);
                             messagestr = new String(packet.getData(), 0, packet.getLength());
                             message = new MessageProtocol(messagestr);
+                            System.out.println(messagestr);
                         }while (!message.getType().equals("item_list") || !message.getUuid().equals(this.uuid.toString()));
 
+                        System.out.println("Hey");
+                        System.out.println(message.getCandidatos());
                         //imprime as listas candidatas
                         if(message.getCandidatos().size()>0){
                             System.out.println("0 - Voto Nulo");
                             System.out.println("1 - Voto Branco");
                             for(Map.Entry<Integer, String> candidato : message.getCandidatos().entrySet()){
-                                Integer key = candidato.getKey()+1;
+                                Integer key = candidato.getKey()+2;
                                 String nome = candidato.getValue();
                                 System.out.println(key + " - " + nome+"\n");
                             }
                         }
                         int choice = Integer.parseInt(in.nextLine());
 
-                         Date date = new Date();
+                        Date date = new Date();
                         String pattern = "MM/dd/yyyy HH:mm";
                         DateFormat df = new SimpleDateFormat(pattern);
                         String dataString = df.format(date);
 
-                        messagestr = "id|"+uuid.toString()+";type|voto;choice|"+choice+";time|"+dataString+";eleicao|"+eleicao+";number|"+ucnumber;
+                        messagestr = "uuid|"+uuid.toString()+";type|voto;choice|"+choice+";time|"+dataString+";eleicao|"+eleicao+";number|"+ucnumber;
                      
                         buffer = messagestr.getBytes();
                         packet = new DatagramPacket(buffer, buffer.length, group, PORT2);
@@ -165,6 +168,9 @@ public class VotingTerm extends Thread{
                        
 
                         System.out.println("Success! Logging you off.");
+                        for(int i = 0; i<20; i++){
+                            System.out.println("\n\n");
+                        }
                         run();
                         //somehow limpar o ecrã?
 
