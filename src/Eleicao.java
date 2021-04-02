@@ -148,7 +148,7 @@ public class Eleicao implements Serializable{
     }
 
     public void addListasCandidatas(Lista lista) {
-        listasCandidatas.add(lista);
+        listasCandidatas.add(0,lista);
     }
 
     public void setListasCandidatas(ArrayList<Lista> listasCandidatas) {
