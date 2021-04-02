@@ -162,7 +162,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
                 return false;
             }
             e.addVoto(v);
-            e.getListasCandidatas().get(choiceLista).addVoto();
+
 
         }
 
