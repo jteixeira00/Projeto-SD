@@ -46,7 +46,7 @@ public class Eleicao implements Serializable{
         this.votosBrancos = 0;
         this.votosNulos = 0;
         this.listasCandidatas = new ArrayList<>();
-
+        this.votos = new ArrayList<>();
         this.departamento = departamento;
 
 

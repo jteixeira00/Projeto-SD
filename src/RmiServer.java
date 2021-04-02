@@ -123,9 +123,26 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
 
 
+
     public boolean votar(int eleicao, int choiceLista, String number, String departamento, int tableCount) throws RemoteException{
-        Eleicao e = getMesaByName(departamento).getEleicoes().get(eleicao);
+        ArrayList<Eleicao> eArray = new ArrayList<>();
+        Date date = new Date();
         Pessoa p = getPessoabyNumber(number);
+
+        for (Eleicao e1 : getMesaByName(departamento).getEleicoes()) {
+            if(e1.getEndDate().after(date) && e1.getStartDate().before(date)) {
+                System.out.println(e1.getTitulo());
+                System.out.println(e1.getListasCandidatas().get(0).getNome());
+                eArray.add(e1);
+            }
+        }
+
+        System.out.println("----------");
+        System.out.println(eArray);
+        System.out.println("----------");
+
+        Eleicao e = eArray.get(eleicao);
+
         if(choiceLista == 0){
             e.addVotoNulo();
         }
@@ -622,7 +639,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
                 if (eleicao.votosTotal() == 0)
                     percent = 0;
                 else
-                    percent = count / eleicao.votosTotal();
+                    percent = (count / eleicao.votosTotal())*100;
                 countS = Integer.toString(count);
                 percentS = Integer.toString(percent);
                 str += ".................\nLista " + list.getNome() + "\nVotos: " + countS + " | " + percentS + "%\n.................\n";
@@ -631,7 +648,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             if (eleicao.votosTotal() == 0)
                 percent = 0;
             else
-                percent = count / eleicao.votosTotal();
+                percent = (count / eleicao.votosTotal())*100;
             countS = Integer.toString(count);
             percentS = Integer.toString(percent);
             str += "\n................." + "\nVotos em Branco: " + countS + " | " + percentS + "%";
@@ -640,7 +657,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             if (eleicao.votosTotal() == 0)
                 percent = 0;
             else
-                percent = count / eleicao.votosTotal();
+                percent = (count / eleicao.votosTotal())*100;
             countS = Integer.toString(count);
             percentS = Integer.toString(percent);
             str += "\n................." + "\nVotos Nulos: " + countS + " | " + percentS + "%";
@@ -717,8 +734,19 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
     public String generateLista(int eleicaoC, String dep) throws RemoteException{
+        ArrayList<Eleicao> eArray = new ArrayList<>();
+        Date date = new Date();
 
-        Eleicao eleicao = getMesaByName(dep).getEleicoes().get(eleicaoC);
+        for (Eleicao e1 : getMesaByName(dep).getEleicoes()) {
+            if(e1.getEndDate().after(date) && e1.getStartDate().before(date)) {
+                System.out.println(e1.getTitulo());
+                System.out.println(e1.getListasCandidatas().get(0).getNome());
+                eArray.add(e1);
+            }
+        }
+
+        Eleicao eleicao = eArray.get(eleicaoC);
+
         for(Eleicao e: getMesaByName(dep).getEleicoes()){
             System.out.println("eleição: " + e.getTitulo());
             for(Lista l: e.getListasCandidatas()){
