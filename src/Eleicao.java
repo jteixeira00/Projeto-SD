@@ -120,11 +120,11 @@ public class Eleicao implements Serializable{
     }
 
     public void addVotoNulo(){
-        votosNulos++;
+        this.votosNulos++;
     }
 
     public void addVotoBranco(){
-        votosBrancos++;
+        this.votosBrancos++;
     }
 
 
@@ -204,12 +204,7 @@ public class Eleicao implements Serializable{
     }
 
     public int votosTotal(){
-        int count = 0;
-        for(Lista list: getListasCandidatas()){
-            count += list.getVotos();
-        }
-        count += votosBrancos + votosNulos;
-        return count;
+        return votos.size() + votosNulos + votosBrancos;
     }
 
     public void addMesa(Mesa mesa){

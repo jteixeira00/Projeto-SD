@@ -3,9 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="72664580-6fa9-4ee8-ac8b-09ffc4ff70ed" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eleicoes.ser" beforeDir="false" afterPath="$PROJECT_DIR$/eleicoes.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mesas.ser" beforeDir="false" afterPath="$PROJECT_DIR$/mesas.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eleicoes.ser" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mesas.ser" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/RmiServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/RmiServer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pessoas.ser" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Eleicao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Eleicao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/MulticastServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MulticastServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RmiServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RmiServer.java" afterDir="false" />
     </list>
     <list id="acb246f5-625e-44ba-95a6-dddabb3f1aeb" name="Changes by dinis" comment="" />
@@ -102,7 +105,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
-  <component name="RunManager" selected="Application.AdminTerminal">
+  <component name="RunManager" selected="Application.MulticastServer">
     <configuration name="AdminTerminal" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="AdminTerminal" />
       <module name="Projeto-SD" />
@@ -142,23 +145,26 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="class" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.VotingTerm" />
-        <item itemvalue="Application.MulticastServer" />
         <item itemvalue="Application.AdminTerminal" />
         <item itemvalue="Application.RmiServer" />
+        <item itemvalue="Application.VotingTerm" />
+        <item itemvalue="Application.MulticastServer" />
+        <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
   </component>
@@ -175,7 +181,8 @@
       <workItem from="1617031425281" duration="593000" />
       <workItem from="1617114773052" duration="11321000" />
       <workItem from="1617202755958" duration="8591000" />
-      <workItem from="1617372900986" duration="13362000" />
+      <workItem from="1617372900986" duration="13411000" />
+      <workItem from="1617461882379" duration="7856000" />
     </task>
     <servers />
   </component>
@@ -212,11 +219,6 @@
             <option name="EMULATED" value="true" />
           </properties>
           <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/AdminTerminal.java</url>
-          <line>225</line>
-          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

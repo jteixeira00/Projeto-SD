@@ -151,7 +151,6 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
         int i = 1;
         Date date = new Date();
         for (Eleicao e : mesaByName.getEleicoes()) {
-            //System.out.println(e.getTitulo());
             if(e.getEndDate().after(date) && e.getStartDate().before(date)) {
 
                 System.out.println(i++ + " - " + e.getTitulo());

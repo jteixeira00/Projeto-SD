@@ -145,10 +145,12 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
         if(choiceLista == 0){
             e.addVotoNulo();
+            save();
         }
 
-        if(choiceLista== 1){
+        else if(choiceLista == 1){
             e.addVotoBranco();
+            save();
         }
         else {
             Voto v = new Voto(p, departamento);
@@ -639,16 +641,17 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
                 if (eleicao.votosTotal() == 0)
                     percent = 0;
                 else
-                    percent = (count / eleicao.votosTotal())*100;
+                    percent = (count * 100)/ eleicao.votosTotal();
                 countS = Integer.toString(count);
                 percentS = Integer.toString(percent);
-                str += ".................\nLista " + list.getNome() + "\nVotos: " + countS + " | " + percentS + "%\n.................\n";
+                str += "\n.................\nLista " + list.getNome() + "\nVotos: " + countS + " | " + percentS +"%";
             }
+
             count = eleicao.getVotosBrancos();
             if (eleicao.votosTotal() == 0)
                 percent = 0;
             else
-                percent = (count / eleicao.votosTotal())*100;
+                percent = (count * 100)/ eleicao.votosTotal();
             countS = Integer.toString(count);
             percentS = Integer.toString(percent);
             str += "\n................." + "\nVotos em Branco: " + countS + " | " + percentS + "%";
@@ -657,10 +660,10 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             if (eleicao.votosTotal() == 0)
                 percent = 0;
             else
-                percent = (count / eleicao.votosTotal())*100;
+                percent = (count * 100)/ eleicao.votosTotal();
             countS = Integer.toString(count);
             percentS = Integer.toString(percent);
-            str += "\n................." + "\nVotos Nulos: " + countS + " | " + percentS + "%";
+            str += "\n................." + "\nVotos Nulos: " + countS + " | " + percentS + "%\n.................\n";
         }
         else
             str = "\nResultados:\nSem Listas Candidatas\n";
