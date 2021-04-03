@@ -146,6 +146,9 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         check = ri.addCandidateRMI(indx, choice, add - 1);
                         if(!check)
                             System.out.println("Erro: Candidato já adicionado.");
+                        else{
+                            System.out.println("Candidato adicionado");
+                        }
                     }
 
                     else {

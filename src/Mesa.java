@@ -1,5 +1,6 @@
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Mesa implements Serializable {
     public String getDepartamento() {
@@ -18,6 +19,18 @@ public class Mesa implements Serializable {
     Mesa(String departamento){
         this.departamento = departamento;
         eleicoes = new ArrayList<>();
+    }
+
+
+    public ArrayList<Eleicao> getEleicoesEspecificas(String tipoUser){
+        ArrayList<Eleicao> res = new ArrayList<>();
+        Date date = new Date();
+        for(Eleicao e: eleicoes){
+            if(e.getTipoVoters().toString().equals(tipoUser)){
+                res.add(e);
+            }
+        }
+        return res;
     }
 
 }
