@@ -77,7 +77,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         return check;
     }
 
-    public Eleicao createEleicao() throws RemoteException {
+    public void createEleicao() throws RemoteException {
         System.out.println("\n---Criar Eleição---\n");
         Scanner sc = new Scanner(System.in);
 
@@ -109,9 +109,6 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         String endM = sc.nextLine();
         int endMinute = Integer.parseInt(endM);
 
-        System.out.println("Departamento: ");
-        String departamento = sc.nextLine();
-
         System.out.println("Restringir eleição para que grupo de Pessoas?(1 - Estudantes || 2 - Docentes || 3 - Funcionários): ");
         int type = 0;
         while(type != 1 && type != 2 && type != 3) {
@@ -121,7 +118,28 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 System.out.println("Numero Inválido: Tente de novo\n");
         }
 
-        return ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, departamento, type);
+        ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, "", type);
+
+        System.out.println("Restringir a único a departamento? 1 - Sim || 2 - Não");
+        String  choiceS = sc.nextLine();
+        int choice = Integer.parseInt(choiceS);
+        boolean goOn = true;
+        switch (choice){
+            case 1:
+                System.out.println("Digite os departamentos que quer adicionar:\nSAIR - SAIR DE ADICIONAR DEPARTAMENTOS\n");
+                while (goOn){
+                    String departamento = sc.nextLine();
+                    if(!departamento.equals("SAIR") && !departamento.equals("sair")){
+                        ri.addDepartamentos(titulo,departamento);
+                    }
+                }
+                break;
+            case 2:
+                break;
+            default:
+                System.out.println("Input Inválido: Eleição criada sem departamentos.");
+        }
+
     }
 
     public boolean gerirCandidatos(Eleicao eleicao, int choice, int indx) throws RemoteException{
@@ -291,6 +309,41 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         return str;
     }
 
+    public boolean gerirDepartamentos(int indexE) throws RemoteException{
+        System.out.println("---Gerir Departamentos---\n");
+        if(ri.sizeMesas() != 0) {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("\n1 - Adicionar Departamento || 2 - Remover Departamento:  ");
+            String tipoS = sc.nextLine();
+            int tipo = Integer.parseInt(tipoS);
+
+            switch (tipo) {
+                case 1:
+                    System.out.printf("\n---Adicionar Departamento---\n");
+                    String addS = sc.nextLine();
+                    ri.addDepartamentos(indexE,addS);
+                    break;
+
+                case 2:
+                    System.out.printf("\n---Remover Departamento---\n");
+                    if(ri.sizeMesasEleicao(indexE) != 0) {
+                        System.out.printf("Departamento que pretende remover (1 - %d): \n", ri.sizeDepartamentos(indexE));
+                        System.out.println(ri.showDepartamentos(indexE));
+                        String delS = sc.nextLine();
+                        int del = Integer.parseInt(delS);
+                        ri.deleteDepartamentos(indexE, del - 1);
+                    }
+                    else System.out.println("Impossivel Remover Departamento: Sem Departamentos adicionadas");
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        else System.out.println("Impossivel Gerir Departamento: Não existem Departamentos criados.");
+        return false;
+    }
+
     public boolean gerirEleicao() throws RemoteException{
         boolean check = false;
         System.out.println("\n---Gerir Eleições---\n");
@@ -302,9 +355,10 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
         if(choice <= ri.sizeEleicoesFuturas()){
             System.out.println("\n---Alterar propriedade da Eleição---");
-            System.out.printf(ri.showEleicoesDetalhes(choice - 1));
+            System.out.print(ri.showEleicoesDetalhes(choice - 1));
             System.out.println("\n6 - Gerir listas");
-            System.out.println("7 - Gerir Mesas");
+            System.out.print("7 - Gerir Mesas");
+            System.out.println("8 - Gerir Departamentos");
             String answerS = sc.nextLine();
             int answer  = Integer.parseInt(answerS);
             if(answer == 6)
@@ -318,8 +372,11 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
             else if (answer == 7){
                 gerirMesas(choice - 1);
             }
+            else if(answer == 8){
+                gerirDepartamentos(choice - 1);
+            }
             else {
-                System.out.printf("\nInput inválido.\n");
+                System.out.print("\nInput inválido.\n");
             }
 
         }

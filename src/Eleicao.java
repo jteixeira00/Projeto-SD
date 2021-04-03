@@ -23,6 +23,7 @@ public class Eleicao implements Serializable{
     private int votosNulos;
     private int votosBrancos;
     private ArrayList<Voto> votos;
+    private ArrayList<String> departamentos;
 
     Eleicao(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws ParseException {
 
@@ -47,8 +48,8 @@ public class Eleicao implements Serializable{
         this.votosNulos = 0;
         this.listasCandidatas = new ArrayList<>();
         this.votos = new ArrayList<>();
-        this.departamento = departamento;
-
+        this.departamento = "";
+        this.departamentos = new ArrayList<>();
 
     }
 
@@ -84,6 +85,10 @@ public class Eleicao implements Serializable{
 
     public String getTitulo() {
         return titulo;
+    }
+
+    public void addDepartamento(String nome) {
+        departamentos.add(nome);
     }
 
     public void setTitulo(String newTitle){
@@ -192,8 +197,18 @@ public class Eleicao implements Serializable{
         return listasCandidatas.get(index).getSize();
     }
 
+    public int sizeDepartamentos() throws RemoteException{
+        if (departamentos == null)
+            return 0;
+        return departamentos.size();
+    }
+
     public String getDepartamento(){
         return departamento;
+    }
+
+    public ArrayList<String> getDepartamentos(){
+        return departamentos;
     }
 
     public String dateToString(Date date){
@@ -201,6 +216,10 @@ public class Eleicao implements Serializable{
         String strDate = dateFormat.format(date);
         return strDate;
 
+    }
+
+    public void deleteDepartamento(String dep){
+        departamentos.remove(dep);
     }
 
     public int votosTotal(){

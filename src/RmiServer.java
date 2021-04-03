@@ -302,6 +302,21 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
         return str;
     }
+
+    @Override
+    public String showDepartamentos(int indexE) throws RemoteException {
+        Eleicao e = getEleicoesFuturas().get(indexE);
+        String str = "";
+        String number;
+        int i = 0;
+        for(String s: e.getDepartamentos()){
+            i++;
+            number = String.valueOf(i);
+            str += number + " - " + s + "\n";
+        }
+        return str;
+    }
+
     public Mesa getMesaByName(String dep) throws RemoteException{
         for (Mesa m: listaMesas){
             if( m.getDepartamento().equals(dep)){
@@ -499,6 +514,33 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return null;
     }
 
+    @Override
+    public void addDepartamentos(String nome, String departamento) throws RemoteException {
+        for(Eleicao e: getEleicoes()){
+            if(e.getTitulo().equals(nome)){
+                e.addDepartamento(departamento);
+            }
+        }
+    }
+
+    @Override
+    public void addDepartamentos(int indexE, String departamento) throws RemoteException {
+        Eleicao e = getEleicoesFuturas().get(indexE);
+        e.addDepartamento(departamento);
+    }
+
+    @Override
+    public void deleteDepartamentos(int indexE, int departamento) throws RemoteException {
+        Eleicao e = getEleicoesFuturas().get(indexE);
+        String dep = e.getDepartamentos().get(departamento);
+        e.deleteDepartamento(dep);
+    }
+
+    @Override
+    public int sizeDepartamentos(int indexE) throws RemoteException{
+        return getEleicoesFuturas().get(indexE).sizeDepartamentos();
+    }
+
     public void addOnlineUser(Pessoa p) {
         this.pessoasOnline.add(p);
     }
@@ -569,13 +611,13 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     @Override
     public String showEleicoesDetalhes(int index) throws RemoteException {
         Eleicao eleicao = getEleicoesFuturas().get(index);
-        return "\n1 - Titulo: " + eleicao.getTitulo() + "\n2 - Descrição: " + eleicao.getDescricao() + "\n3 - Data de Inicio (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getStartDate()) + "\n4 - Data de Fim (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getEndDate()) + "\n5 - Restringir eleição para um único departamento: " + eleicao.getDepartamento();
+        return "\n1 - Titulo: " + eleicao.getTitulo() + "\n2 - Descrição: " + eleicao.getDescricao() + "\n3 - Data de Inicio (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getStartDate()) + "\n4 - Data de Fim (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getEndDate());
     }
 
     @Override
     public String showEleicoesDetalhesEnded(int index) throws RemoteException {
         Eleicao eleicao = getEleicoesEnded().get(index);
-        return "\n1 - Titulo: " + eleicao.getTitulo() + "\n2 - Descrição: " + eleicao.getDescricao() + "\n3 - Data de Inicio (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getStartDate()) + "\n4 - Data de Fim (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getEndDate()) + "\n5 - Restringir eleição para um único departamento: " + eleicao.getDepartamento();
+        return "\n1 - Titulo: " + eleicao.getTitulo() + "\n2 - Descrição: " + eleicao.getDescricao() + "\n3 - Data de Inicio (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getStartDate()) + "\n4 - Data de Fim (dd-MM-yyyy  HH:mm): " + eleicao.dateToString(eleicao.getEndDate());
     }
 
     @Override
@@ -605,11 +647,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                break;
-
-            case 5:
-                //alterar departamento
-                eleicao.setDepartamento(change);
                 break;
 
             default:
