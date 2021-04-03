@@ -85,13 +85,27 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
 
             while(true) {
                 System.out.println("Para identificar um eleitor, insira o número da UC");
-                System.out.println(ri.identificarUser(sc.nextLine())); //falta dar handle das exceptions
+                String numeroUc = sc.nextLine();
+                String identificacao = ri.identificarUser(numeroUc);
+                System.out.println(identificacao);
+                if(identificacao.equals("Utilizador inexistente")){
+                    run();
+                    return;
+                }
+                String tipoUser = ri.getPessoabyNumber(numeroUc).getType().toString();
 
+                String aux = displayEleicoes(ri.getMesaByName(departamento), tipoUser);
+                if(aux.equals("")){
+                    System.out.println("Não existem eleições disponíveis");
+                    run();
+                }
                 System.out.println("Escolha a eleição em que quer votar:");
-
-                displayEleicoes(ri.getMesaByName(departamento));
+                System.out.println(aux);
                 choice = Integer.parseInt(sc.nextLine());
-
+                if(choice>contarEleicoes(aux) || choice<=0){
+                    System.out.println("Opção inválida");
+                    run();
+                }
                 String message = "type|request";
                 byte[] buffer = message.getBytes();
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
@@ -147,18 +161,28 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
         eleicaoLista.add(eleicao);
     }
 
-    public void displayEleicoes(Mesa mesaByName) {
+    public String displayEleicoes(Mesa mesaByName, String tipoUser) {
         int i = 1;
         Date date = new Date();
+        String res = "";
         for (Eleicao e : mesaByName.getEleicoes()) {
             if(e.getEndDate().after(date) && e.getStartDate().before(date)) {
-
-                System.out.println(i++ + " - " + e.getTitulo());
+                if(e.getTipoVoters().toString().equals(tipoUser)){
+                    res += i++ + " - " + e.getTitulo()+"\n";
+                    //System.out.println(i++ + " - " + e.getTitulo());
+                }
             }
         }
+        return res;
+    }
+
+    public int contarEleicoes(String input){
+        String[] lines = input.split("\r\n|\r|\n");
+        return  lines.length;
     }
 
     //11 - estado mesas
+
     public void setMesaON(){
         active = true;
     }

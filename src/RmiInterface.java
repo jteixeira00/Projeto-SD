@@ -80,6 +80,7 @@ public interface RmiInterface extends Remote {
     public int sizeMesasEleicao(int indx) throws RemoteException;
 
     public boolean votar(int eleicao, int choiceLista, String number, String departamento, int tableCount) throws RemoteException;
+    public boolean checkNomeEleicao(String titulo) throws RemoteException;
 
     public String showDepartamentos(int indexE) throws RemoteException;
 

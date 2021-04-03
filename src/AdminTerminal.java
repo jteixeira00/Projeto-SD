@@ -80,9 +80,16 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
     public void createEleicao() throws RemoteException {
         System.out.println("\n---Criar Eleição---\n");
         Scanner sc = new Scanner(System.in);
-
-        System.out.println("Titulo: ");
-        String titulo = sc.nextLine();
+        String titulo;
+        boolean titulobool;
+        do {
+            System.out.println("Titulo: ");
+            titulo = sc.nextLine();
+            titulobool=ri.checkNomeEleicao(titulo);
+            if(!titulobool){
+                System.out.println("Titulo de eleiçao já existe, por favor insira outro");
+            }
+        }while(!titulobool);
 
         System.out.println("Descrição: ");
         String descricao = sc.nextLine();
@@ -164,6 +171,9 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         check = ri.addCandidateRMI(indx, choice, add - 1);
                         if(!check)
                             System.out.println("Erro: Candidato já adicionado.");
+                        else{
+                            System.out.println("Candidato adicionado");
+                        }
                     }
 
                     else {

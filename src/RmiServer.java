@@ -1,3 +1,4 @@
+import javax.lang.model.type.ArrayType;
 import java.io.*;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -124,12 +125,13 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
 
 
+
     public boolean votar(int eleicao, int choiceLista, String number, String departamento, int tableCount) throws RemoteException{
         ArrayList<Eleicao> eArray = new ArrayList<>();
         Date date = new Date();
         Pessoa p = getPessoabyNumber(number);
 
-        for (Eleicao e1 : getMesaByName(departamento).getEleicoes()) {
+        for (Eleicao e1 : getMesaByName(departamento).getEleicoesEspecificas(p.getType().toString())) {
             if(e1.getEndDate().after(date) && e1.getStartDate().before(date)) {
                 System.out.println(e1.getTitulo());
                 System.out.println(e1.getListasCandidatas().get(0).getNome());
@@ -180,7 +182,14 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         save();
         return true;
     }
-
+    public boolean checkNomeEleicao(String titulo) throws RemoteException{
+        for(Eleicao e: listaEleicoes){
+            if(e.getTitulo().equals(titulo)){
+                return false;
+            }
+        }
+        return true;
+    }
     @Override
     public Eleicao createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws RemoteException {
         Date startDate1 = null;
@@ -745,7 +754,12 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     //to-do
     public String identificarUser(String input){
-        return "";
+        for(Pessoa p: listaPessoas){
+            if(p.getNumero().equals(input)){
+                return "Bem vindo "+ p.getNome();
+            }
+        }
+        return "Utilizador inexistente";
     }
 
     @Override
