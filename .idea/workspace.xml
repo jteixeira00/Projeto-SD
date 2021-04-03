@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="72664580-6fa9-4ee8-ac8b-09ffc4ff70ed" name="Default Changelist" comment="" />
+    <list default="true" id="72664580-6fa9-4ee8-ac8b-09ffc4ff70ed" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/pessoas.ser" beforeDir="false" />
+    </list>
     <list id="acb246f5-625e-44ba-95a6-dddabb3f1aeb" name="Changes by dinis" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +98,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
-  <component name="RunManager" selected="Application.RmiServer">
+  <component name="RunManager" selected="Application.MulticastServer">
     <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
@@ -135,7 +137,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="RmiServer" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
+    <configuration name="RmiServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="RmiServer" />
       <module name="Projeto-SD" />
       <method v="2">
@@ -153,8 +155,8 @@
       <list>
         <item itemvalue="Application.RmiServer" />
         <item itemvalue="Application.AdminTerminal" />
-        <item itemvalue="Application.MulticastServer" />
         <item itemvalue="Application.VotingTerm" />
+        <item itemvalue="Application.MulticastServer" />
         <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
@@ -173,7 +175,7 @@
       <workItem from="1617114773052" duration="11321000" />
       <workItem from="1617202755958" duration="8591000" />
       <workItem from="1617372900986" duration="13411000" />
-      <workItem from="1617461882379" duration="7856000" />
+      <workItem from="1617461882379" duration="11766000" />
     </task>
     <servers />
   </component>

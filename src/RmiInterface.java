@@ -82,12 +82,23 @@ public interface RmiInterface extends Remote {
     public boolean votar(int eleicao, int choiceLista, String number, String departamento, int tableCount) throws RemoteException;
     public boolean checkNomeEleicao(String titulo) throws RemoteException;
 
+    public String showDepartamentos(int indexE) throws RemoteException;
+
     public void subscribe(AdminTerminalInterface admin) throws RemoteException;
     public String generateLista(int eleicaoC, String dep) throws RemoteException;
     public Mesa getMesaByName(String dep) throws RemoteException;
     public void notifyOfNewTable(String arg) throws RemoteException;
     public Pessoa getPessoabyNumber(String numero) throws RemoteException;
     public void heartbeat() throws RemoteException;
+
+    public void addDepartamentos(String nome, String departamento) throws RemoteException;
+
+    public void addDepartamentos(int indexE, String departamento) throws RemoteException;
+
+    public void deleteDepartamentos(int indexE, int departamento) throws RemoteException;
+
+    public int sizeDepartamentos(int indexE) throws RemoteException;
+
     //public String showMesasEstados() throws RemoteException;
 
    // public String showMesasCount() throws RemoteException;
