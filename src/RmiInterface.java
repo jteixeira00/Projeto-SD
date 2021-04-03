@@ -87,7 +87,7 @@ public interface RmiInterface extends Remote {
     public Mesa getMesaByName(String dep) throws RemoteException;
     public void notifyOfNewTable(String arg) throws RemoteException;
     public Pessoa getPessoabyNumber(String numero) throws RemoteException;
-
+    public void heartbeat() throws RemoteException;
     //public String showMesasEstados() throws RemoteException;
 
    // public String showMesasCount() throws RemoteException;
