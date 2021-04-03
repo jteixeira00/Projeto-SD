@@ -182,7 +182,14 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         save();
         return true;
     }
-
+    public boolean checkNomeEleicao(String titulo) throws RemoteException{
+        for(Eleicao e: listaEleicoes){
+            if(e.getTitulo().equals(titulo)){
+                return false;
+            }
+        }
+        return true;
+    }
     @Override
     public Eleicao createEleicaoRMI(String titulo, String descricao, String startDate, int startHour, int startMinute, String endDate, int endHour, int endMinute, String departamento, int type) throws RemoteException {
         Date startDate1 = null;
