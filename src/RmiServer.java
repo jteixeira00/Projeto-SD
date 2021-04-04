@@ -598,7 +598,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     @Override
     public void addDepartamentos(String nome, String departamento) throws RemoteException {
-        for(Eleicao e: getEleicoes()){
+        for(Eleicao e: getEleicoesFuturas()){
             if(e.getTitulo().equals(nome)){
                 e.addDepartamento(departamento);
             }
