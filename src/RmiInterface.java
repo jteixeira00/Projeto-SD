@@ -90,7 +90,7 @@ public interface RmiInterface extends Remote {
     public void notifyOfNewTable(String arg) throws RemoteException;
     public Pessoa getPessoabyNumber(String numero) throws RemoteException;
     public void heartbeat() throws RemoteException;
-
+    public boolean alreadyVoted(String departamento, int choice, String tipoUser, String numeroUc) throws RemoteException;
     public void addDepartamentos(String nome, String departamento) throws RemoteException;
 
     public void addDepartamentos(int indexE, String departamento) throws RemoteException;

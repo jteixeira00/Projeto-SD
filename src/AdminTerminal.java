@@ -127,7 +127,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
         ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, "", type);
 
-        System.out.println("Restringir a único a departamento? 1 - Sim || 2 - Não");
+        System.out.println("Restringir departamentos que podem votar? 1 - Sim || 2 - Não");
         String  choiceS = sc.nextLine();
         int choice = Integer.parseInt(choiceS);
         boolean goOn = true;
@@ -233,6 +233,9 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     //mostrar lista de mesas e associar eleicao + mesa & mesa + eleicao || gerirMesas(index)
                     //ri.criaMesaRMI(indexE,indexM);
                     System.out.printf("\n---Adicionar Mesa---\n");
+                    System.out.println("Mesas atualmente adicionadas:");
+                    System.out.println(ri.showMesasEleicao(indexE));
+
                     System.out.printf("Mesa que pretende adicionar (1 - %d): \n",ri.sizeMesas());
                     System.out.println(ri.showMesas());
                     String addS = sc.nextLine();
@@ -359,6 +362,10 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         System.out.println("\n---Gerir Eleições---\n");
         Scanner sc = new Scanner(System.in);
         System.out.print(ri.showEleicoesFuturas());
+        if(ri.sizeEleicoesFuturas()==0){
+            System.out.println("Não existem eleições para gerir.");
+            return  false;
+        }
         System.out.printf("Eleição que pretende gerir (1 - %d): ",ri.sizeEleicoesFuturas());
         String choiceS = sc.nextLine();
         int choice = Integer.parseInt(choiceS);
@@ -367,7 +374,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
             System.out.println("\n---Alterar propriedade da Eleição---");
             System.out.print(ri.showEleicoesDetalhes(choice - 1));
             System.out.println("\n6 - Gerir listas");
-            System.out.print("7 - Gerir Mesas");
+            System.out.println("7 - Gerir Mesas");
             System.out.println("8 - Gerir Departamentos");
             String answerS = sc.nextLine();
             int answer  = Integer.parseInt(answerS);

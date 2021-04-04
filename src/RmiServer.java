@@ -3,6 +3,7 @@ import sun.util.locale.LocaleObjectCache;
 import javax.lang.model.type.ArrayType;
 import java.io.*;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -170,10 +171,11 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         Date date = new Date();
         Pessoa p = getPessoabyNumber(number);
 
+
         for (Eleicao e1 : getMesaByName(departamento).getEleicoesEspecificas(p.getType().toString())) {
             if(e1.getEndDate().after(date) && e1.getStartDate().before(date)) {
                 System.out.println(e1.getTitulo());
-                System.out.println(e1.getListasCandidatas().get(0).getNome());
+                //System.out.println(e1.getListasCandidatas().get(0).getNome());
                 eArray.add(e1);
             }
         }
@@ -186,11 +188,15 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
         if(choiceLista == 0){
             e.addVotoNulo();
+            Voto v = new Voto(p, departamento);
+            e.addVoto(v);
             save();
         }
 
         else if(choiceLista == 1){
             e.addVotoBranco();
+            Voto v = new Voto(p, departamento);
+            e.addVoto(v);
             save();
         }
         else {
@@ -212,7 +218,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         for(AdminTerminalInterface ad: terminais){
 
             try{
-                System.out.println("at least i tried");
                 ad.voteUpdate(departamento, tableCount);}
             catch(RemoteException e1){
                 //ignore
@@ -387,6 +392,35 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return str;
     }
 
+
+    public boolean alreadyVoted(String departamento, int choice, String tipoUser, String numeroUc) throws RemoteException {
+        Mesa mesaByName = null;
+        try {
+            mesaByName = getMesaByName(departamento);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        Date date = new Date();
+        ArrayList<Eleicao> aux = new ArrayList<>();
+        for (Eleicao e : mesaByName.getEleicoes()) {
+            if(e.getEndDate().after(date) && e.getStartDate().before(date)) {
+                if(e.getTipoVoters().toString().equals(tipoUser)){
+                    aux.add(e);
+                }
+            }
+        }
+        Eleicao e = aux.get(choice-1);
+
+        for(Voto v: e.getVotos()){
+            System.out.println("NUMERO");
+            System.out.println(v.getEleitor().getNumero());
+            if (v.getEleitor().getNumero().equals(numeroUc)){
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     @Override
     public int sizeMesas() throws RemoteException {
@@ -833,7 +867,10 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         for (Eleicao e1 : getMesaByName(dep).getEleicoes()) {
             if(e1.getEndDate().after(date) && e1.getStartDate().before(date)) {
                 System.out.println(e1.getTitulo());
-                System.out.println(e1.getListasCandidatas().get(0).getNome());
+                if(e1.getListasCandidatas().size()>0){
+                    System.out.println(e1.getListasCandidatas().get(0).getNome());
+                }
+
                 eArray.add(e1);
             }
         }

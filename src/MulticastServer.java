@@ -106,7 +106,11 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                     System.out.println("Opção inválida");
                     run();
                 }
-                String message = "type|request";
+                if(ri.alreadyVoted(departamento, choice, tipoUser, numeroUc)){
+                    System.out.println("Já votou nessa eleição");
+                    run();
+                }
+                String message = "type|request;number|"+numeroUc;
                 byte[] buffer = message.getBytes();
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
                 //envia mensagem a pedir um terminal livre

@@ -53,6 +53,9 @@ public class Eleicao implements Serializable{
 
     }
 
+    public ArrayList<Voto> getVotos(){
+        return this.votos;
+    }
     public String parseDate(String date, int hour, int minute){
         String sHour = ""+hour;
         if (sHour.length()==1){
