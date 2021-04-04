@@ -139,6 +139,9 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     if(!departamento.equals("SAIR") && !departamento.equals("sair")){
                         ri.addDepartamentos(titulo,departamento);
                     }
+                    else{
+                        goOn = false;
+                    }
                 }
                 break;
             case 2:
@@ -232,7 +235,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 case 1:
                     //mostrar lista de mesas e associar eleicao + mesa & mesa + eleicao || gerirMesas(index)
                     //ri.criaMesaRMI(indexE,indexM);
-                    System.out.printf("\n---Adicionar Mesa---\n");
+                    System.out.print("\n---Adicionar Mesa---\n");
                     System.out.println("Mesas atualmente adicionadas:");
                     System.out.println(ri.showMesasEleicao(indexE));
 
@@ -244,7 +247,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     break;
 
                 case 2:
-                    System.out.printf("\n---Remover Mesa---\n");
+                    System.out.print("\n---Remover Mesa---\n");
                     if(ri.sizeMesasEleicao(indexE) != 0) {
                         System.out.printf("Mesa que pretende remover (1 - %d): \n", ri.sizeMesasEleicao(indexE));
                         System.out.println(ri.showMesasEleicao(indexE));
@@ -332,19 +335,23 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
             switch (tipo) {
                 case 1:
-                    System.out.printf("\n---Adicionar Departamento---\n");
+                    System.out.print("\n---Adicionar Departamento---\n");
                     String addS = sc.nextLine();
                     ri.addDepartamentos(indexE,addS);
                     break;
 
                 case 2:
-                    System.out.printf("\n---Remover Departamento---\n");
-                    if(ri.sizeMesasEleicao(indexE) != 0) {
+                    System.out.print("\n---Remover Departamento---\n");
+                    if(ri.sizeDepartamentos(indexE) != 0) {
                         System.out.printf("Departamento que pretende remover (1 - %d): \n", ri.sizeDepartamentos(indexE));
                         System.out.println(ri.showDepartamentos(indexE));
+                        System.out.println("0 - SAIR DE REMOVER DEPARTAMENTOS");
                         String delS = sc.nextLine();
                         int del = Integer.parseInt(delS);
-                        ri.deleteDepartamentos(indexE, del - 1);
+                        if(del == 0)
+                            break;
+                        else
+                            ri.deleteDepartamentos(indexE, del - 1);
                     }
                     else System.out.println("Impossivel Remover Departamento: Sem Departamentos adicionadas");
                     break;
