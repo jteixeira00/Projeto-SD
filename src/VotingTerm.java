@@ -171,11 +171,11 @@ public class VotingTerm extends Thread{
                         }while(!message.getType().equals("success"));
 
                         System.out.println("Success! Logging you off.");
-                        for(int i = 0; i<20; i++){
+                        for(int i = 0; i<50; i++){
                             System.out.println("\n\n");
                         }
                         run();
-                        //somehow limpar o ecrã?
+
 
 
                     }

@@ -96,7 +96,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
-  <component name="RunManager" selected="Application.MulticastServer">
+  <component name="RunManager" selected="Application.AdminTerminal">
     <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
@@ -135,7 +135,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="RmiServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+    <configuration name="RmiServer" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="RmiServer" />
       <module name="Projeto-SD" />
       <method v="2">
@@ -152,9 +152,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.AdminTerminal" />
-        <item itemvalue="Application.VotingTerm" />
-        <item itemvalue="Application.MulticastServer" />
         <item itemvalue="Application.RmiServer" />
+        <item itemvalue="Application.MulticastServer" />
+        <item itemvalue="Application.VotingTerm" />
         <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>

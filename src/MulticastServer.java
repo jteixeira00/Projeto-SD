@@ -8,6 +8,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,7 +73,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
 
         MulticastSocket socket = null;
         long counter = 0;
-        System.out.println(this.getName() + " running in address " + MULTICAST_ADDRESS + " in department " + departamento);
+        System.out.println("["+ this.getName() + " running in address " + MULTICAST_ADDRESS + " in department " + departamento + "]");
         try {
 
             RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
@@ -86,28 +87,90 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
             while(true) {
                 System.out.println("Para identificar um eleitor, insira o número da UC");
                 String numeroUc = sc.nextLine();
-                String identificacao = ri.identificarUser(numeroUc);
+                String identificacao = "";
+                for(int i = 0; i<=5;i++) {
+                    try{
+                        identificacao = ri.identificarUser(numeroUc);
+                        break;
+                    }catch(RemoteException e){
+                        try{
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException|RemoteException notBoundException ) {
+                        }if(i==5){
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return;
+                        }
+                    }
+                }
+
                 System.out.println(identificacao);
                 if(identificacao.equals("Utilizador inexistente")){
                     run();
                     return;
                 }
-                String tipoUser = ri.getPessoabyNumber(numeroUc).getType().toString();
+                String tipoUser = "";
 
-                String aux = displayEleicoes(ri.getMesaByName(departamento), tipoUser);
+                for(int i = 0; i<=5;i++) {
+                    try{
+                        tipoUser = ri.getPessoabyNumber(numeroUc).getType().toString();
+                        break;
+                    }catch(RemoteException e){
+                        try{
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException|RemoteException notBoundException ) {
+                        }if(i==5){
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return;
+                        }
+                    }
+                }
+                Mesa m = null;
+                for(int i = 0; i<=5;i++) {
+                    try{
+                        mesa = ri.getMesaByName(departamento);
+                        break;
+                    }catch(RemoteException e){
+                        try{
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException|RemoteException notBoundException ) {
+                        }if(i==5){
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return;
+                        }
+                    }
+                }
+
+                String aux = displayEleicoes(mesa, tipoUser);
+
                 if(aux.equals("")){
-                    System.out.println("Não existem eleições disponíveis");
+                    System.out.println("[ERRO] Não existem eleições disponíveis");
                     run();
                 }
                 System.out.println("Escolha a eleição em que quer votar:");
                 System.out.println(aux);
                 choice = Integer.parseInt(sc.nextLine());
                 if(choice>contarEleicoes(aux) || choice<=0){
-                    System.out.println("Opção inválida");
+                    System.out.println("[ERRO] Opção inválida");
                     run();
                 }
-                if(ri.alreadyVoted(departamento, choice, tipoUser, numeroUc)){
-                    System.out.println("Já votou nessa eleição");
+                boolean auxbool = true;
+                for(int i = 0; i<=5;i++) {
+                    try{
+                        auxbool = ri.alreadyVoted(departamento, choice, tipoUser, numeroUc);
+                        break;
+                    }catch(RemoteException e){
+                        try{
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException|RemoteException notBoundException ) {
+                        }if(i==5){
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return;
+                        }
+                    }
+                }
+
+                if(auxbool){
+                    System.out.println("[ERRO]  Já votou nessa eleição");
                     run();
                 }
                 String message = "type|request;number|"+numeroUc;
@@ -126,7 +189,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                         System.out.println(reply);
                     }
                     catch (SocketTimeoutException e){
-                        System.out.println("Timeout exceeded, no available terminals!");
+                        System.out.println("[ERRO] Timeout exceeded, no available terminals!");
                         run();
                         return;
                     }
@@ -256,7 +319,23 @@ class client extends Thread{
 
                 if (message.getType().equals("login")) {
                     try {
-                        if (ri.login(message.getUsername(), message.getPassword())) {
+                        boolean logintry = false;
+                        for(int i = 0; i<=5;i++) {
+                            try{
+                                logintry = ri.login(message.getUsername(), message.getPassword());
+                                break;
+                            }catch(RemoteException e){
+                                try{
+                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                } catch (NotBoundException|RemoteException notBoundException ) {
+
+                                }if(i==5){
+                                    System.out.println("Impossivel conectar aos servidores RMI");
+                                    return;
+                                }
+                            }
+                        }
+                        if (logintry) {
                             messagestr = "uuid|" + message.getUuid() + ";type|status;logged|on";
 
                             //usersLoggedIn.put(message.getUuid(), message.getUsername());
@@ -276,12 +355,26 @@ class client extends Thread{
                     }
 
                 }
+
                 if (message.getType().equals("voto")) {
-
-
-
                     try {
-                        if(ri.votar(message.getEleicao(), message.getChoice(), message.getUsername(), server.getDepartamento(), ++tableCount)){
+                        boolean auxbool = false;
+                        for(int i = 0; i<=5;i++) {
+                            try{
+                                auxbool = ri.votar(message.getEleicao(), message.getChoice(), message.getUsername(), server.getDepartamento(), ++tableCount);
+                                break;
+                            }catch(RemoteException e){
+                                try{
+                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                } catch (NotBoundException|RemoteException notBoundException ) {
+
+                                }if(i==5){
+                                    System.out.println("Impossivel conectar aos servidores RMI");
+                                    return;
+                                }
+                            }
+                        }
+                        if(auxbool){
                             messagestr = "uuid|"+message.getUuid()+";type|success";
                             buffer = messagestr.getBytes();
                             packet = new DatagramPacket(buffer, buffer.length, group, PORT);
@@ -292,7 +385,23 @@ class client extends Thread{
                     }
                 }
                 if(message.getType().equals("listas")){
-                    messagestr = "uuid|"+message.getUuid()+";"+ri.generateLista(message.getEleicao(), departamento);
+                    String aux = "";
+                    for(int i = 0; i<=5;i++) {
+                        try{
+                            aux = ri.generateLista(message.getEleicao(), departamento);
+                            break;
+                        }catch(RemoteException e){
+                            try{
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException|RemoteException notBoundException ) {
+                            }
+                            if(i==5){
+                                System.out.println("Impossivel conectar aos servidores RMI");
+                                return;
+                            }
+                        }
+                    }
+                    messagestr = "uuid|"+message.getUuid()+";"+aux;
                     buffer = messagestr.getBytes();
                     packet = new DatagramPacket(buffer, buffer.length, group, PORT);
                     socket.send(packet);
@@ -301,8 +410,6 @@ class client extends Thread{
             }
         } catch (IOException e) {
             e.printStackTrace();
-
-
         }
 
     }
