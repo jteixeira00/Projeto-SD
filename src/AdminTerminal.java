@@ -231,7 +231,6 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
             System.out.println("\n1 - Adicionar mesa || 2 - Remover mesa:  ");
             String tipoS = sc.nextLine();
             int tipo = Integer.parseInt(tipoS);
-
             switch (tipo) {
                 case 1:
                     //mostrar lista de mesas e associar eleicao + mesa & mesa + eleicao || gerirMesas(index)
@@ -239,7 +238,6 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     System.out.print("\n---Adicionar Mesa---\n");
                     System.out.println("Mesas atualmente adicionadas:");
                     System.out.println(ri.showMesasEleicao(indexE));
-
                     System.out.printf("Mesa que pretende adicionar (1 - %d): \n",ri.sizeMesas());
                     System.out.println(ri.showMesas());
                     String addS = sc.nextLine();
@@ -537,10 +535,6 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         }
     }
 
-    @Override
-    public void placeholder() throws RemoteException {
-
-    }
 
     public void voteUpdate(String departamento, int count) throws RemoteException{
         System.out.println("[UPDATE] New Vote in department "+ departamento + ", total count in that table: " + count);
@@ -552,5 +546,9 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
     public void tableDisconnectedUpdate(String dep) throws RemoteException{
         System.out.println("[UPDATE] Table at "+ dep+" exited gracefully");
+    }
+
+    public void terminalUpdate(String departamento) throws RemoteException{
+        System.out.println("[UPDATE] New terminal connected at the table at " + departamento);
     }
 }

@@ -109,7 +109,22 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
-  <component name="RunManager" selected="Application.VotingTerm">
+
+  <component name="RunManager" selected="Application.RmiServer">
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+
     <configuration name="AdminTerminal" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="AdminTerminal" />
       <module name="Projeto-SD" />
@@ -163,8 +178,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.VotingTerm" />
-        <item itemvalue="Application.AdminTerminal" />
+
         <item itemvalue="Application.RmiServer" />
+        <item itemvalue="Application.AdminTerminal" />
         <item itemvalue="Application.MulticastServer" />
         <item itemvalue="Application.Main" />
       </list>

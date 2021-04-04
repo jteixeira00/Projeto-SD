@@ -98,7 +98,6 @@ public class Eleicao implements Serializable{
         this.titulo = newTitle;
     }
 
-
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
