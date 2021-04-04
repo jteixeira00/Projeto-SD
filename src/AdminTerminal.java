@@ -633,10 +633,10 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
     public boolean gerirDepartamentos(int indexE) throws RemoteException{
         System.out.println("---Gerir Departamentos---\n");
-        int sizeM = 0;
+        int sizeD = 0;
         for (int i = 0; i <= 6; i++) {
             try {
-                sizeM = ri.sizeMesas();
+                sizeD = ri.getEleicoesFuturas().get(indexE).sizeDepartamentos();
                 break;
             } catch (RemoteException e) {
                 try {
@@ -650,7 +650,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 }
             }
         }
-        if(sizeM != 0) {
+        if(sizeD != 0) {
             Scanner sc = new Scanner(System.in);
             System.out.println("\n1 - Adicionar Departamento || 2 - Remover Departamento:  ");
             String tipoS = sc.nextLine();
@@ -680,7 +680,6 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
                 case 2:
                     System.out.print("\n---Remover Departamento---\n");
-                    int sizeD = 0;
                     for (int i = 0; i <= 6; i++) {
                         try {
                             sizeD = ri.sizeDepartamentos(indexE);
@@ -740,7 +739,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         }
 
                     }
-                    else System.out.println("Impossivel Remover Departamento: Sem Departamentos adicionadas");
+                    else System.out.println("Impossivel Remover Departamento: Sem Departamentos adicionados");
                     break;
 
                 default:
@@ -1167,7 +1166,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         terminal.votoDetalhes();
                         break;
                     case 0:
-                        break;
+                        return;
                     default:
                         System.out.println("Input Inválido.");
                 }

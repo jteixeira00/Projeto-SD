@@ -6,11 +6,6 @@
       <change beforePath="$PROJECT_DIR$/eleicoes.ser" beforeDir="false" afterPath="$PROJECT_DIR$/eleicoes.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mesas.ser" beforeDir="false" afterPath="$PROJECT_DIR$/mesas.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/AdminTerminal.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/AdminTerminal.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/Eleicao.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/Eleicao.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/RmiServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/RmiServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/VotingTerm.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/VotingTerm.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/client.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pessoas.ser" beforeDir="false" afterPath="$PROJECT_DIR$/pessoas.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/AdminTerminal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/AdminTerminal.java" afterDir="false" />
     </list>
     <list id="acb246f5-625e-44ba-95a6-dddabb3f1aeb" name="Changes by dinis" comment="" />
@@ -162,8 +157,8 @@
       <list>
         <item itemvalue="Application.RmiServer" />
         <item itemvalue="Application.VotingTerm" />
-        <item itemvalue="Application.AdminTerminal" />
         <item itemvalue="Application.MulticastServer" />
+        <item itemvalue="Application.AdminTerminal" />
         <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
