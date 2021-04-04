@@ -18,6 +18,8 @@ public class VotingTerm extends Thread{
     private static String SECONDARY_MULTICAST;
     private int PORT2 = 4322;
 
+    private String tableNumber = "";
+
     private UUID uuid;
     public void setUuid() {
         this.uuid = UUID.randomUUID();
@@ -34,13 +36,18 @@ public class VotingTerm extends Thread{
         MulticastSocket socket = null;
         setUuid();
         try {
-            System.out.println( "A que mesa de voto deseja ligar-se?");
+            String s = tableNumber;
             Scanner in = new Scanner(System.in);
-            String s = in.nextLine();
-            MULTICAST_ADDRESS = MULTICAST_ADDRESS+s;
-            SECONDARY_MULTICAST = MULTICAST_ADDRESS;
-            SECONDARY_MULTICAST = SECONDARY_MULTICAST.replace(".2.", ".3.");
+            String numeroUc;
+            if(MULTICAST_ADDRESS.length()<9 ) {
+                System.out.println("A que mesa de voto deseja ligar-se?");
 
+                s = in.nextLine();
+                tableNumber = s;
+                MULTICAST_ADDRESS = MULTICAST_ADDRESS + s;
+                SECONDARY_MULTICAST = MULTICAST_ADDRESS;
+                SECONDARY_MULTICAST = SECONDARY_MULTICAST.replace(".2.", ".3.");
+            }
             String messagestr;
             MessageProtocol message;
             int eleicao;
@@ -60,7 +67,7 @@ public class VotingTerm extends Thread{
                     message = new MessageProtocol(messagestr);
 
                 }while(!message.getType().equals("request"));
-
+                numeroUc = message.getUsername();
                 //responde a informar que está disponivel
                 messagestr = "type|available;uuid|"+ uuid.toString();
                 byte[] buffer = messagestr.getBytes();
@@ -80,8 +87,8 @@ public class VotingTerm extends Thread{
 
 
                 if(message.getUuid().equals(uuid.toString())){
-                    System.out.println("UC Number:");
-                    String ucnumber = in.nextLine();
+                    System.out.println("Terminal desbloqueado");
+                    System.out.println("UC Number:" +numeroUc);
                     System.out.println("Password");
                     String password = in.nextLine();
 
@@ -91,7 +98,7 @@ public class VotingTerm extends Thread{
                     socket.joinGroup(group);
 
                     //envia login info
-                    messagestr = "uuid|"+uuid.toString()+";type|login;number|"+ucnumber+";password|"+password;
+                    messagestr = "uuid|"+uuid.toString()+";type|login;number|"+numeroUc+";password|"+password;
                     buffer = messagestr.getBytes();
                     packet = new DatagramPacket(buffer, buffer.length, group, PORT2);
                     System.out.println(messagestr);
@@ -132,17 +139,15 @@ public class VotingTerm extends Thread{
                             System.out.println(messagestr);
                         }while (!message.getType().equals("item_list") || !message.getUuid().equals(this.uuid.toString()));
 
-                        System.out.println("Hey");
                         System.out.println(message.getCandidatos());
                         //imprime as listas candidatas
-                        if(message.getCandidatos().size()>0){
-                            System.out.println("0 - Voto Nulo");
-                            System.out.println("1 - Voto Branco");
-                            for(Map.Entry<Integer, String> candidato : message.getCandidatos().entrySet()){
-                                Integer key = candidato.getKey()+2;
-                                String nome = candidato.getValue();
-                                System.out.println(key + " - " + nome+"\n");
-                            }
+
+                        System.out.println("0 - Voto Nulo");
+                        System.out.println("1 - Voto Branco");
+                        for(Map.Entry<Integer, String> candidato : message.getCandidatos().entrySet()){
+                            Integer key = candidato.getKey()+2;
+                            String nome = candidato.getValue();
+                            System.out.println(key + " - " + nome+"\n");
                         }
                         int choice = Integer.parseInt(in.nextLine());
 
@@ -151,7 +156,7 @@ public class VotingTerm extends Thread{
                         DateFormat df = new SimpleDateFormat(pattern);
                         String dataString = df.format(date);
 
-                        messagestr = "uuid|"+uuid.toString()+";type|voto;choice|"+choice+";time|"+dataString+";eleicao|"+eleicao+";number|"+ucnumber;
+                        messagestr = "uuid|"+uuid.toString()+";type|voto;choice|"+choice+";time|"+dataString+";eleicao|"+eleicao+";number|"+numeroUc;
                      
                         buffer = messagestr.getBytes();
                         packet = new DatagramPacket(buffer, buffer.length, group, PORT2);
@@ -164,8 +169,6 @@ public class VotingTerm extends Thread{
                             messagestr = new String(packet.getData(), 0, packet.getLength());
                             message = new MessageProtocol(messagestr);
                         }while(!message.getType().equals("success"));
-
-                       
 
                         System.out.println("Success! Logging you off.");
                         for(int i = 0; i<20; i++){
