@@ -4,13 +4,14 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 import java.util.jar.JarOutputStream;
 
-public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalInterface, Serializable
-{
+public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalInterface, Serializable {
     private RmiInterface ri;
+
     public AdminTerminal() throws RemoteException {
         super();
         try {
@@ -20,24 +21,8 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         }
     }
 
-    public boolean loginUser() throws RemoteException    {
-        while(true) {
-            System.out.println("\n---Login User---\n");
-            Scanner sc = new Scanner(System.in);
-            System.out.println("Numero: ");
-            String numero = sc.nextLine();
-            System.out.println("Password: ");
-            String password = sc.nextLine();
-            boolean check = ri.login(numero, password);
-            if (!check) {
-                System.err.println("Login Failed: numero ou password incorretas.");
-            } else {
-                return true;
-            }
-        }
-    }
-
     public boolean registerUser() throws RemoteException {
+        boolean check = false;
         System.out.println("\n---Criar Utilizador---\n");
         Scanner sc = new Scanner(System.in);
         System.out.println("1 - Estudante\n2 - Docente\n3 - Funcionário");
@@ -71,11 +56,27 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         System.out.println("Faculdade: ");
         String faculdade = sc.nextLine();
 
-        boolean check = ri.createUserRMI(tipo, nome, uni, departamento, faculdade, numeroTelefonico, morada, cc, validade, password);
-        if(!check)
+        for (int i = 0; i <= 5; i++) {
+            try {
+                check = ri.createUserRMI(tipo, nome, uni, departamento, faculdade, numeroTelefonico, morada, cc, validade, password);
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
+
+                }
+                if (i == 5) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return false;
+                }
+            }
+        }
+        if (!check)
             System.out.println("Impossivel Criar Pessoa: Número de UC ou Número de CC já registado");
         return check;
     }
+
 
     public void createEleicao() throws RemoteException {
         System.out.println("\n---Criar Eleição---\n");

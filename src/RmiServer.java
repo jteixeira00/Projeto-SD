@@ -180,10 +180,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             }
         }
 
-        System.out.println("----------");
-        System.out.println(eArray);
-        System.out.println("----------");
-
         Eleicao e = eArray.get(eleicao);
 
         if(choiceLista == 0){
@@ -741,10 +737,18 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     @Override
     public String showVotoDetalhesRMI(int indx) throws RemoteException {
         Pessoa eleitor = listaPessoas.get(indx);
-        if(eleitor.getTimeVoto() == null){
+        String str = "";
+        for(Eleicao e : getEleicoes()){
+            for(Voto v : e.getVotos()){
+                if(v.getEleitor().getNome().equals(eleitor.getNome())){
+                     str += "\n.................\nEleição: " + e.getTitulo() + "\nLocal de Voto: " + v.getLocal() + "\nMomento de Voto: " + v.getData() + "\n";
+                }
+            }
+        }
+        if(str.equals("")){
             return "O eleitor ainda não votou.";
         }
-        return "Local de Voto: " + eleitor.getLocalVoto() + "\nMomento de Voto: " + eleitor.getTimeVoto();
+        return str;
     }
 
     @Override
