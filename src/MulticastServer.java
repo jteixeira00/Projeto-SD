@@ -3,15 +3,12 @@ import com.sun.org.apache.xpath.internal.operations.Mult;
 import java.io.Serializable;
 import java.net.*;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Scanner;
 
 
@@ -62,8 +59,8 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
         }
         client cliente = new client(SECONDARY_MULTICAST_ADDRESS, PORT2, server, departamento);
         cliente.start();
-    }
 
+    }
     public MulticastServer() {
         super("Table Number " + tableNumber);
     }
@@ -85,8 +82,25 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
             int choice;
 
             while(true) {
+                System.out.println("Para encerrar mesa de voto, escreva SAIR");
                 System.out.println("Para identificar um eleitor, insira o número da UC");
                 String numeroUc = sc.nextLine();
+                if(numeroUc.equals("SAIR")){
+                    for(int i = 0; i<=5;i++) {
+                        try{
+                            ri.terminarMesa(departamento);
+                            System.exit(0);
+                        }catch(RemoteException e){
+                            try{
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException|RemoteException notBoundException ) {
+                            }if(i==5){
+                                System.out.println("Impossivel conectar aos servidores RMI, a terminar sem avisar");
+                                System.exit(0);
+                            }
+                        }
+                    }
+                }
                 String identificacao = "";
                 for(int i = 0; i<=5;i++) {
                     try{
@@ -145,6 +159,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 if(aux.equals("")){
                     System.out.println("[ERRO] Não existem eleições disponíveis");
                     run();
+                    return;
                 }
                 System.out.println("Escolha a eleição em que quer votar:");
                 System.out.println(aux);
@@ -152,6 +167,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 if(choice>contarEleicoes(aux) || choice<=0){
                     System.out.println("[ERRO] Opção inválida");
                     run();
+                    return;
                 }
                 boolean auxbool = true;
                 for(int i = 0; i<=5;i++) {
@@ -172,7 +188,31 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 if(auxbool){
                     System.out.println("[ERRO]  Já votou nessa eleição");
                     run();
+                    return;
                 }
+
+                for(int i = 0; i<=5;i++) {
+                    try{
+                        auxbool = ri.doesItBelong(departamento, choice, numeroUc, tipoUser);
+                        break;
+                    }catch(RemoteException e){
+                        try{
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException|RemoteException notBoundException ) {
+                        }if(i==5){
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return;
+                        }
+                    }
+                }
+
+                if(!auxbool){
+                    System.out.println("[EROO] Não pertence ao grupo que pode votar nessa eleição");
+                    run();
+                    return;
+                }
+
+
                 String message = "type|request;number|"+numeroUc;
                 byte[] buffer = message.getBytes();
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
@@ -186,7 +226,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                     try {
                         socket.receive(packet);
                         reply = new String(packet.getData(), 0, packet.getLength());
-                        System.out.println(reply);
+                        //System.out.println(reply);
                     }
                     catch (SocketTimeoutException e){
                         System.out.println("[ERRO] Timeout exceeded, no available terminals!");
@@ -203,6 +243,9 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 packet = new DatagramPacket(buffer, buffer.length, group, PORT);
                 socket.send(packet);
                 //desbloqueia esse terminal
+
+                System.out.println("Terminal desbloquado para votar");
+
             }
 
         } catch (IOException | NotBoundException e) {
@@ -248,28 +291,13 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
         return  lines.length;
     }
 
-    //11 - estado mesas
-
-    public void setMesaON(){
-        active = true;
-    }
-    public void setMesaOFF(){
-        active = false;
-    }
     public boolean getEstado() throws RemoteException{
         return active;
-    }
-
-    //12 - nº votos
-    public void addCountVotos(){
-        countVotos++;
     }
 
     public int getCountVotos() throws  RemoteException{
         return countVotos;
     }
-
-
 }
 
 
@@ -279,7 +307,7 @@ class client extends Thread{
     private MulticastServer server;
     private String departamento;
     private int tableCount =0;
-    //private HashMap<String, String> usersLoggedIn = new HashMap<String,String>();
+
     public client(String MULTICAST_ADDRESS, int PORT, MulticastServer server, String departamento){
         super();
         this.MULTICAST_ADDRESS = MULTICAST_ADDRESS;
@@ -289,7 +317,6 @@ class client extends Thread{
     }
 
     public void run() {
-        //System.out.println(MULTICAST_ADDRESS);
         MulticastSocket socket = null;
         RmiInterface ri = null;
         try {
@@ -299,7 +326,7 @@ class client extends Thread{
             e.printStackTrace();
         }
         try {
-            socket = new MulticastSocket(PORT);  // create socket without binding it (only for sending)
+            socket = new MulticastSocket(PORT);
             Scanner sc = new Scanner(System.in);
             InetAddress group = null;
             group = InetAddress.getByName(MULTICAST_ADDRESS);
@@ -312,10 +339,27 @@ class client extends Thread{
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                String messagestr = new String(packet.getData(), 0, packet.getLength());
-                System.out.println(messagestr);
-                MessageProtocol message = new MessageProtocol(messagestr);
 
+                String messagestr = new String(packet.getData(), 0, packet.getLength());
+                MessageProtocol message = new MessageProtocol(messagestr);
+             
+                if(message.getType().equals("newterminal")){
+
+                    for(int i = 0; i<=5;i++) {
+                        try{
+                            ri.newTerminal(departamento);
+                            break;
+                        }catch(RemoteException e){
+                            try{
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException|RemoteException notBoundException ) {
+                            }if(i==5){
+                                System.out.println("Impossivel conectar aos servidores RMI");
+                                return;
+                            }
+                        }
+                    }
+                }
 
                 if (message.getType().equals("login")) {
                     try {
@@ -328,7 +372,6 @@ class client extends Thread{
                                 try{
                                     ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
                                 } catch (NotBoundException|RemoteException notBoundException ) {
-
                                 }if(i==5){
                                     System.out.println("Impossivel conectar aos servidores RMI");
                                     return;
@@ -338,7 +381,7 @@ class client extends Thread{
                         if (logintry) {
                             messagestr = "uuid|" + message.getUuid() + ";type|status;logged|on";
 
-                            //usersLoggedIn.put(message.getUuid(), message.getUsername());
+
                         } else {
                             messagestr = "uuid|" + message.getUuid() + ";type|status;logged|failure";
                             buffer = messagestr.getBytes();
@@ -353,7 +396,6 @@ class client extends Thread{
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
                 }
 
                 if (message.getType().equals("voto")) {
@@ -367,7 +409,6 @@ class client extends Thread{
                                 try{
                                     ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
                                 } catch (NotBoundException|RemoteException notBoundException ) {
-
                                 }if(i==5){
                                     System.out.println("Impossivel conectar aos servidores RMI");
                                     return;
@@ -379,7 +420,7 @@ class client extends Thread{
                             buffer = messagestr.getBytes();
                             packet = new DatagramPacket(buffer, buffer.length, group, PORT);
                             socket.send(packet);
-                        };
+                        }
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -406,12 +447,10 @@ class client extends Thread{
                     packet = new DatagramPacket(buffer, buffer.length, group, PORT);
                     socket.send(packet);
                 }
-
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }
 

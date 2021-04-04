@@ -11,8 +11,6 @@ public interface RmiInterface extends Remote {
 
     public int getTableNumber(String arg) throws RemoteException;
 
-    public void printEleicao(Eleicao e) throws RemoteException;
-
     public ArrayList<Eleicao> getEleicoes() throws RemoteException;
 
     public ArrayList<Pessoa> getPessoas() throws RemoteException;
@@ -98,6 +96,10 @@ public interface RmiInterface extends Remote {
     public void deleteDepartamentos(int indexE, int departamento) throws RemoteException;
 
     public int sizeDepartamentos(int indexE) throws RemoteException;
+
+    public boolean doesItBelong(String departamento, int choice, String numeroUc, String tipoUser) throws RemoteException;
+    public void terminarMesa(String departamento) throws RemoteException;
+    public void newTerminal(String departamento) throws RemoteException;
 
     //public String showMesasEstados() throws RemoteException;
 

@@ -96,7 +96,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
-  <component name="RunManager" selected="Application.AdminTerminal">
+  <component name="RunManager" selected="Application.RmiServer">
     <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
@@ -151,10 +151,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.AdminTerminal" />
-        <item itemvalue="Application.RmiServer" />
-        <item itemvalue="Application.MulticastServer" />
         <item itemvalue="Application.VotingTerm" />
+        <item itemvalue="Application.RmiServer" />
+        <item itemvalue="Application.AdminTerminal" />
+        <item itemvalue="Application.MulticastServer" />
         <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
