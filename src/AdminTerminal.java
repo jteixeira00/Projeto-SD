@@ -6,6 +6,10 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.SecureRandom;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.jar.JarOutputStream;
 
@@ -77,10 +81,12 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         return check;
     }
 
-
     public void createEleicao() throws RemoteException {
         System.out.println("\n---Criar Eleição---\n");
         Scanner sc = new Scanner(System.in);
+        int startHour = 0;
+        int startMinute = 0;
+        String startDate = "";
         String titulo;
         boolean titulobool = false;
         do {
@@ -111,39 +117,92 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         String descricao = sc.nextLine();
 
         System.out.println("Data de Inicio (dd-MM-yyyy): ");
-        String startDate = sc.nextLine();
+        while (true) {
+            startDate = sc.nextLine();
+            if(isParsableDate(startDate))
+                break;
+            else System.out.println("[Formato de Data Inválido: Tente de Novo]");
+        }
 
         System.out.println("Hora de Inicio: ");
-        String startH = sc.nextLine();
-        int startHour = Integer.parseInt(startH);
+        while(true) {
+            String startH = sc.nextLine();
+            if (isParsable(startH)) {
+                startHour = Integer.parseInt(startH);
+                break;
+            }
+            else
+                System.out.println("[Input Inválido: Tente de Novo]");
+        }
 
         System.out.println("Minuto de Inicio: ");
-        String startM = sc.nextLine();
-        int startMinute = Integer.parseInt(startM);
+        while(true) {
+            String startM = sc.nextLine();
+            if (isParsable(startM)) {
+                startMinute = Integer.parseInt(startM);
+                break;
+            }
+            else
+                System.out.println("[Input Inválido: Tente de Novo]");
+        }
+
+
 
         System.out.println("Data de Fim (dd-MM-yyyy): ");
-        String endDate = sc.nextLine();
+        String endDate = "";
+        while (true) {
+            endDate = sc.nextLine();
+            if(isParsableDate(endDate))
+                break;
+            else System.out.println("[Formato de Data Inválido: Tente de Novo]");
+        }
 
         System.out.println("Hora de Fim: ");
-        String endH = sc.nextLine();
-        int endHour = Integer.parseInt(endH);
+        int endHour = 0;
+        while(true) {
+            String endH = sc.nextLine();
+            if (isParsable(endH)) {
+                endHour = Integer.parseInt(endH);
+                break;
+            }
+            else
+                System.out.println("[Input Inválido: Tente de Novo]");
+        }
 
         System.out.println("Minuto de Fim: ");
-        String endM = sc.nextLine();
-        int endMinute = Integer.parseInt(endM);
+        int endMinute = 0;
+        while(true) {
+            String endM = sc.nextLine();
+            if (isParsable(endM)) {
+                endMinute = Integer.parseInt(endM);
+                break;
+            }
+            else
+                System.out.println("[Input Inválido: Tente de Novo]");
+        }
 
         System.out.println("Restringir eleição para que grupo de Pessoas?(1 - Estudantes || 2 - Docentes || 3 - Funcionários): ");
         int type = 0;
         while(type != 1 && type != 2 && type != 3) {
-            String typeS = sc.nextLine();
-            type = Integer.parseInt(typeS);
+            while(true) {
+                String typeS = sc.nextLine();
+                if (isParsable(typeS)) {
+                    type = Integer.parseInt(typeS);
+                    break;
+                }
+                else
+                    System.out.println("[Input Inválido: Tente de Novo]");
+            }
             if(type != 1 && type != 2 && type != 3)
-                System.out.println("Numero Inválido: Tente de novo\n");
+                System.out.println("[Input Inválido: Tente de novo]");
         }
 
         for (int i = 0; i <= 6; i++) {
             try {
-                ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, "", type);
+                if(ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, "", type) == null) {
+                    System.out.println("Erro: Eleição não criada - Datas Inválidas");
+                    return;
+                }
                 break;
             } catch (RemoteException e) {
                 try {
@@ -161,8 +220,19 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
 
         System.out.println("Restringir departamentos que podem votar? 1 - Sim || 2 - Não");
-        String  choiceS = sc.nextLine();
-        int choice = Integer.parseInt(choiceS);
+        int choice = 0;
+        while(true) {
+            String  choiceS = sc.nextLine();
+            if (isParsable(choiceS)) {
+                choice = Integer.parseInt(choiceS);
+                if(choice != 1 && choice != 2)
+                    System.out.println("[Input Inválido: Tente de Novo]");
+                else
+                    break;
+            }
+            else
+                System.out.println("[Input Inválido: Tente de Novo]");
+        }
         boolean goOn = true;
         switch (choice){
             case 1:
@@ -194,22 +264,31 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 break;
             case 2:
                 break;
-            default:
-                System.out.println("Input Inválido: Eleição criada sem departamentos.");
         }
 
     }
 
-    public boolean gerirCandidatos(Eleicao eleicao, int choice, int indx) throws RemoteException{
+    public boolean gerirCandidatos(Eleicao eleicao, int choice, int indx) throws RemoteException {
         boolean check = false;
         System.out.println("---Gerir Candidatos---");
         Scanner sc = new Scanner(System.in);
 
         System.out.println("1 - Adicionar candidatos || 2 - Remover candidatos:  ");
-        String tipoS = sc.nextLine();
-        int tipo = Integer.parseInt(tipoS);
+        int tipo = 0;
+        while (true) {
+            String tipoS = sc.nextLine();
+            if (isParsable(tipoS)) {
+                tipo = Integer.parseInt(tipoS);
+                if (tipo != 1 && tipo != 2)
+                    System.out.println("[Input Inválido: Tente de Novo]");
+                else
+                    break;
+            } else
+                System.out.println("[Input Inválido: Tente de Novo]");
+        }
+
         int size = eleicao.sizeLista(choice);
-        switch (tipo){
+        switch (tipo) {
             case 1:
                 System.out.println("---Adicionar Candidatos---");
                 for (int i = 0; i <= 6; i++) {
@@ -246,7 +325,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 }
                 System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
                 int sizeP = 0;
-                while(true){
+                while (true) {
                     for (int i = 0; i <= 6; i++) {
                         try {
                             sizeP = ri.sizePessoas();
@@ -263,9 +342,20 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                             }
                         }
                     }
-                    String addS = sc.nextLine();
-                    int add = Integer.parseInt(addS);
-                    if (add <= sizeP && add > 0) {
+                    int add = 0;
+                    while (true) {
+                        String addS = sc.nextLine();
+                        if (isParsable(addS)) {
+                            add = Integer.parseInt(addS);
+                            if (add <= sizeP && add >= 0)
+                                break;
+                            else
+                                System.out.println("[Input Inválido: Tente de Novo]");
+                        } else
+                            System.out.println("[Input Inválido: Tente de Novo]");
+                    }
+
+                    if (add != 0) {
                         for (int i = 0; i <= 6; i++) {
                             try {
                                 check = ri.addCandidateRMI(indx, choice, add - 1);
@@ -282,29 +372,24 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 }
                             }
                         }
-                        if(!check)
+                        if (!check)
                             System.out.println("Erro: Candidato já adicionado.");
-                        else{
+                        else {
                             System.out.println("Candidato adicionado");
                         }
-                    }
-
-                    else {
-                        if(add == 0)
-                            break;
-                        System.out.println("Candidato inválido.");
-                        break;
+                    } else {
+                        return true;
                     }
                 }
-                break;
+
 
             case 2:
                 System.out.println("---Remover Candidatos---");
-                if(size == 0){
+                if (size == 0) {
                     System.out.println("Lista Vazia - Impossivel Remover Candidatos");
                 }
                 else {
-                    while(true) {
+                    while (true) {
                         for (int i = 0; i <= 6; i++) {
                             try {
                                 size = ri.getEleicoesFuturas().get(indx).sizeLista(choice);
@@ -339,9 +424,22 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                             }
                         }
                         System.out.println("0 - SAIR DE REMOVER CANDIDATOS");
-                        String deletS = sc.nextLine();
-                        int delet = Integer.parseInt(deletS);
-                        if (delet <= size && delet > 0) {
+                        int delet = 0;
+
+                        while (true) {
+                            String deletS = sc.nextLine();
+                            if (isParsable(deletS)) {
+                                delet = Integer.parseInt(deletS);
+                                if (delet <= size && delet >= 0) {
+                                    break;
+                                } else {
+                                    System.out.println("[Input Inválido: Tente de Novo]");
+                                }
+                            } else
+                                System.out.println("[Input Inválido: Tente de Novo]");
+                        }
+
+                        if(delet != 0) {
                             for (int i = 0; i <= 6; i++) {
                                 try {
                                     check = ri.deleteCandidateRMI(indx, choice, delet - 1);
@@ -359,21 +457,12 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 }
                             }
                         }
-                        else {
-                            if(delet == 0)
-                                break;
-                            System.out.println("Candidato inválido.");
-                            break;
+                        else{
+                            return true;
                         }
                     }
                 }
-                break;
-
-            default:
-                System.out.println("Opção Inválida");
-                break;
         }
-
         return check;
     }
 
@@ -401,8 +490,21 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         if(sizeM != 0) {
             Scanner sc = new Scanner(System.in);
             System.out.println("\n1 - Adicionar mesa || 2 - Remover mesa:  ");
-            String tipoS = sc.nextLine();
-            int tipo = Integer.parseInt(tipoS);
+            int tipo = 0;
+            while (true) {
+                String tipoS = sc.nextLine();
+                if (isParsable(tipoS)) {
+                    tipo = Integer.parseInt(tipoS);
+                    if (tipo == 1 || tipo == 2) {
+                        break;
+                    } else {
+                        System.out.println("[Input Inválido: Tente de Novo]");
+                    }
+                } else
+                    System.out.println("[Input Inválido: Tente de Novo]");
+            }
+
+
             switch (tipo) {
                 case 1:
                     System.out.print("\n---Adicionar Mesa---\n");
@@ -455,23 +557,41 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                             }
                         }
                     }
-                    String addS = sc.nextLine();
-                    int add = Integer.parseInt(addS);
-                    for (int i = 0; i <= 6; i++) {
-                        try {
-                            check = ri.criaMesaRMI(indexE, add - 1);
-                            break;
-                        } catch (RemoteException e) {
-                            try {
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
-                            } catch (NotBoundException | RemoteException ignored) {
-
+                    System.out.println("0 - SAIR DE ADICIONAR MESA");
+                    int add = 0;
+                    while (true) {
+                        String addS = sc.nextLine();
+                        if (isParsable(addS)) {
+                            add = Integer.parseInt(addS);
+                            if (add <= sizeM && add >= 0) {
+                                break;
+                            } else {
+                                System.out.println("[Input Inválido: Tente de Novo]");
                             }
-                            if (i == 6) {
-                                System.out.println("Impossivel conectar aos servidores RMI");
-                                return false;
+                        } else
+                            System.out.println("[Input Inválido: Tente de Novo]");
+                    }
+
+                    if(add != 0) {
+                        for (int i = 0; i <= 6; i++) {
+                            try {
+                                check = ri.criaMesaRMI(indexE, add - 1);
+                                break;
+                            } catch (RemoteException e) {
+                                try {
+                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                } catch (NotBoundException | RemoteException ignored) {
+
+                                }
+                                if (i == 6) {
+                                    System.out.println("Impossivel conectar aos servidores RMI");
+                                    return false;
+                                }
                             }
                         }
+                    }
+                    else{
+                        return true;
                     }
                     break;
 
@@ -495,7 +615,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         }
                     }
                     if(sizeMeleicao != 0) {
-                        System.out.printf("Mesa que pretende remover (1 - %d): \n", ri.sizeMesasEleicao(indexE));
+                        System.out.printf("Mesa que pretende remover (1 - %d): \n", sizeMeleicao);
                         for (int i = 0; i <= 6; i++) {
                             try {
                                 System.out.println(ri.showMesasEleicao(indexE));
@@ -512,23 +632,40 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 }
                             }
                         }
-                        String delS = sc.nextLine();
-                        int del = Integer.parseInt(delS);
-                        for (int i = 0; i <= 6; i++) {
-                            try {
-                                check = ri.deleteMesaRMI(indexE, del - 1);
-                                break;
-                            } catch (RemoteException e) {
-                                try {
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
-                                } catch (NotBoundException | RemoteException ignored) {
-
+                        int del = 0;
+                        while (true) {
+                            String delS = sc.nextLine();
+                            if (isParsable(delS)) {
+                                del = Integer.parseInt(delS);
+                                if (del <= sizeMeleicao && del >= 0) {
+                                    break;
+                                } else {
+                                    System.out.println("[Input Inválido: Tente de Novo]");
                                 }
-                                if (i == 6) {
-                                    System.out.println("Impossivel conectar aos servidores RMI");
-                                    return false;
+                            } else
+                                System.out.println("[Input Inválido: Tente de Novo]");
+                        }
+
+                        if(del != 0) {
+                            for (int i = 0; i <= 6; i++) {
+                                try {
+                                    check = ri.deleteMesaRMI(indexE, del - 1);
+                                    break;
+                                } catch (RemoteException e) {
+                                    try {
+                                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    } catch (NotBoundException | RemoteException ignored) {
+
+                                    }
+                                    if (i == 6) {
+                                        System.out.println("Impossivel conectar aos servidores RMI");
+                                        return false;
+                                    }
                                 }
                             }
+                        }
+                        else{
+                            return true;
                         }
                     }
                     else System.out.println("Impossivel Remover Mesas: Sem mesas adicionadas");
@@ -546,8 +683,21 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         System.out.println("---Gerir Listas---");
         Scanner sc = new Scanner(System.in);
         System.out.println("1 - Criar lista || 2 - Remover Lista || 3 - Gerir Candidatos: ");
-        String choiceS = sc.nextLine();
-        int choice = Integer.parseInt(choiceS);
+        String  choiceS;
+        int choice = 0;
+        while (true) {
+            choiceS = sc.nextLine();
+            if (isParsable(choiceS)) {
+                choice = Integer.parseInt(choiceS);
+                if (choice == 1 || choice == 2 || choice == 3 || choice == 0)
+                    break;
+                else
+                    System.out.println("[Input Inválido: Tente de Novo]");
+            } else
+                System.out.println("[Input Inválido: Tente de Novo]");
+        }
+
+
         switch (choice){
             case  1:
                 createLista(eleicao,indx);
@@ -559,24 +709,38 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     int size = eleicao.sizeCandidatos();
                     System.out.printf("\nLista que pretende eliminar (1 - %d): \n",size);
                     System.out.print(eleicao.showListasCandidatas());
-                    System.out.println();
-                    choiceS = sc.nextLine();
-                    choice = Integer.parseInt(choiceS);
-                    for (int i = 0; i <= 6; i++) {
-                        try {
-                            ri.eliminarListaCandidatos(indx,choice - 1);
-                            break;
-                        } catch (RemoteException e) {
+                    System.out.println("0 - SAIR ELIMINAR LISTA");
+                    while (true) {
+                        choiceS = sc.nextLine();
+                        if (isParsable(choiceS)) {
+                            choice = Integer.parseInt(choiceS);
+                            if (choice <= size && choice >= 0)
+                                break;
+                            else
+                                System.out.println("[Input Inválido: Tente de Novo]");
+                        } else
+                            System.out.println("[Input Inválido: Tente de Novo]");
+                    }
+                    if(choice != 0) {
+                        for (int i = 0; i <= 6; i++) {
                             try {
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
-                            } catch (NotBoundException | RemoteException ignored) {
+                                ri.eliminarListaCandidatos(indx, choice - 1);
+                                break;
+                            } catch (RemoteException e) {
+                                try {
+                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                } catch (NotBoundException | RemoteException ignored) {
 
-                            }
-                            if (i == 6) {
-                                System.out.println("Impossivel conectar aos servidores RMI");
-                                return;
+                                }
+                                if (i == 6) {
+                                    System.out.println("Impossivel conectar aos servidores RMI");
+                                    return;
+                                }
                             }
                         }
+                    }
+                    else{
+                        return;
                     }
                 }
                 break;
@@ -588,23 +752,37 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     System.out.printf("\nLista que pretende gerir (1 - %d): \n", size);
                     System.out.print(eleicao.showListasCandidatas());
                     System.out.println();
-                    choiceS = sc.nextLine();
-                    choice = Integer.parseInt(choiceS);
-                    for (int i = 0; i <= 6; i++) {
-                        try {
-                            gerirCandidatos(ri.getEleicoesFuturas().get(indx), choice - 1,indx);
-                            break;
-                        } catch (RemoteException e) {
+                    while (true) {
+                        choiceS = sc.nextLine();
+                        if (isParsable(choiceS)) {
+                            choice = Integer.parseInt(choiceS);
+                            if (choice <= size && choice >= 0)
+                                break;
+                            else
+                                System.out.println("[Input Inválido: Tente de Novo]");
+                        } else
+                            System.out.println("[Input Inválido: Tente de Novo]");
+                    }
+                    if(choice != 0) {
+                        for (int i = 0; i <= 6; i++) {
                             try {
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
-                            } catch (NotBoundException | RemoteException ignored) {
+                                gerirCandidatos(ri.getEleicoesFuturas().get(indx), choice - 1, indx);
+                                break;
+                            } catch (RemoteException e) {
+                                try {
+                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                } catch (NotBoundException | RemoteException ignored) {
 
-                            }
-                            if (i == 6) {
-                                System.out.println("Impossivel conectar aos servidores RMI");
-                                return;
+                                }
+                                if (i == 6) {
+                                    System.out.println("Impossivel conectar aos servidores RMI");
+                                    return;
+                                }
                             }
                         }
+                    }
+                    else{
+                        return;
                     }
 
                 }
@@ -616,19 +794,6 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
 
 
-    }
-
-    public String nomeHere(Eleicao eleicao){
-        String str = "type|item_list;item_count|" + eleicao.getListasCandidatas().size();
-        int i = 0;
-        for(Lista l : eleicao.getListasCandidatas()){
-            str += ";item_" + i + "_name|";
-            for(Pessoa p : l.getMembros()){
-                str += p.getNome() + "\n";
-            }
-            i++;
-        }
-        return str;
     }
 
     public boolean gerirDepartamentos(int indexE) throws RemoteException{
@@ -655,8 +820,19 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         if(sizeD == 0)
             System.out.println("[Sem Departamentos Adicionados: Eleição permitida a todos os votantes]");
         System.out.println("1 - Adicionar Departamento || 2 - Remover Departamento:  ");
-        String tipoS = sc.nextLine();
-        int tipo = Integer.parseInt(tipoS);
+        int tipo = 0;
+
+        while (true) {
+            String tipoS = sc.nextLine();
+            if (isParsable(tipoS)) {
+                tipo = Integer.parseInt(tipoS);
+                if (tipo == 1 || tipo == 2 || tipo == 0)
+                    break;
+                else
+                    System.out.println("[Input Inválido: Tente de Novo]");
+            } else
+                System.out.println("[Input Inválido: Tente de Novo]");
+        }
 
         switch (tipo) {
             case 1:
@@ -699,7 +875,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     }
                 }
                 if(sizeD != 0) {
-                    System.out.printf("Departamento que pretende remover (1 - %d): \n", ri.sizeDepartamentos(indexE));
+                    System.out.printf("Departamento que pretende remover (1 - %d): \n", sizeD);
                     for (int i = 0; i <= 6; i++) {
                         try {
                             System.out.println(ri.showDepartamentos(indexE));
@@ -717,8 +893,19 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         }
                     }
                     System.out.println("0 - SAIR DE REMOVER DEPARTAMENTOS");
-                    String delS = sc.nextLine();
-                    int del = Integer.parseInt(delS);
+                    int del = 0;
+                    while (true) {
+                        String delS = sc.nextLine();
+                        if (isParsable(delS)) {
+                            del = Integer.parseInt(delS);
+                            if (del <= sizeD && del >= 0)
+                                break;
+                            else
+                                System.out.println("[Input Inválido: Tente de Novo]");
+                        } else
+                            System.out.println("[Input Inválido: Tente de Novo]");
+                    }
+
                     if(del == 0)
                         break;
                     else{
@@ -787,45 +974,28 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 }
             }
         }
+
         if(sizeEleF == 0){
             System.out.println("Não existem eleições para gerir.");
             return  false;
         }
-        for (int i = 0; i <= 6; i++) {
-            try {
-                System.out.printf("Eleição que pretende gerir (1 - %d): ",ri.sizeEleicoesFuturas());
-                break;
-            } catch (RemoteException e) {
-                try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
-                } catch (NotBoundException | RemoteException ignored) {
 
-                }
-                if (i == 6) {
-                    System.out.println("Impossivel conectar aos servidores RMI");
-                    return false;
-                }
-            }
-        }
-        String choiceS = sc.nextLine();
-        int choice = Integer.parseInt(choiceS);
-        for (int i = 0; i <= 6; i++) {
-            try {
-                sizeEleF = ri.sizeEleicoesFuturas();
-                break;
-            } catch (RemoteException e) {
-                try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
-                } catch (NotBoundException | RemoteException ignored) {
+        System.out.printf("Eleição que pretende gerir (1 - %d): \n",sizeEleF);
 
-                }
-                if (i == 6) {
-                    System.out.println("Impossivel conectar aos servidores RMI");
-                    return false;
-                }
-            }
+        int choice = 0;
+        while (true) {
+            String choiceS = sc.nextLine();
+            if (isParsable(choiceS)) {
+                choice = Integer.parseInt(choiceS);
+                if (choice <= sizeEleF && choice >= 0)
+                    break;
+                else
+                    System.out.println("[Input Inválido: Tente de Novo]");
+            } else
+                System.out.println("[Input Inválido: Tente de Novo]");
         }
-        if(choice <= sizeEleF){
+
+        if(choice != 0){
             System.out.println("\n---Alterar propriedade da Eleição---");
             for (int i = 0; i <= 6; i++) {
                 try {
@@ -843,12 +1013,24 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     }
                 }
             }
-            System.out.println("\n6 - Gerir listas");
-            System.out.println("7 - Gerir Mesas");
-            System.out.println("8 - Gerir Departamentos");
-            String answerS = sc.nextLine();
-            int answer  = Integer.parseInt(answerS);
-            if(answer == 6){
+            System.out.println("\n5 - Gerir listas");
+            System.out.println("6 - Gerir Mesas");
+            System.out.println("7 - Gerir Departamentos");
+            int answer = 0;
+            while (true) {
+                String answerS = sc.nextLine();
+                if (isParsable(answerS)) {
+                    answer  = Integer.parseInt(answerS);
+                    if (answer <= 7 && answer >= 0)
+                        break;
+                    else
+                        System.out.println("[Input Inválido: Tente de Novo]");
+                } else
+                    System.out.println("[Input Inválido: Tente de Novo]");
+            }
+
+            String change;
+            if(answer == 5){
                 for (int i = 0; i <= 6; i++) {
                     try {
                         gerirListas(ri.getEleicoesFuturas().get(choice - 1),choice - 1);
@@ -868,7 +1050,18 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
             }
             else if (answer > 0 && answer <= 4){
                 System.out.println("Alterar para: ");
-                String change = sc.nextLine();
+                if(answer == 3 || answer == 4){
+                    while (true) {
+                        change = sc.nextLine();
+                        if(isParsableDate_v2(change))
+                            break;
+                        else System.out.println("[Formato de Data Inválido: Tente de Novo]");
+                    }
+                }
+                else {
+                    change = sc.nextLine();
+                }
+
                 //to-do pedir a data ao utilizador no formato dd-MM-yyyy HH:mm ou entao pedir data hora e minuto separado
                 for (int i = 0; i <= 6; i++) {
                     try {
@@ -887,19 +1080,19 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     }
                 }
             }
-            else if (answer == 7){
+            else if (answer == 6){
                 gerirMesas(choice - 1);
             }
-            else if(answer == 8){
+            else if(answer == 7){
                 gerirDepartamentos(choice - 1);
             }
             else {
-                System.out.print("\nInput inválido.\n");
+                return true;
             }
 
         }
         else
-            System.out.printf("\nInput inválido.\n");
+            return true;
 
         return check;
     }
@@ -939,9 +1132,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 }
             }
         }
-        System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
-        String indxS = sc.nextLine();
-        int indx = Integer.parseInt(indxS);
+        System.out.println("0 - SAIR DE ADICIONAR DETALHES");
         int sizeP = 0;
         for (int i = 0; i <= 6; i++) {
             try {
@@ -959,7 +1150,20 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 }
             }
         }
-        if (indx <= sizeP && indx > 0){
+        int indx = 0;
+        while (true) {
+            String indxS = sc.nextLine();
+            if (isParsable(indxS)) {
+                indx = Integer.parseInt(indxS);
+                if (indx <= sizeP && indx >= 0)
+                    break;
+                else
+                    System.out.println("[Input Inválido: Tente de Novo]");
+            } else
+                System.out.println("[Input Inválido: Tente de Novo]");
+        }
+
+        if(indx != 0) {
             for (int i = 0; i <= 6; i++) {
                 try {
                     System.out.print(ri.showVotoDetalhesRMI(indx - 1));
@@ -977,15 +1181,6 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 }
             }
         }
-        else {
-            if(indx == 0)
-                System.out.print("");
-            else
-                System.out.println("Candidato inválido.");
-
-            }
-
-
     }
 
 
@@ -1047,27 +1242,39 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     }
                 }
                 System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
-                while (true) {
-                    String addS = sc.nextLine();
-                    int add = Integer.parseInt(addS);
-                    int sizeP = 0;
-                    for (int i = 0; i <= 6; i++) {
-                        try {
-                            sizeP = ri.sizePessoas();
-                            break;
-                        } catch (RemoteException e) {
-                            try {
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
-                            } catch (NotBoundException | RemoteException ignored) {
+                int sizeP = 0;
+                for (int i = 0; i <= 6; i++) {
+                try {
+                    sizeP = ri.sizePessoas();
+                    break;
+                } catch (RemoteException e) {
+                    try {
+                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    } catch (NotBoundException | RemoteException ignored) {
 
-                            }
-                            if (i == 6) {
-                                System.out.println("Impossivel conectar aos servidores RMI");
-                                return null;
-                            }
-                        }
                     }
-                    if (add <= sizeP && add > 0) {
+                    if (i == 6) {
+                        System.out.println("Impossivel conectar aos servidores RMI");
+                        return null;
+                    }
+                }
+            }
+                int add = 0;
+                while (true) {
+                    while (true) {
+                        String addS = sc.nextLine();
+                        if (isParsable(addS)) {
+                            add = Integer.parseInt(addS);
+                            if (add <= sizeP && add >= 0)
+                                break;
+                            else
+                                System.out.println("[Input Inválido: Tente de Novo]");
+                        } else
+                            System.out.println("[Input Inválido: Tente de Novo]");
+                    }
+
+
+                    if (add != 0) {
                         for (int i = 0; i <= 6; i++) {
                             try {
                                 check = ri.addCandidateRMI(indx, 0, add - 1);
@@ -1090,10 +1297,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                             System.out.println("Erro: Candidato já adicionado");
 
                     } else {
-                        if (add == 0)
-                            break;
-                        System.out.println("Candidato inválido.");
-                        break;
+                        return null;
                     }
                 }
         }
@@ -1121,6 +1325,32 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         }
     }
 
+    public static boolean isParsable(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch (final NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean isParsableDate(String input){
+        try {
+            Date startDate = new SimpleDateFormat("dd-MM-yyyy").parse(input);
+            return true;
+        } catch (ParseException e) {
+            return  false;
+        }
+    }
+
+    public static boolean isParsableDate_v2(String input){
+        try {
+            Date startDate = new SimpleDateFormat("dd-MM-yyyy hh:mm").parse(input);
+            return true;
+        } catch (ParseException e) {
+            return  false;
+        }
+    }
 
 
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
@@ -1144,8 +1374,19 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 System.out.println("4 - Eleições Passadas");
                 System.out.println("5 - Local e Momento de Voto de um Eleitor");
                 System.out.println("0 - SAIR");
-                answerS = sc.nextLine();
-                answer = Integer.parseInt(answerS);
+
+                while (true) {
+                    answerS = sc.nextLine();
+                    if (isParsable(answerS)) {
+                        answer = Integer.parseInt(answerS);
+                        if (answer <= 5 && answer >= 0)
+                            break;
+                        else
+                            System.out.println("[Input Inválido: Tente de Novo]");
+                    } else
+                        System.out.println("[Input Inválido: Tente de Novo]");
+                }
+
                 switch (answer){
                     case 1:
                         terminal.createEleicao();
@@ -1165,8 +1406,6 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     case 5:
                         terminal.votoDetalhes();
                         break;
-                    case 0:
-                        return;
                     default:
                         System.out.println("Input Inválido.");
                 }

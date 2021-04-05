@@ -217,7 +217,6 @@ public class Eleicao implements Serializable{
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm");
         String strDate = dateFormat.format(date);
         return strDate;
-
     }
 
     public void deleteDepartamento(String dep){

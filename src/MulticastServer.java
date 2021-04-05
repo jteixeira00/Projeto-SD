@@ -163,9 +163,19 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 }
                 System.out.println("Escolha a eleição em que quer votar:");
                 System.out.println(aux);
-                choice = Integer.parseInt(sc.nextLine());
+
+                String choiceS = sc.nextLine();
+                if (isParsable(choiceS)) {
+                    choice = Integer.parseInt(choiceS);
+
+                } else {
+                    System.out.println("[Input Inválido]");
+                    run();
+                    return;
+                }
+
                 if(choice>contarEleicoes(aux) || choice<=0){
-                    System.out.println("[ERRO] Opção inválida");
+                    System.out.println("[Input Inválido]");
                     run();
                     return;
                 }
@@ -298,6 +308,16 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
     public int getCountVotos() throws  RemoteException{
         return countVotos;
     }
+
+    public static boolean isParsable(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch (final NumberFormatException e) {
+            return false;
+        }
+    }
+
 }
 
 

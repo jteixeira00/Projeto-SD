@@ -128,11 +128,11 @@ public class VotingTerm extends Thread{
 
                     }while((!message.getUuid().equals(uuid.toString())) || (!message.getType().equals("status")) || (message.getType().equals("login")));
 
-                    if(message.getLogged().equals("on")){
+                    if(message.getLogged().equals("on")) {
                         System.out.println("Escolha a lista em que pretende votar:");
 
                         //pedir listas candidatas
-                        messagestr = "uuid|"+uuid.toString()+";type|listas";
+                        messagestr = "uuid|" + uuid.toString() + ";type|listas";
                         buffer = messagestr.getBytes();
                         packet = new DatagramPacket(buffer, buffer.length, group, PORT2);
                         socket.send(packet);
@@ -144,20 +144,28 @@ public class VotingTerm extends Thread{
                             socket.receive(packet);
                             messagestr = new String(packet.getData(), 0, packet.getLength());
                             message = new MessageProtocol(messagestr);
-                        }while (!message.getType().equals("item_list") || !message.getUuid().equals(this.uuid.toString()));
-
+                        } while (!message.getType().equals("item_list") || !message.getUuid().equals(this.uuid.toString()));
 
 
                         //imprime as listas candidatas
 
                         System.out.println("0 - Voto Nulo");
                         System.out.println("1 - Voto Branco");
-                        for(Map.Entry<Integer, String> candidato : message.getCandidatos().entrySet()){
-                            Integer key = candidato.getKey()+2;
+                        for (Map.Entry<Integer, String> candidato : message.getCandidatos().entrySet()) {
+                            Integer key = candidato.getKey() + 2;
                             String nome = candidato.getValue();
-                            System.out.println(key + " - " + nome+"\n");
+                            System.out.println(key + " - " + nome + "\n");
                         }
-                        int choice = Integer.parseInt(in.nextLine());
+                        int choice = 0;
+                        while (true) {
+                            String choiceS = in.nextLine();
+                            if (isParsable(choiceS)) {
+                                choice = Integer.parseInt(choiceS);
+                                break;
+                            } else {
+                                System.out.println("[Input Inválido: Tente de Novo]\n");
+                            }
+                        }
 
                         Date date = new Date();
                         String pattern = "MM/dd/yyyy HH:mm";
@@ -191,6 +199,15 @@ public class VotingTerm extends Thread{
             e.printStackTrace();
         } finally {
             socket.close();
+        }
+    }
+
+    public static boolean isParsable(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch (final NumberFormatException e) {
+            return false;
         }
     }
 

@@ -703,7 +703,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             }
         }
         if(str.equals("")){
-            return "O eleitor ainda não votou.";
+            return "\n.................\nO eleitor ainda não votou.\n.................\n";
         }
         return str;
     }
