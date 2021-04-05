@@ -893,6 +893,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         ArrayList<Eleicao> eArray = new ArrayList<>();
         Date date = new Date();
 
+
+
         for (Eleicao e1 : getMesaByName(dep).getEleicoes()) {
             if(e1.getEndDate().after(date) && e1.getStartDate().before(date)) {
                 //System.out.println(e1.getTitulo());
@@ -905,14 +907,14 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
 
         Eleicao eleicao = eArray.get(eleicaoC);
-        /*
+
         for(Eleicao e: getMesaByName(dep).getEleicoes()){
             System.out.println("eleição: " + e.getTitulo());
             for(Lista l: e.getListasCandidatas()){
                 System.out.println("lista "+ l.getNome());
             }
         }
-        */
+
         StringBuilder str = new StringBuilder("type|item_list;item_count|" + eleicao.getListasCandidatas().size());
         int i = 0;
         for(Lista l : eleicao.getListasCandidatas()){

@@ -12,7 +12,7 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 
-public class MulticastServer extends Thread implements Serializable, MulticastInterface{
+public class MulticastServer extends Thread implements Serializable{
     private static String MULTICAST_ADDRESS, SECONDARY_MULTICAST_ADDRESS;
     private int PORT;
     private static int PORT2;
@@ -122,7 +122,10 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                     return;
                 }
             }
+
+
         }
+
         MulticastServer server = new MulticastServer();
         server.start();
         mesa = new Mesa(departamento);
@@ -324,7 +327,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
                 //envia mensagem a pedir um terminal livre
                 socket.send(packet);
-                String reply = null;
+                String reply;
                 do {
 
                     buffer = new byte[256];
@@ -350,6 +353,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 socket.send(packet);
                 //desbloqueia esse terminal
 
+
                 System.out.println("Terminal desbloqueado para votar");
 
             }
@@ -364,8 +368,8 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
     public static void setDepartamento(String s){
         departamento = s;
     }
-    @Override
-    public String getDepartamento() throws RemoteException{
+
+    public String getDepartamento() {
         return departamento;
     }
 

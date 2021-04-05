@@ -1318,22 +1318,6 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 }
             }
 
-            for (int i = 0; i <= 6; i++) {
-                try {
-                    System.out.print(ri.showPessoas());
-                    break;
-                } catch (RemoteException e) {
-                    try {
-                        ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
-                    } catch (NotBoundException | RemoteException ignored) {
-
-                    }
-                    if (i == 6) {
-                        System.out.println("Impossivel conectar aos servidores RMI");
-                        return null;
-                    }
-                }
-            }
             System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
             int sizeP = 0;
             for (int i = 0; i <= 6; i++) {
