@@ -1,4 +1,3 @@
-import com.sun.org.apache.xpath.internal.operations.Mult;
 
 import java.io.Serializable;
 import java.net.*;
@@ -15,33 +14,43 @@ import java.util.concurrent.TimeUnit;
 
 public class MulticastServer extends Thread implements Serializable, MulticastInterface{
     private static String MULTICAST_ADDRESS, SECONDARY_MULTICAST_ADDRESS;
-    private int PORT = 4321;
-    private static int PORT2 = 4322;
-    private long SLEEP_TIME = 5000;
+    private int PORT;
+    private static int PORT2;
     private static int tableNumber;
     private static String departamento;
     private ArrayList<Eleicao> eleicaoLista;
     private static Mesa mesa;
 
-    //11 - estado mesas
-    private boolean active = false;
-
-    //12 - nº votos
-    private int countVotos = 0;
-
+    private String rmiport;
+    private String rminame;
+    private String registry;
+    private String baseAddress;
+    private String secondaryAddress;
 
 
     public static void main(String[] args) {
+
+        //load properties
+        GetPropertyValues properties = new GetPropertyValues();
+        try {
+            properties.setPropValues();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String rmiport = properties.getRmiport();
+        String rminame = properties.getRminame();
+        String registry = properties.getRegistry();
+
 
         setDepartamento(args[0]);
         RmiInterface ti = null;
         for (int i = 0; i <= 6; i++) {
             try {
-                ti = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+                ti = (RmiInterface) Naming.lookup("rmi://" + registry+ ":"+ rmiport + "/" + rminame);
                 break;
             } catch (RemoteException | NotBoundException | MalformedURLException e) {
                 try {
-                    ti = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ti = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException notBoundException) {
                 }
                 if (i == 6) {
@@ -56,7 +65,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 break;
             } catch (RemoteException e) {
                 try {
-                    ti = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ti = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException notBoundException) {
                 }
                 if (i == 6) {
@@ -72,7 +81,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 break;
             } catch (RemoteException e) {
                 try {
-                    ti = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ti = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException notBoundException) {
                 }
                 if (i == 6) {
@@ -89,7 +98,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 break;
             } catch (RemoteException e) {
                 try {
-                    ti = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ti = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException notBoundException) {
                 }
                 if (i == 6) {
@@ -105,7 +114,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 break;
             } catch (RemoteException e) {
                 try {
-                    ti = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ti = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException notBoundException) {
                 }
                 if (i == 6) {
@@ -123,7 +132,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 break;
             } catch (RemoteException e) {
                 try {
-                    ti = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ti = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException notBoundException) {
                 }
                 if (i == 6) {
@@ -138,17 +147,29 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
 
     public MulticastServer() {
         super("Table Number " + tableNumber);
+
+        //load properties
+        GetPropertyValues properties = new GetPropertyValues();
+        try {
+            properties.setPropValues();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        this.rmiport = properties.getRmiport();
+        this.rminame = properties.getRminame();
+        this.registry = properties.getRegistry();
+        this.PORT = properties.getPort1();
+        this.PORT2 = properties.getPort2();
     }
 
     public void run() {
-
-
         MulticastSocket socket = null;
         long counter = 0;
         System.out.println("["+ this.getName() + " running in address " + MULTICAST_ADDRESS + " in department " + departamento + "]");
         try {
 
-            RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+            RmiInterface ri = (RmiInterface) Naming.lookup("rmi://" + registry + ":"+ rmiport + "/" + rminame);
             socket = new MulticastSocket(PORT);  // create socket without binding it (only for sending)
             socket.setSoTimeout(1000);
             Scanner sc = new Scanner(System.in);
@@ -167,7 +188,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                             System.exit(0);
                         }catch(RemoteException e){
                             try{
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                             } catch (NotBoundException|RemoteException notBoundException ) {
                             }if(i==6){
                                 System.out.println("Impossivel conectar aos servidores RMI, a terminar sem avisar");
@@ -183,7 +204,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                         break;
                     }catch(RemoteException e){
                         try{
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                         } catch (NotBoundException|RemoteException notBoundException ) {
                         }if(i==6){
                             System.out.println("Impossivel conectar aos servidores RMI");
@@ -205,7 +226,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                         break;
                     }catch(RemoteException e){
                         try{
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                         } catch (NotBoundException|RemoteException notBoundException ) {
                         }if(i==6){
                             System.out.println("Impossivel conectar aos servidores RMI");
@@ -220,7 +241,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                         break;
                     }catch(RemoteException e){
                         try{
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                         } catch (NotBoundException|RemoteException notBoundException ) {
                         }if(i==6){
                             System.out.println("Impossivel conectar aos servidores RMI");
@@ -261,7 +282,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                         break;
                     }catch(RemoteException e){
                         try{
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                         } catch (NotBoundException|RemoteException notBoundException ) {
                         }if(i==6){
                             System.out.println("Impossivel conectar aos servidores RMI");
@@ -282,7 +303,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                         break;
                     }catch(RemoteException e){
                         try{
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                         } catch (NotBoundException|RemoteException notBoundException ) {
                         }if(i==6){
                             System.out.println("Impossivel conectar aos servidores RMI");
@@ -376,13 +397,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
         return  lines.length;
     }
 
-    public boolean getEstado() throws RemoteException{
-        return active;
-    }
 
-    public int getCountVotos() throws  RemoteException{
-        return countVotos;
-    }
 
     public static boolean isParsable(String input) {
         try {
@@ -402,6 +417,9 @@ class client extends Thread{
     private MulticastServer server;
     private String departamento;
     private int tableCount =0;
+    private String rmiport;
+    private String rminame;
+    private String registry;
 
     public client(String MULTICAST_ADDRESS, int PORT, MulticastServer server, String departamento){
         super();
@@ -409,6 +427,17 @@ class client extends Thread{
         this.PORT = PORT;
         this.departamento = departamento;
         this.server = server;
+
+        //load properties
+        GetPropertyValues properties = new GetPropertyValues();
+        try {
+            properties.setPropValues();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.rmiport = properties.getRmiport();
+        this.rminame = properties.getRminame();
+        this.registry = properties.getRegistry();
     }
 
     public void run() {
@@ -416,11 +445,11 @@ class client extends Thread{
         RmiInterface ri = null;
         for (int i = 0; i <= 6; i++) {
             try {
-                ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+                ri = (RmiInterface)  Naming.lookup("rmi://" + registry+ ":"+ rmiport + "/" + rminame);
                 break;
             } catch (RemoteException | NotBoundException | MalformedURLException e) {
                 try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException notBoundException) {
                 }
                 if (i == 6) {
@@ -455,7 +484,7 @@ class client extends Thread{
                             break;
                         }catch(RemoteException e){
                             try{
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                             } catch (NotBoundException|RemoteException notBoundException ) {
                             }if(i==6){
                                 System.out.println("Impossivel conectar aos servidores RMI");
@@ -474,7 +503,7 @@ class client extends Thread{
                                 break;
                             }catch(RemoteException e){
                                 try{
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                 } catch (NotBoundException|RemoteException notBoundException ) {
                                 }if(i==6){
                                     System.out.println("Impossivel conectar aos servidores RMI");
@@ -512,11 +541,11 @@ class client extends Thread{
                                 break;
                             }catch(RemoteException e){
                                 try{
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                 } catch (NotBoundException|RemoteException notBoundException ) {
                                 }if(i==5){
                                     try{
-                                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                        ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                     } catch (NotBoundException|RemoteException notBoundException ) {
                                         System.out.println("Impossivel conectar aos servidores RMI");}
 
@@ -542,7 +571,7 @@ class client extends Thread{
                             break;
                         }catch(RemoteException e){
                             try{
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                             } catch (NotBoundException|RemoteException notBoundException ) {
                             }
                             if(i==5){

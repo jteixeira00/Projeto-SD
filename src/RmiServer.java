@@ -1,4 +1,3 @@
-import sun.util.locale.LocaleObjectCache;
 
 import javax.lang.model.type.ArrayType;
 import java.io.*;
@@ -17,22 +16,37 @@ import java.util.concurrent.TimeUnit;
 public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     private static final long serialVersionUID = 1L;
-    public ArrayList<String> addressPool;
     public int addressEnd = 1;
-    public String baseAddress = "224.3.2.";
-    public String secondaryAddress = "224.3.3.";
+    public String baseAddress;
+    public String secondaryAddress;
     private ArrayList<Eleicao> listaEleicoes;
     private ArrayList<Pessoa> listaPessoas;
     private ArrayList<Pessoa> pessoasOnline;
     private ArrayList<Mesa> listaMesas;
     private ArrayList<AdminTerminalInterface> terminais = new ArrayList<>();
-
+    private String rmiport;
+    private String rminame;
+    private String registry;
     public RmiServer() throws RemoteException {
         super();
         this.listaPessoas = new ArrayList<>();
         this.listaEleicoes = new ArrayList<>();
         this.pessoasOnline = new ArrayList<>();
         this.listaMesas = new ArrayList<>();
+
+        //load properties file
+        GetPropertyValues properties = new GetPropertyValues();
+        try {
+            properties.setPropValues();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.baseAddress = properties.getMain_multicast_pool();
+        this.secondaryAddress = properties.getSecondary_multicast_pool();
+        this.rmiport = properties.getRmiport();
+        this.rminame = properties.getRminame();
+        this.registry = properties.getRegistry();
+
         load();
     }
 
@@ -64,13 +78,26 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
     public static void main(String args[]) {
+
+
+        //load properties
+        GetPropertyValues properties = new GetPropertyValues();
         try {
-            Registry rmi = LocateRegistry.getRegistry("localhost", 7000);
+            properties.setPropValues();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String rmiport = properties.getRmiport();
+        String rminame = properties.getRminame();
+        String registry = properties.getRegistry();
+        System.setProperty("java.rmi.server.hostname", registry);
+        try {
+            Registry rmi = LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport));
             RmiInterface ri;
             int tries = 1;
             while(tries<=3){
                 try{
-                    ri = (RmiInterface) rmi.lookup("rmiServer");
+                    ri = (RmiInterface) rmi.lookup(rminame);
                     ri.heartbeat();
                     tries = 0;
                 }
@@ -87,13 +114,13 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             }
 
             ri = new RmiServer();
-            LocateRegistry.createRegistry(7000).rebind("rmiServer", ri);
+            LocateRegistry.createRegistry(Integer.parseInt(rmiport)).rebind(rminame, ri);
             System.out.println("Servidor RMI secundário é agora o servidor primário");
 
         } catch (RemoteException | NotBoundException ex1) {
             try {
                 RmiInterface ri = new RmiServer();
-                LocateRegistry.createRegistry(7000).rebind("rmiServer", ri);
+                LocateRegistry.createRegistry(Integer.parseInt(rmiport)).rebind(rminame, ri);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -484,29 +511,17 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
                 }
             }
         }
-        if(f3.exists() && !f3.isDirectory()){
+        if(f3.exists() && !f3.isDirectory() && f.exists() && !f.isDirectory()  ){
             try {
                 FileInputStream stream = new FileInputStream("mesas.ser");
                 is3 = new ObjectInputStream(stream);
                 this.listaMesas = (ArrayList<Mesa>) is3.readObject();
+                FileInputStream stream2 = new FileInputStream("eleicoes.ser");
+                is1 = new ObjectInputStream(stream2);
+                this.listaEleicoes = (ArrayList<Eleicao>) is1.readObject();
+
             } catch(Exception e){
                 e.printStackTrace();
-            } finally {
-                if (is2 != null) {
-                    try {
-                        is2.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        if(f.exists() && !f.isDirectory()  ) {
-            try {
-                FileInputStream stream = new FileInputStream("eleicoes.ser");
-                is1 = new ObjectInputStream(stream);
-                this.listaEleicoes = (ArrayList<Eleicao>) is1.readObject();
-            } catch (Exception e) {
             } finally {
                 try {
                     if (is1 != null) {

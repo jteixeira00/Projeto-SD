@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -15,17 +16,41 @@ import java.util.jar.JarOutputStream;
 
 public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalInterface, Serializable {
     private RmiInterface ri;
-    
+    private String rmiport;
+    private String rminame;
+    private String registry;
+    private String callbackip;
+
     public AdminTerminal() throws RemoteException {
         super();
+
+        //load properties
+        GetPropertyValues properties = new GetPropertyValues();
+        try {
+            properties.setPropValues();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.rmiport = properties.getRmiport();
+        this.rminame = properties.getRminame();
+        this.registry = properties.getRegistry();
+        this.callbackip = properties.getCallbackip();
+        System.out.println(registry);
+
+
         for (int i = 0; i <= 6; i++) {
             try {
-                ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+                System.setProperty("java.rmi.server.hostname", callbackip);
+                ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
+
+                System.out.println(ri.toString());
                 break;
-            } catch (RemoteException | NotBoundException | MalformedURLException e) {
+            } catch (RemoteException | NotBoundException e) {
+
                 try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException notBoundException) {
+                    System.out.println("2");
                 }
                 if (i == 6) {
                     System.out.println("Impossivel conectar aos servidores RMI");
@@ -76,7 +101,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 break;
             } catch (RemoteException e) {
                 try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException ignored) {
 
                 }
@@ -108,7 +133,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     break;
                 } catch (RemoteException e) {
                     try {
-                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                     } catch (NotBoundException | RemoteException ignored) {
 
                     }
@@ -216,7 +241,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 break;
             } catch (RemoteException e) {
                 try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException ignored) {
 
                 }
@@ -256,7 +281,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 break;
                             } catch (RemoteException e) {
                                 try {
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                 } catch (NotBoundException | RemoteException ignored) {
 
                                 }
@@ -307,7 +332,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         break;
                     } catch (RemoteException e) {
                         try {
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                         } catch (NotBoundException | RemoteException ignored) {
 
                         }
@@ -323,7 +348,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         break;
                     } catch (RemoteException e) {
                         try {
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                         } catch (NotBoundException | RemoteException ignored) {
 
                         }
@@ -342,7 +367,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                             break;
                         } catch (RemoteException e) {
                             try {
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                             } catch (NotBoundException | RemoteException ignored) {
 
                             }
@@ -372,7 +397,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 break;
                             } catch (RemoteException e) {
                                 try {
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                 } catch (NotBoundException | RemoteException ignored) {
 
                                 }
@@ -406,7 +431,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 break;
                             } catch (RemoteException e) {
                                 try {
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                 } catch (NotBoundException | RemoteException ignored) {
 
                                 }
@@ -423,7 +448,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 break;
                             } catch (RemoteException e) {
                                 try {
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                 } catch (NotBoundException | RemoteException ignored) {
 
                                 }
@@ -456,7 +481,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                     break;
                                 } catch (RemoteException e) {
                                     try {
-                                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                        ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                     } catch (NotBoundException | RemoteException ignored) {
 
                                     }
@@ -487,7 +512,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 break;
             } catch (RemoteException e) {
                 try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException ignored) {
 
                 }
@@ -525,7 +550,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                             break;
                         } catch (RemoteException e) {
                             try {
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                             } catch (NotBoundException | RemoteException ignored) {
 
                             }
@@ -541,7 +566,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                             break;
                         } catch (RemoteException e) {
                             try {
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                             } catch (NotBoundException | RemoteException ignored) {
 
                             }
@@ -557,7 +582,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                             break;
                         } catch (RemoteException e) {
                             try {
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                             } catch (NotBoundException | RemoteException ignored) {
 
                             }
@@ -589,7 +614,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 break;
                             } catch (RemoteException e) {
                                 try {
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                 } catch (NotBoundException | RemoteException ignored) {
 
                                 }
@@ -614,7 +639,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                             break;
                         } catch (RemoteException e) {
                             try {
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                             } catch (NotBoundException | RemoteException ignored) {
 
                             }
@@ -632,7 +657,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 break;
                             } catch (RemoteException e) {
                                 try {
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                 } catch (NotBoundException | RemoteException ignored) {
 
                                 }
@@ -663,7 +688,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                     break;
                                 } catch (RemoteException e) {
                                     try {
-                                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                        ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                     } catch (NotBoundException | RemoteException ignored) {
 
                                     }
@@ -738,7 +763,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 break;
                             } catch (RemoteException e) {
                                 try {
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                 } catch (NotBoundException | RemoteException ignored) {
 
                                 }
@@ -780,7 +805,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 break;
                             } catch (RemoteException e) {
                                 try {
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                 } catch (NotBoundException | RemoteException ignored) {
 
                                 }
@@ -815,7 +840,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 break;
             } catch (RemoteException e) {
                 try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException ignored) {
 
                 }
@@ -854,7 +879,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         break;
                     } catch (RemoteException e) {
                         try {
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                         } catch (NotBoundException | RemoteException ignored) {
 
                         }
@@ -874,7 +899,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         break;
                     } catch (RemoteException e) {
                         try {
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                         } catch (NotBoundException | RemoteException ignored) {
 
                         }
@@ -892,7 +917,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                             break;
                         } catch (RemoteException e) {
                             try {
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                             } catch (NotBoundException | RemoteException ignored) {
 
                             }
@@ -925,7 +950,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 break;
                             } catch (RemoteException e) {
                                 try {
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                 } catch (NotBoundException | RemoteException ignored) {
 
                                 }
@@ -957,7 +982,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 break;
             } catch (RemoteException e) {
                 try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException ignored) {
 
                 }
@@ -974,7 +999,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 break;
             } catch (RemoteException e) {
                 try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException ignored) {
 
                 }
@@ -1013,7 +1038,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     break;
                 } catch (RemoteException e) {
                     try {
-                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                     } catch (NotBoundException | RemoteException ignored) {
 
                     }
@@ -1047,7 +1072,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         break;
                     } catch (RemoteException e) {
                         try {
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                         } catch (NotBoundException | RemoteException ignored) {
 
                         }
@@ -1078,7 +1103,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         break;
                     } catch (RemoteException e) {
                         try {
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                         } catch (NotBoundException | RemoteException ignored) {
 
                         }
@@ -1115,7 +1140,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 break;
             } catch (RemoteException e) {
                 try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException ignored) {
 
                 }
@@ -1131,7 +1156,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 break;
             } catch (RemoteException e) {
                 try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException ignored) {
 
                 }
@@ -1149,7 +1174,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 break;
             } catch (RemoteException e) {
                 try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException ignored) {
 
                 }
@@ -1179,7 +1204,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     break;
                 } catch (RemoteException e) {
                     try {
-                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                     } catch (NotBoundException | RemoteException ignored) {
 
                     }
@@ -1205,7 +1230,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 break;
             } catch (RemoteException e) {
                 try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException ignored) {
 
                 }
@@ -1224,7 +1249,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         break;
                     } catch (RemoteException e) {
                         try {
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                         } catch (NotBoundException | RemoteException ignored) {
 
                         }
@@ -1240,7 +1265,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         break;
                     } catch (RemoteException e) {
                         try {
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                         } catch (NotBoundException | RemoteException ignored) {
 
                         }
@@ -1258,7 +1283,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     break;
                 } catch (RemoteException e) {
                     try {
-                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                     } catch (NotBoundException | RemoteException ignored) {
 
                     }
@@ -1290,7 +1315,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 break;
                             } catch (RemoteException e) {
                                 try {
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                                 } catch (NotBoundException | RemoteException ignored) {
 
                                 }
@@ -1322,7 +1347,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 break;
             } catch (RemoteException e) {
                 try {
-                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    ri = (RmiInterface) LocateRegistry.getRegistry(registry, Integer.parseInt(rmiport)).lookup(rminame);
                 } catch (NotBoundException | RemoteException ignored) {
 
                 }
@@ -1364,8 +1389,10 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
 
-        AdminTerminal terminal = new AdminTerminal();
 
+
+
+        AdminTerminal terminal = new AdminTerminal();
 
         terminal.ri.subscribe((AdminTerminalInterface) terminal );
 

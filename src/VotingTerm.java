@@ -11,10 +11,10 @@ import java.util.*;
 
 public class VotingTerm extends Thread{
 
-    private static String MULTICAST_ADDRESS = "224.3.2.";
-    private int PORT = 4321;
+    private static String MULTICAST_ADDRESS;
+    private int PORT;
     private static String SECONDARY_MULTICAST;
-    private int PORT2 = 4322;
+    private int PORT2;
     private boolean firstExec;
     private String tableNumber = "";
     String password = "";
@@ -23,6 +23,9 @@ public class VotingTerm extends Thread{
         this.uuid = UUID.randomUUID();
     }
     static VotingTerm client;
+    private String rmiport;
+    private String rminame;
+    private String registry;
 
     Timer timer;
 
@@ -32,6 +35,7 @@ public class VotingTerm extends Thread{
     }
     public VotingTerm(boolean firstExec){
         this.firstExec = firstExec;
+
     }
 
 
@@ -49,11 +53,17 @@ public class VotingTerm extends Thread{
             if (firstExec) {
                 System.out.println("A que mesa de voto deseja ligar-se?");
                 s = in.nextLine();
-
+                //load properties
+                GetPropertyValues properties = new GetPropertyValues();
+                try {
+                    properties.setPropValues();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                MULTICAST_ADDRESS = properties.getMain_multicast_pool()+s;
+                SECONDARY_MULTICAST = properties.getSecondary_multicast_pool()+s;
                 tableNumber = s;
-                MULTICAST_ADDRESS = MULTICAST_ADDRESS + s;
-                SECONDARY_MULTICAST = MULTICAST_ADDRESS;
-                SECONDARY_MULTICAST = SECONDARY_MULTICAST.replace(".2.", ".3.");
+
                 this.firstExec = false;
                 System.out.println("Terminal de voto conectado à mesa nº " + tableNumber);
             }
@@ -73,7 +83,6 @@ public class VotingTerm extends Thread{
                 group = InetAddress.getByName(MULTICAST_ADDRESS);
                 socket.joinGroup(group);
                 System.out.println("Terminal de voto aguardando pedido de conexão");
-                System.out.println(MULTICAST_ADDRESS);
                 //aguarda uma mensagem a pedir um terminal livre
                 do {
                     buffer = new byte[256];
