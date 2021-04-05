@@ -1,3 +1,4 @@
+import java.io.StringBufferInputStream;
 import java.net.MulticastSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -14,21 +15,25 @@ public class VotingTerm extends Thread{
     private int PORT = 4321;
     private static String SECONDARY_MULTICAST;
     private int PORT2 = 4322;
-
+    private boolean firstExec;
     private String tableNumber = "";
-
+    String password = "";
     private UUID uuid;
     public void setUuid() {
         this.uuid = UUID.randomUUID();
     }
     static VotingTerm client;
 
-    Timer timer = new Timer();
+    Timer timer;
 
     public static void main(String[] args){
-        client = new VotingTerm();
+        client = new VotingTerm(true);
         client.start();
     }
+    public VotingTerm(boolean firstExec){
+        this.firstExec = firstExec;
+    }
+
 
 
 
@@ -36,19 +41,20 @@ public class VotingTerm extends Thread{
         MulticastSocket socket = null;
         setUuid();
         try {
-            String s = tableNumber;
+            String s;
             Scanner in = new Scanner(System.in);
             String numeroUc;
             byte[] buffer;
             DatagramPacket packet;
-            if(MULTICAST_ADDRESS.length()<9 ) {
+            if (firstExec) {
                 System.out.println("A que mesa de voto deseja ligar-se?");
-
                 s = in.nextLine();
                 tableNumber = s;
                 MULTICAST_ADDRESS = MULTICAST_ADDRESS + s;
                 SECONDARY_MULTICAST = MULTICAST_ADDRESS;
                 SECONDARY_MULTICAST = SECONDARY_MULTICAST.replace(".2.", ".3.");
+                this.firstExec = false;
+                System.out.println("Terminal de voto conectado à mesa nº " + tableNumber);
             }
             String messagestr;
             MessageProtocol message;
@@ -65,7 +71,8 @@ public class VotingTerm extends Thread{
                 socket = new MulticastSocket(PORT);  // create socket and bind it
                 group = InetAddress.getByName(MULTICAST_ADDRESS);
                 socket.joinGroup(group);
-                System.out.println("Terminal de voto conectado à mesa nº "+s + " aguardando pedido de conexão");
+                System.out.println("Terminal de voto aguardando pedido de conexão");
+                System.out.println(MULTICAST_ADDRESS);
                 //aguarda uma mensagem a pedir um terminal livre
                 do {
                     buffer = new byte[256];
@@ -74,62 +81,64 @@ public class VotingTerm extends Thread{
                     messagestr = new String(packet.getData(), 0, packet.getLength());
                     message = new MessageProtocol(messagestr);
 
-                }while(!message.getType().equals("request"));
+                } while (!message.getType().equals("request"));
                 numeroUc = message.getUsername();
                 //responde a informar que está disponivel
-                messagestr = "type|available;uuid|"+ uuid.toString();
+                messagestr = "type|available;uuid|" + uuid.toString();
                 buffer = messagestr.getBytes();
                 packet = new DatagramPacket(buffer, buffer.length, group, PORT);
                 socket.send(packet);
 
                 //aguarda mensagem a desbloquear
-                do{
+                do {
                     buffer = new byte[256];
                     packet = new DatagramPacket(buffer, buffer.length);
                     socket.receive(packet);
                     messagestr = new String(packet.getData(), 0, packet.getLength());
                     message = new MessageProtocol(messagestr);
-                }while(!message.getType().equals("unlock"));
+                } while (!message.getType().equals("unlock"));
                 eleicao = message.getEleicao();
 
 
-                if(message.getUuid().equals(uuid.toString())){
+                if (message.getUuid().equals(uuid.toString())) {
                     System.out.println("Terminal desbloqueado");
-                    System.out.println("UC Number:" +numeroUc);
+                    System.out.println("UC Number:" + numeroUc);
                     System.out.println("Password");
-                    TimerTask task = new TimerTask(){
-                        public void run()
-                        {
-                            client.run();
-
+                    TimerTask task= new TimerTask() {
+                        public void run() {
+                            client.stop();
+                            System.out.println("Terminal bloqueou por inatividade, prima ENTER antes de inserir input");
+                            client = new VotingTerm(false);
+                            client.start();
                         }
                     };
-                    timer.schedule( task, 60*1000 );
-                    String password = in.nextLine();
+                    timer = new Timer();
+                    timer.schedule(task, 10 * 1000);
+                    password = in.nextLine();
                     timer.cancel();
-
+                    System.out.println(password);
                     //conecta-se à segunda rede multicast
                     socket = new MulticastSocket(PORT2);
                     group = InetAddress.getByName(SECONDARY_MULTICAST);
                     socket.joinGroup(group);
 
                     //envia login info
-                    messagestr = "uuid|"+uuid.toString()+";type|login;number|"+numeroUc+";password|"+password;
+                    messagestr = "uuid|" + uuid.toString() + ";type|login;number|" + numeroUc + ";password|" + password;
                     buffer = messagestr.getBytes();
                     packet = new DatagramPacket(buffer, buffer.length, group, PORT2);
                     socket.send(packet);
 
                     //recebe o status (sucesso no login ou nao)
-                    do{
+                    do {
                         buffer = new byte[512];
                         packet = new DatagramPacket(buffer, buffer.length);
                         socket.receive(packet);
                         messagestr = new String(packet.getData(), 0, packet.getLength());
                         message = new MessageProtocol(messagestr);
 
-                    }while((!message.getUuid().equals(uuid.toString())) || (!message.getType().equals("status")) || (message.getType().equals("login")));
+                    } while ((!message.getUuid().equals(uuid.toString())) || (!message.getType().equals("status")) || (message.getType().equals("login")));
 
-                    if(message.getLogged().equals("on")) {
+                    if (message.getLogged().equals("on")) {
                         System.out.println("Escolha a lista em que pretende votar:");
 
                         //pedir listas candidatas
@@ -173,22 +182,23 @@ public class VotingTerm extends Thread{
                         DateFormat df = new SimpleDateFormat(pattern);
                         String dataString = df.format(date);
 
-                        messagestr = "uuid|"+uuid.toString()+";type|voto;choice|"+choice+";time|"+dataString+";eleicao|"+eleicao+";number|"+numeroUc;
-                     
+                        messagestr = "uuid|" + uuid.toString() + ";type|voto;choice|" + choice + ";time|" + dataString + ";eleicao|" + eleicao + ";number|" + numeroUc;
+
+
                         buffer = messagestr.getBytes();
                         packet = new DatagramPacket(buffer, buffer.length, group, PORT2);
                         socket.send(packet);
 
-                        do{
+                        do {
                             buffer = new byte[1024];
                             packet = new DatagramPacket(buffer, buffer.length);
                             socket.receive(packet);
                             messagestr = new String(packet.getData(), 0, packet.getLength());
                             message = new MessageProtocol(messagestr);
-                        }while(!message.getType().equals("success"));
+                        } while (!message.getType().equals("success"));
 
 
-                        for(int i = 0; i<50; i++){
+                        for (int i = 0; i < 50; i++) {
                             System.out.println("\n\n");
                         }
                         System.out.println("Success! Logging you off.");
@@ -212,6 +222,6 @@ public class VotingTerm extends Thread{
         }
     }
 
-
 }
+
 

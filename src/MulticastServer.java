@@ -32,37 +32,110 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
 
 
     public static void main(String[] args) {
+
         setDepartamento(args[0]);
-        try {
+        RmiInterface ti = null;
+        for (int i = 0; i <= 6; i++) {
+            try {
+                ti = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+                break;
+            } catch (RemoteException | NotBoundException | MalformedURLException e) {
+                try {
+                    ti = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException notBoundException) {
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return;
+                }
+            }
+        }
+        for (int i = 0; i <= 6; i++) {
+            try {
+                MULTICAST_ADDRESS = ti.getNewAddress();
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ti = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException notBoundException) {
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return;
+                }
+            }
+        }
 
-            RmiInterface ti = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
-            MULTICAST_ADDRESS = ti.getNewAddress();
-            SECONDARY_MULTICAST_ADDRESS = ti.getSecondaryAddress();
+        for (int i = 0; i <= 6; i++) {
+            try {
+                SECONDARY_MULTICAST_ADDRESS = ti.getSecondaryAddress();
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ti = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException notBoundException) {
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return;
+                }
+            }
+        }
 
-            tableNumber = ti.getTableNumber(args[0]);
+
+        for (int i = 0; i <= 6; i++) {
+            try {
+                tableNumber = ti.getTableNumber(args[0]);
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ti = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException notBoundException) {
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return;
+                }
+            }
+        }
+
+        for (int i = 0; i <= 6; i++) {
             try {
                 ti.notifyOfNewTable(args[0]);
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ti = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException notBoundException) {
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return;
+                }
             }
-            catch (RemoteException e){}
-
         }
-        catch (NotBoundException|MalformedURLException|RemoteException e) {
-            e.printStackTrace();
-        }
-
         MulticastServer server = new MulticastServer();
         server.start();
         mesa = new Mesa(departamento);
-        try {
-            RmiInterface ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
-            ri.addMesa(mesa);
-        } catch (NotBoundException | MalformedURLException | RemoteException e) {
-            e.printStackTrace();
+        for (int i = 0; i <= 6; i++) {
+            try {
+                ti.addMesa(mesa);
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ti = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException notBoundException) {
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return;
+                }
+            }
         }
         client cliente = new client(SECONDARY_MULTICAST_ADDRESS, PORT2, server, departamento);
         cliente.start();
-
     }
+
     public MulticastServer() {
         super("Table Number " + tableNumber);
     }
@@ -256,7 +329,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 socket.send(packet);
                 //desbloqueia esse terminal
 
-                System.out.println("Terminal desbloquado para votar");
+                System.out.println("Terminal desbloqueado para votar");
 
             }
 
@@ -425,6 +498,7 @@ class client extends Thread{
                         boolean auxbool = false;
                         for(int i = 0; i<=6;i++) {
                             try{
+
                                 auxbool = ri.votar(message.getEleicao(), message.getChoice(), message.getUsername(), server.getDepartamento(), ++tableCount);
                                 break;
                             }catch(RemoteException e){
@@ -442,6 +516,7 @@ class client extends Thread{
                             }
                         }
                         if(auxbool){
+                            System.out.println("here");
                             messagestr = "uuid|"+message.getUuid()+";type|success";
                             buffer = messagestr.getBytes();
                             packet = new DatagramPacket(buffer, buffer.length, group, PORT);
