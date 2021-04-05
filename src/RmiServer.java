@@ -127,9 +127,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
     @Override
     public boolean login(String numero, String password) throws RemoteException {
-        System.out.println("Procurando utilizador com nº " + numero);
+        //System.out.println("Procurando utilizador com nº " + numero);
         Pessoa p = getPessoabyNumber(numero);
-        System.out.println(p.getNumero());
         if (p.getPassword().equals(password)) {
             return true;
         } else {
@@ -183,19 +182,27 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
             e.addVoto(v);
             save();
         }
+
         else {
+
             Voto v = new Voto(p, departamento);
             e.getListasCandidatas().get(choiceLista-2).addVoto();
+            /*
             try {
+
                 if (!this.eleicoesOngoing().contains(e)) {
+                    System.out.println("here");
                     return false;
                 }
             } catch (RemoteException remoteException) {
                 remoteException.printStackTrace();
                 return false;
             }
+                */
             e.addVoto(v);
         }
+
+        tableCount = countVotosDep(departamento);
 
         for(AdminTerminalInterface ad: terminais){
             try{
@@ -206,6 +213,18 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
         save();
         return true;
+    }
+
+    public int countVotosDep(String dep){
+        int count = 0;
+        for(Eleicao e: listaEleicoes){
+            for(Voto v: e.getVotos()){
+                if(v.getLocal().equals(dep)){
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     public boolean checkNomeEleicao(String titulo) throws RemoteException{
