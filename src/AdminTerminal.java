@@ -4,13 +4,14 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 import java.util.jar.JarOutputStream;
 
-public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalInterface, Serializable
-{
+public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalInterface, Serializable {
     private RmiInterface ri;
+
     public AdminTerminal() throws RemoteException {
         super();
         try {
@@ -20,24 +21,8 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         }
     }
 
-    public boolean loginUser() throws RemoteException    {
-        while(true) {
-            System.out.println("\n---Login User---\n");
-            Scanner sc = new Scanner(System.in);
-            System.out.println("Numero: ");
-            String numero = sc.nextLine();
-            System.out.println("Password: ");
-            String password = sc.nextLine();
-            boolean check = ri.login(numero, password);
-            if (!check) {
-                System.err.println("Login Failed: numero ou password incorretas.");
-            } else {
-                return true;
-            }
-        }
-    }
-
     public boolean registerUser() throws RemoteException {
+        boolean check = false;
         System.out.println("\n---Criar Utilizador---\n");
         Scanner sc = new Scanner(System.in);
         System.out.println("1 - Estudante\n2 - Docente\n3 - Funcionário");
@@ -71,21 +56,52 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         System.out.println("Faculdade: ");
         String faculdade = sc.nextLine();
 
-        boolean check = ri.createUserRMI(tipo, nome, uni, departamento, faculdade, numeroTelefonico, morada, cc, validade, password);
-        if(!check)
+        for (int i = 0; i <= 6; i++) {
+            try {
+                check = ri.createUserRMI(tipo, nome, uni, departamento, faculdade, numeroTelefonico, morada, cc, validade, password);
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
+
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return false;
+                }
+            }
+        }
+        if (!check)
             System.out.println("Impossivel Criar Pessoa: Número de UC ou Número de CC já registado");
         return check;
     }
+
 
     public void createEleicao() throws RemoteException {
         System.out.println("\n---Criar Eleição---\n");
         Scanner sc = new Scanner(System.in);
         String titulo;
-        boolean titulobool;
+        boolean titulobool = false;
         do {
             System.out.println("Titulo: ");
             titulo = sc.nextLine();
-            titulobool=ri.checkNomeEleicao(titulo);
+            for (int i = 0; i <= 6; i++) {
+                try {
+                    titulobool=ri.checkNomeEleicao(titulo);
+                    break;
+                } catch (RemoteException e) {
+                    try {
+                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    } catch (NotBoundException | RemoteException ignored) {
+
+                    }
+                    if (i == 6) {
+                        System.out.println("Impossivel conectar aos servidores RMI");
+                        return;
+                    }
+                }
+            }
             if(!titulobool){
                 System.out.println("Titulo de eleiçao já existe, por favor insira outro");
             }
@@ -125,7 +141,24 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 System.out.println("Numero Inválido: Tente de novo\n");
         }
 
-        ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, "", type);
+        for (int i = 0; i <= 6; i++) {
+            try {
+                ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, "", type);
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
+
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return;
+                }
+            }
+        }
+
+
 
         System.out.println("Restringir departamentos que podem votar? 1 - Sim || 2 - Não");
         String  choiceS = sc.nextLine();
@@ -137,7 +170,22 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 while (goOn){
                     String departamento = sc.nextLine();
                     if(!departamento.equals("SAIR") && !departamento.equals("sair")){
-                        ri.addDepartamentos(titulo,departamento);
+                        for (int i = 0; i <= 6; i++) {
+                            try {
+                                ri.addDepartamentos(titulo,departamento);
+                                break;
+                            } catch (RemoteException e) {
+                                try {
+                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                } catch (NotBoundException | RemoteException ignored) {
+
+                                }
+                                if (i == 6) {
+                                    System.out.println("Impossivel conectar aos servidores RMI");
+                                    return;
+                                }
+                            }
+                        }
                     }
                     else{
                         goOn = false;
@@ -164,14 +212,76 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         switch (tipo){
             case 1:
                 System.out.println("---Adicionar Candidatos---");
-                System.out.printf("\nPessoa(s) que pretende adicionar (1 - %d): \n", ri.sizePessoas());
-                System.out.print(ri.showPessoas());
+                for (int i = 0; i <= 6; i++) {
+                    try {
+                        System.out.printf("\nPessoa(s) que pretende adicionar (1 - %d): \n", ri.sizePessoas());
+                        break;
+                    } catch (RemoteException e) {
+                        try {
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException | RemoteException ignored) {
+
+                        }
+                        if (i == 6) {
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return false;
+                        }
+                    }
+                }
+                for (int i = 0; i <= 6; i++) {
+                    try {
+                        System.out.print(ri.showPessoas());
+                        break;
+                    } catch (RemoteException e) {
+                        try {
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException | RemoteException ignored) {
+
+                        }
+                        if (i == 6) {
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return false;
+                        }
+                    }
+                }
                 System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
+                int sizeP = 0;
                 while(true){
+                    for (int i = 0; i <= 6; i++) {
+                        try {
+                            sizeP = ri.sizePessoas();
+                            break;
+                        } catch (RemoteException e) {
+                            try {
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException | RemoteException ignored) {
+
+                            }
+                            if (i == 6) {
+                                System.out.println("Impossivel conectar aos servidores RMI");
+                                return false;
+                            }
+                        }
+                    }
                     String addS = sc.nextLine();
                     int add = Integer.parseInt(addS);
-                    if (add <= ri.sizePessoas() && add > 0) {
-                        check = ri.addCandidateRMI(indx, choice, add - 1);
+                    if (add <= sizeP && add > 0) {
+                        for (int i = 0; i <= 6; i++) {
+                            try {
+                                check = ri.addCandidateRMI(indx, choice, add - 1);
+                                break;
+                            } catch (RemoteException e) {
+                                try {
+                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                } catch (NotBoundException | RemoteException ignored) {
+
+                                }
+                                if (i == 6) {
+                                    System.out.println("Impossivel conectar aos servidores RMI");
+                                    return false;
+                                }
+                            }
+                        }
                         if(!check)
                             System.out.println("Erro: Candidato já adicionado.");
                         else{
@@ -195,14 +305,60 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 }
                 else {
                     while(true) {
-                        size = ri.getEleicoesFuturas().get(indx).sizeLista(choice);
+                        for (int i = 0; i <= 6; i++) {
+                            try {
+                                size = ri.getEleicoesFuturas().get(indx).sizeLista(choice);
+                                break;
+                            } catch (RemoteException e) {
+                                try {
+                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                } catch (NotBoundException | RemoteException ignored) {
+
+                                }
+                                if (i == 6) {
+                                    System.out.println("Impossivel conectar aos servidores RMI");
+                                    return false;
+                                }
+                            }
+                        }
                         System.out.printf("\nCandidato que pretende eliminar (1 - %d): \n", size);
-                        System.out.print(ri.getEleicoesFuturas().get(indx).getListasCandidatas().get(choice).showCandidatos());
+                        for (int i = 0; i <= 6; i++) {
+                            try {
+                                System.out.print(ri.getEleicoesFuturas().get(indx).getListasCandidatas().get(choice).showCandidatos());
+                                break;
+                            } catch (RemoteException e) {
+                                try {
+                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                } catch (NotBoundException | RemoteException ignored) {
+
+                                }
+                                if (i == 6) {
+                                    System.out.println("Impossivel conectar aos servidores RMI");
+                                    return false;
+                                }
+                            }
+                        }
                         System.out.println("0 - SAIR DE REMOVER CANDIDATOS");
                         String deletS = sc.nextLine();
                         int delet = Integer.parseInt(deletS);
-                        if (delet <= size && delet > 0)
-                            check = ri.deleteCandidateRMI(indx, choice, delet - 1);
+                        if (delet <= size && delet > 0) {
+                            for (int i = 0; i <= 6; i++) {
+                                try {
+                                    check = ri.deleteCandidateRMI(indx, choice, delet - 1);
+                                    break;
+                                } catch (RemoteException e) {
+                                    try {
+                                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                    } catch (NotBoundException | RemoteException ignored) {
+
+                                    }
+                                    if (i == 6) {
+                                        System.out.println("Impossivel conectar aos servidores RMI");
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
                         else {
                             if(delet == 0)
                                 break;
@@ -225,33 +381,155 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
     public boolean gerirMesas(int indexE) throws RemoteException{
         boolean check = false;
         System.out.println("---Gerir Mesas---\n");
-        if(ri.sizeMesas() != 0) {
+        int sizeM = 0;
+        for (int i = 0; i <= 6; i++) {
+            try {
+                sizeM = ri.sizeMesas();
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
+
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return false;
+                }
+            }
+        }
+        if(sizeM != 0) {
             Scanner sc = new Scanner(System.in);
             System.out.println("\n1 - Adicionar mesa || 2 - Remover mesa:  ");
             String tipoS = sc.nextLine();
             int tipo = Integer.parseInt(tipoS);
             switch (tipo) {
                 case 1:
-                    //mostrar lista de mesas e associar eleicao + mesa & mesa + eleicao || gerirMesas(index)
-                    //ri.criaMesaRMI(indexE,indexM);
                     System.out.print("\n---Adicionar Mesa---\n");
                     System.out.println("Mesas atualmente adicionadas:");
-                    System.out.println(ri.showMesasEleicao(indexE));
-                    System.out.printf("Mesa que pretende adicionar (1 - %d): \n",ri.sizeMesas());
-                    System.out.println(ri.showMesas());
+                    for (int i = 0; i <= 6; i++) {
+                        try {
+                            System.out.println(ri.showMesasEleicao(indexE));
+                            break;
+                        } catch (RemoteException e) {
+                            try {
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException | RemoteException ignored) {
+
+                            }
+                            if (i == 6) {
+                                System.out.println("Impossivel conectar aos servidores RMI");
+                                return false;
+                            }
+                        }
+                    }
+                    for (int i = 0; i <= 6; i++) {
+                        try {
+                            System.out.printf("Mesa que pretende adicionar (1 - %d): \n",ri.sizeMesas());
+                            break;
+                        } catch (RemoteException e) {
+                            try {
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException | RemoteException ignored) {
+
+                            }
+                            if (i == 6) {
+                                System.out.println("Impossivel conectar aos servidores RMI");
+                                return false;
+                            }
+                        }
+                    }
+                    for (int i = 0; i <= 6; i++) {
+                        try {
+                            System.out.println(ri.showMesas());
+                            break;
+                        } catch (RemoteException e) {
+                            try {
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException | RemoteException ignored) {
+
+                            }
+                            if (i == 6) {
+                                System.out.println("Impossivel conectar aos servidores RMI");
+                                return false;
+                            }
+                        }
+                    }
                     String addS = sc.nextLine();
                     int add = Integer.parseInt(addS);
-                    check = ri.criaMesaRMI(indexE, add - 1);
+                    for (int i = 0; i <= 6; i++) {
+                        try {
+                            check = ri.criaMesaRMI(indexE, add - 1);
+                            break;
+                        } catch (RemoteException e) {
+                            try {
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException | RemoteException ignored) {
+
+                            }
+                            if (i == 6) {
+                                System.out.println("Impossivel conectar aos servidores RMI");
+                                return false;
+                            }
+                        }
+                    }
                     break;
 
                 case 2:
                     System.out.print("\n---Remover Mesa---\n");
-                    if(ri.sizeMesasEleicao(indexE) != 0) {
+                    int sizeMeleicao = 0;
+                    for (int i = 0; i <= 6; i++) {
+                        try {
+                            sizeMeleicao = ri.sizeMesasEleicao(indexE);
+                            break;
+                        } catch (RemoteException e) {
+                            try {
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException | RemoteException ignored) {
+
+                            }
+                            if (i == 6) {
+                                System.out.println("Impossivel conectar aos servidores RMI");
+                                return false;
+                            }
+                        }
+                    }
+                    if(sizeMeleicao != 0) {
                         System.out.printf("Mesa que pretende remover (1 - %d): \n", ri.sizeMesasEleicao(indexE));
-                        System.out.println(ri.showMesasEleicao(indexE));
+                        for (int i = 0; i <= 6; i++) {
+                            try {
+                                System.out.println(ri.showMesasEleicao(indexE));
+                                break;
+                            } catch (RemoteException e) {
+                                try {
+                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                } catch (NotBoundException | RemoteException ignored) {
+
+                                }
+                                if (i == 6) {
+                                    System.out.println("Impossivel conectar aos servidores RMI");
+                                    return false;
+                                }
+                            }
+                        }
                         String delS = sc.nextLine();
                         int del = Integer.parseInt(delS);
-                        check = ri.deleteMesaRMI(indexE, del - 1);
+                        for (int i = 0; i <= 6; i++) {
+                            try {
+                                check = ri.deleteMesaRMI(indexE, del - 1);
+                                break;
+                            } catch (RemoteException e) {
+                                try {
+                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                } catch (NotBoundException | RemoteException ignored) {
+
+                                }
+                                if (i == 6) {
+                                    System.out.println("Impossivel conectar aos servidores RMI");
+                                    return false;
+                                }
+                            }
+                        }
                     }
                     else System.out.println("Impossivel Remover Mesas: Sem mesas adicionadas");
                     break;
@@ -284,7 +562,22 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     System.out.println();
                     choiceS = sc.nextLine();
                     choice = Integer.parseInt(choiceS);
-                    ri.eliminarListaCandidatos(indx,choice - 1);
+                    for (int i = 0; i <= 6; i++) {
+                        try {
+                            ri.eliminarListaCandidatos(indx,choice - 1);
+                            break;
+                        } catch (RemoteException e) {
+                            try {
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException | RemoteException ignored) {
+
+                            }
+                            if (i == 6) {
+                                System.out.println("Impossivel conectar aos servidores RMI");
+                                return;
+                            }
+                        }
+                    }
                 }
                 break;
             case 3:
@@ -297,7 +590,22 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     System.out.println();
                     choiceS = sc.nextLine();
                     choice = Integer.parseInt(choiceS);
-                    gerirCandidatos(ri.getEleicoesFuturas().get(indx), choice - 1,indx);
+                    for (int i = 0; i <= 6; i++) {
+                        try {
+                            gerirCandidatos(ri.getEleicoesFuturas().get(indx), choice - 1,indx);
+                            break;
+                        } catch (RemoteException e) {
+                            try {
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException | RemoteException ignored) {
+
+                            }
+                            if (i == 6) {
+                                System.out.println("Impossivel conectar aos servidores RMI");
+                                return;
+                            }
+                        }
+                    }
 
                 }
                 break;
@@ -325,71 +633,259 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
     public boolean gerirDepartamentos(int indexE) throws RemoteException{
         System.out.println("---Gerir Departamentos---\n");
-        if(ri.sizeMesas() != 0) {
-            Scanner sc = new Scanner(System.in);
-            System.out.println("\n1 - Adicionar Departamento || 2 - Remover Departamento:  ");
-            String tipoS = sc.nextLine();
-            int tipo = Integer.parseInt(tipoS);
+        int sizeD = 0;
+        for (int i = 0; i <= 6; i++) {
+            try {
+                sizeD = ri.getEleicoesFuturas().get(indexE).sizeDepartamentos();
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
 
-            switch (tipo) {
-                case 1:
-                    System.out.print("\n---Adicionar Departamento---\n");
-                    String addS = sc.nextLine();
-                    ri.addDepartamentos(indexE,addS);
-                    break;
-
-                case 2:
-                    System.out.print("\n---Remover Departamento---\n");
-                    if(ri.sizeDepartamentos(indexE) != 0) {
-                        System.out.printf("Departamento que pretende remover (1 - %d): \n", ri.sizeDepartamentos(indexE));
-                        System.out.println(ri.showDepartamentos(indexE));
-                        System.out.println("0 - SAIR DE REMOVER DEPARTAMENTOS");
-                        String delS = sc.nextLine();
-                        int del = Integer.parseInt(delS);
-                        if(del == 0)
-                            break;
-                        else
-                            ri.deleteDepartamentos(indexE, del - 1);
-                    }
-                    else System.out.println("Impossivel Remover Departamento: Sem Departamentos adicionadas");
-                    break;
-
-                default:
-                    break;
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return false;
+                }
             }
         }
-        else System.out.println("Impossivel Gerir Departamento: Não existem Departamentos criados.");
-        return false;
+
+        Scanner sc = new Scanner(System.in);
+        if(sizeD == 0)
+            System.out.println("[Sem Departamentos Adicionados: Eleição permitida a todos os votantes]");
+        System.out.println("1 - Adicionar Departamento || 2 - Remover Departamento:  ");
+        String tipoS = sc.nextLine();
+        int tipo = Integer.parseInt(tipoS);
+
+        switch (tipo) {
+            case 1:
+                System.out.print("\n---Adicionar Departamento---\n");
+                String addS = sc.nextLine();
+                for (int i = 0; i <= 6; i++) {
+                    try {
+                        ri.addDepartamentos(indexE,addS);
+                        break;
+                    } catch (RemoteException e) {
+                        try {
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException | RemoteException ignored) {
+
+                        }
+                        if (i == 6) {
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return false;
+                        }
+                    }
+                }
+                break;
+
+            case 2:
+                System.out.print("\n---Remover Departamento---\n");
+                for (int i = 0; i <= 6; i++) {
+                    try {
+                        sizeD = ri.sizeDepartamentos(indexE);
+                        break;
+                    } catch (RemoteException e) {
+                        try {
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException | RemoteException ignored) {
+
+                        }
+                        if (i == 6) {
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return false;
+                        }
+                    }
+                }
+                if(sizeD != 0) {
+                    System.out.printf("Departamento que pretende remover (1 - %d): \n", ri.sizeDepartamentos(indexE));
+                    for (int i = 0; i <= 6; i++) {
+                        try {
+                            System.out.println(ri.showDepartamentos(indexE));
+                            break;
+                        } catch (RemoteException e) {
+                            try {
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException | RemoteException ignored) {
+
+                            }
+                            if (i == 6) {
+                                System.out.println("Impossivel conectar aos servidores RMI");
+                                return false;
+                            }
+                        }
+                    }
+                    System.out.println("0 - SAIR DE REMOVER DEPARTAMENTOS");
+                    String delS = sc.nextLine();
+                    int del = Integer.parseInt(delS);
+                    if(del == 0)
+                        break;
+                    else{
+                        for (int i = 0; i <= 6; i++) {
+                            try {
+                                ri.deleteDepartamentos(indexE, del - 1);
+                                break;
+                            } catch (RemoteException e) {
+                                try {
+                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                } catch (NotBoundException | RemoteException ignored) {
+
+                                }
+                                if (i == 6) {
+                                    System.out.println("Impossivel conectar aos servidores RMI");
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+
+                }
+                else System.out.println("Impossivel Remover Departamento: Sem Departamentos adicionados");
+                break;
+
+            default:
+                break;
+        }
+        return true;
     }
 
     public boolean gerirEleicao() throws RemoteException{
         boolean check = false;
         System.out.println("\n---Gerir Eleições---\n");
         Scanner sc = new Scanner(System.in);
-        System.out.print(ri.showEleicoesFuturas());
-        if(ri.sizeEleicoesFuturas()==0){
+        for (int i = 0; i <= 6; i++) {
+            try {
+                System.out.print(ri.showEleicoesFuturas());
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
+
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return false;
+                }
+            }
+        }
+        int sizeEleF = 0;
+        for (int i = 0; i <= 6; i++) {
+            try {
+                sizeEleF = ri.sizeEleicoesFuturas();
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
+
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return false;
+                }
+            }
+        }
+        if(sizeEleF == 0){
             System.out.println("Não existem eleições para gerir.");
             return  false;
         }
-        System.out.printf("Eleição que pretende gerir (1 - %d): ",ri.sizeEleicoesFuturas());
+        for (int i = 0; i <= 6; i++) {
+            try {
+                System.out.printf("Eleição que pretende gerir (1 - %d): ",ri.sizeEleicoesFuturas());
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
+
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return false;
+                }
+            }
+        }
         String choiceS = sc.nextLine();
         int choice = Integer.parseInt(choiceS);
+        for (int i = 0; i <= 6; i++) {
+            try {
+                sizeEleF = ri.sizeEleicoesFuturas();
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
 
-        if(choice <= ri.sizeEleicoesFuturas()){
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return false;
+                }
+            }
+        }
+        if(choice <= sizeEleF){
             System.out.println("\n---Alterar propriedade da Eleição---");
-            System.out.print(ri.showEleicoesDetalhes(choice - 1));
+            for (int i = 0; i <= 6; i++) {
+                try {
+                    System.out.print(ri.showEleicoesDetalhes(choice - 1));
+                    break;
+                } catch (RemoteException e) {
+                    try {
+                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    } catch (NotBoundException | RemoteException ignored) {
+
+                    }
+                    if (i == 6) {
+                        System.out.println("Impossivel conectar aos servidores RMI");
+                        return false;
+                    }
+                }
+            }
             System.out.println("\n6 - Gerir listas");
             System.out.println("7 - Gerir Mesas");
             System.out.println("8 - Gerir Departamentos");
             String answerS = sc.nextLine();
             int answer  = Integer.parseInt(answerS);
-            if(answer == 6)
-                gerirListas(ri.getEleicoesFuturas().get(choice - 1),choice - 1);
+            if(answer == 6){
+                for (int i = 0; i <= 6; i++) {
+                    try {
+                        gerirListas(ri.getEleicoesFuturas().get(choice - 1),choice - 1);
+                        break;
+                    } catch (RemoteException e) {
+                        try {
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException | RemoteException ignored) {
+
+                        }
+                        if (i == 6) {
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return false;
+                        }
+                    }
+                }
+            }
             else if (answer > 0 && answer <= 4){
                 System.out.println("Alterar para: ");
                 String change = sc.nextLine();
                 //to-do pedir a data ao utilizador no formato dd-MM-yyyy HH:mm ou entao pedir data hora e minuto separado
-                check = ri.changeEleicoesRMI(choice - 1, answer, change);
+                for (int i = 0; i <= 6; i++) {
+                    try {
+                        check = ri.changeEleicoesRMI(choice - 1, answer, change);
+                        break;
+                    } catch (RemoteException e) {
+                        try {
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException | RemoteException ignored) {
+
+                        }
+                        if (i == 6) {
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return false;
+                        }
+                    }
+                }
             }
             else if (answer == 7){
                 gerirMesas(choice - 1);
@@ -411,13 +907,76 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
     public void votoDetalhes() throws RemoteException{
         System.out.println("---Eleitor Local & Momento de Voto---");
         Scanner sc = new Scanner(System.in);
-        System.out.printf("\nEscolha um eleitor (1 - %d): \n", ri.sizePessoas());
-        System.out.print(ri.showPessoas());
+        for (int i = 0; i <= 6; i++) {
+            try {
+                System.out.printf("\nEscolha um eleitor (1 - %d): \n", ri.sizePessoas());
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
+
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return;
+                }
+            }
+        }
+        for (int i = 0; i <= 6; i++) {
+            try {
+                System.out.print(ri.showPessoas());
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
+
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return;
+                }
+            }
+        }
         System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
         String indxS = sc.nextLine();
         int indx = Integer.parseInt(indxS);
-        if (indx <= ri.sizePessoas() && indx > 0)
-            System.out.print(ri.showVotoDetalhesRMI(indx - 1));
+        int sizeP = 0;
+        for (int i = 0; i <= 6; i++) {
+            try {
+                sizeP = ri.sizePessoas();
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
+
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return;
+                }
+            }
+        }
+        if (indx <= sizeP && indx > 0){
+            for (int i = 0; i <= 6; i++) {
+                try {
+                    System.out.print(ri.showVotoDetalhesRMI(indx - 1));
+                    break;
+                } catch (RemoteException e) {
+                    try {
+                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    } catch (NotBoundException | RemoteException ignored) {
+
+                    }
+                    if (i == 6) {
+                        System.out.println("Impossivel conectar aos servidores RMI");
+                        return;
+                    }
+                }
+            }
+        }
         else {
             if(indx == 0)
                 System.out.print("");
@@ -433,40 +992,110 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
     public Lista createLista(Eleicao eleicao, int indx) throws RemoteException {
         System.out.println("---Criar Lista---");
         Scanner sc = new Scanner(System.in);
-
         System.out.println("Nome da lista: ");
         String nome = sc.nextLine();
-        boolean check = ri.createListaRMI(indx, nome);
+        boolean check = false;
+        for (int i = 0; i <= 6; i++) {
+            try {
+                check = ri.createListaRMI(indx, nome);
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
 
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return null;
+                }
+            }
+        }
         if (!check) {
             System.out.println("Erro: Lista já criada com esse nome");
         } else {
-            System.out.println("Adicionar candidatos: Sim - 1 || Não - 2");
-            String choiceS = sc.nextLine();
-            int choice = Integer.parseInt(choiceS);
-            switch (choice) {
-                case 1:
-                    System.out.printf("\nPessoa(s) que pretende adicionar (1 - %d): \n", ri.sizePessoas());
-                    System.out.print(ri.showPessoas());
-                    System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
-                    while (true) {
-                        String addS = sc.nextLine();
-                        int add = Integer.parseInt(addS);
-                        if (add <= ri.sizePessoas() && add > 0)
-                            ri.addCandidateRMI(indx, 0, add - 1);
-                        else {
-                            if (add == 0)
-                                break;
-                            System.out.println("Candidato inválido.");
-                            break;
+                for (int i = 0; i <= 6; i++) {
+                    try {
+                        System.out.printf("Pessoa(s) que pretende adicionar (1 - %d): \n", ri.sizePessoas());
+                        break;
+                    } catch (RemoteException e) {
+                        try {
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException | RemoteException ignored) {
+
+                        }
+                        if (i == 6) {
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return null;
                         }
                     }
-                    break;
-                case 2:
-                    System.out.println("Lista criada com 0 candidatos");
-                default:
-                    System.out.println("Input Inválido: Lista criada com 0 candidatos");
-            }
+                }
+                for (int i = 0; i <= 6; i++) {
+                    try {
+                        System.out.print(ri.showPessoas());
+                        break;
+                    } catch (RemoteException e) {
+                        try {
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException | RemoteException ignored) {
+
+                        }
+                        if (i == 6) {
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return null;
+                        }
+                    }
+                }
+                System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
+                while (true) {
+                    String addS = sc.nextLine();
+                    int add = Integer.parseInt(addS);
+                    int sizeP = 0;
+                    for (int i = 0; i <= 6; i++) {
+                        try {
+                            sizeP = ri.sizePessoas();
+                            break;
+                        } catch (RemoteException e) {
+                            try {
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException | RemoteException ignored) {
+
+                            }
+                            if (i == 6) {
+                                System.out.println("Impossivel conectar aos servidores RMI");
+                                return null;
+                            }
+                        }
+                    }
+                    if (add <= sizeP && add > 0) {
+                        for (int i = 0; i <= 6; i++) {
+                            try {
+                                check = ri.addCandidateRMI(indx, 0, add - 1);
+                                break;
+                            } catch (RemoteException e) {
+                                try {
+                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                                } catch (NotBoundException | RemoteException ignored) {
+
+                                }
+                                if (i == 6) {
+                                    System.out.println("Impossivel conectar aos servidores RMI");
+                                    return null;
+                                }
+                            }
+                        }
+                        if(check)
+                            System.out.println("Candidato adicionado.");
+                        else
+                            System.out.println("Erro: Candidato já adicionado");
+
+                    } else {
+                        if (add == 0)
+                            break;
+                        System.out.println("Candidato inválido.");
+                        break;
+                    }
+                }
         }
         return null;
     }
@@ -474,7 +1103,22 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
     public void eleicaoEndedDetalhes() throws RemoteException{
         System.out.println("\n---Detalhes Eleicoes Terminadas---\n");
-        System.out.print(ri.eleicoesEndedRMI());
+        for (int i = 0; i <= 6; i++) {
+            try {
+                System.out.print(ri.eleicoesEndedRMI());
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
+
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return;
+                }
+            }
+        }
     }
 
 
@@ -522,7 +1166,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         terminal.votoDetalhes();
                         break;
                     case 0:
-                        break;
+                        return;
                     default:
                         System.out.println("Input Inválido.");
                 }

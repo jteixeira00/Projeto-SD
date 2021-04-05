@@ -225,7 +225,7 @@ public class Eleicao implements Serializable{
     }
 
     public int votosTotal(){
-        return votos.size() + votosNulos + votosBrancos;
+        return votos.size();
     }
 
     public void addMesa(Mesa mesa){
