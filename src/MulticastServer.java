@@ -545,7 +545,6 @@ class client extends Thread{
                         boolean auxbool = false;
                         for(int i = 0; i<=6;i++) {
                             try{
-
                                 auxbool = ri.votar(message.getEleicao(), message.getChoice(), message.getUsername(), server.getDepartamento(), ++tableCount);
                                 break;
                             }catch(RemoteException e){

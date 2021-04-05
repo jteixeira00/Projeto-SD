@@ -187,15 +187,20 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         Pessoa p = getPessoabyNumber(number);
 
 
+
         for (Eleicao e1 : getMesaByName(departamento).getEleicoesEspecificas(p.getType().toString())) {
             if(e1.getEndDate().after(date) && e1.getStartDate().before(date)) {
-                //System.out.println(e1.getTitulo());
-                //System.out.println(e1.getListasCandidatas().get(0).getNome());
+                /*System.out.println("---------");
+                System.out.println(e1.getTitulo());
+                System.out.println(e1.getListasCandidatas().get(0).getNome());
+                System.out.println("---------");*/
                 eArray.add(e1);
             }
         }
 
         Eleicao e = eArray.get(eleicao);
+
+
 
         if(choiceLista == 0){
             e.addVotoNulo();
@@ -879,7 +884,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         save();
     }
 
-    //verifica
+    //verifica se user pode votar na eleição em relação departamento
     public boolean doesItBelong(String departamento, int choice, String numeroUc, String tipoUser) throws RemoteException{
         Mesa mesaByName = null;
         try {
@@ -914,10 +919,14 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return false;
     }
 
+    //guarda um AdminTerminalInterface admin numa lista do Rmi
+    //De modo a poder dar callback e usar as funções aí presentes,
     public void subscribe(AdminTerminalInterface admin) throws RemoteException{
         terminais.add(admin);
     }
 
+    //cria e devolve a mensagem do tipo "type|item_list;item_count|" + listasCandidatas
+    //para ser entregue ao Voting term de modo ao votante poder votar
     public String generateLista(int eleicaoC, String dep) throws RemoteException{
         ArrayList<Eleicao> eArray = new ArrayList<>();
         Date date = new Date();
@@ -937,12 +946,13 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
 
         Eleicao eleicao = eArray.get(eleicaoC);
 
+        /*
         for(Eleicao e: getMesaByName(dep).getEleicoes()){
             System.out.println("eleição: " + e.getTitulo());
             for(Lista l: e.getListasCandidatas()){
                 System.out.println("lista "+ l.getNome());
             }
-        }
+        }*/
 
         StringBuilder str = new StringBuilder("type|item_list;item_count|" + eleicao.getListasCandidatas().size());
         int i = 0;
@@ -959,6 +969,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return str.toString();
     }
 
+    //Desconecta a mesa de todos os terminais e dá callback
     public void terminarMesa(String departamento) throws RemoteException{
         for(AdminTerminalInterface a:getTerminais()){
             try{
@@ -969,6 +980,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
     }
 
+    //Conecta a mesa a todos os terminais e dá callback
     public void newTerminal(String departamento) throws RemoteException{
         for(AdminTerminalInterface a:getTerminais()){
             try{

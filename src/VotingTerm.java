@@ -82,7 +82,7 @@ public class VotingTerm extends Thread{
                 buffer = messagestr.getBytes();
                 packet = new DatagramPacket(buffer, buffer.length, group, PORT2);
                 socket.send(packet);
-
+                //comunica um novo terminal (callback)
                 socket = new MulticastSocket(PORT);  // create socket and bind it
                 group = InetAddress.getByName(MULTICAST_ADDRESS);
                 socket.joinGroup(group);
@@ -161,9 +161,8 @@ public class VotingTerm extends Thread{
 
                     if (message.getLogged().equals("on")) {
                         System.out.println("Escolha a lista em que pretende votar:");
-
                         //pedir listas candidatas
-                        messagestr = "uuid|" + uuid.toString() + ";type|listas";
+                        messagestr = "uuid|" + uuid.toString() + ";type|listas;eleicao|" + eleicao;
                         buffer = messagestr.getBytes();
                         packet = new DatagramPacket(buffer, buffer.length, group, PORT2);
                         socket.send(packet);
@@ -185,8 +184,9 @@ public class VotingTerm extends Thread{
                         for (Map.Entry<Integer, String> candidato : message.getCandidatos().entrySet()) {
                             Integer key = candidato.getKey() + 2;
                             String nome = candidato.getValue();
-                            System.out.println(key + " - " + nome + "\n");
+                            System.out.println(key + " - " + nome);
                         }
+
                         int choice = 0;
                         while (true) {
                             String choiceS = in.nextLine();
@@ -205,10 +205,10 @@ public class VotingTerm extends Thread{
 
                         messagestr = "uuid|" + uuid.toString() + ";type|voto;choice|" + choice + ";time|" + dataString + ";eleicao|" + eleicao + ";number|" + numeroUc;
 
-
                         buffer = messagestr.getBytes();
                         packet = new DatagramPacket(buffer, buffer.length, group, PORT2);
                         socket.send(packet);
+                        //envia voto
 
                         do {
                             buffer = new byte[1024];
