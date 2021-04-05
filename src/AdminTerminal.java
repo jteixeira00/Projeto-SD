@@ -650,19 +650,59 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 }
             }
         }
-        if(sizeD != 0) {
-            Scanner sc = new Scanner(System.in);
-            System.out.println("\n1 - Adicionar Departamento || 2 - Remover Departamento:  ");
-            String tipoS = sc.nextLine();
-            int tipo = Integer.parseInt(tipoS);
 
-            switch (tipo) {
-                case 1:
-                    System.out.print("\n---Adicionar Departamento---\n");
-                    String addS = sc.nextLine();
+        Scanner sc = new Scanner(System.in);
+        if(sizeD == 0)
+            System.out.println("[Sem Departamentos Adicionados: Eleição permitida a todos os votantes]");
+        System.out.println("1 - Adicionar Departamento || 2 - Remover Departamento:  ");
+        String tipoS = sc.nextLine();
+        int tipo = Integer.parseInt(tipoS);
+
+        switch (tipo) {
+            case 1:
+                System.out.print("\n---Adicionar Departamento---\n");
+                String addS = sc.nextLine();
+                for (int i = 0; i <= 6; i++) {
+                    try {
+                        ri.addDepartamentos(indexE,addS);
+                        break;
+                    } catch (RemoteException e) {
+                        try {
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException | RemoteException ignored) {
+
+                        }
+                        if (i == 6) {
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return false;
+                        }
+                    }
+                }
+                break;
+
+            case 2:
+                System.out.print("\n---Remover Departamento---\n");
+                for (int i = 0; i <= 6; i++) {
+                    try {
+                        sizeD = ri.sizeDepartamentos(indexE);
+                        break;
+                    } catch (RemoteException e) {
+                        try {
+                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                        } catch (NotBoundException | RemoteException ignored) {
+
+                        }
+                        if (i == 6) {
+                            System.out.println("Impossivel conectar aos servidores RMI");
+                            return false;
+                        }
+                    }
+                }
+                if(sizeD != 0) {
+                    System.out.printf("Departamento que pretende remover (1 - %d): \n", ri.sizeDepartamentos(indexE));
                     for (int i = 0; i <= 6; i++) {
                         try {
-                            ri.addDepartamentos(indexE,addS);
+                            System.out.println(ri.showDepartamentos(indexE));
                             break;
                         } catch (RemoteException e) {
                             try {
@@ -676,31 +716,15 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                             }
                         }
                     }
-                    break;
-
-                case 2:
-                    System.out.print("\n---Remover Departamento---\n");
-                    for (int i = 0; i <= 6; i++) {
-                        try {
-                            sizeD = ri.sizeDepartamentos(indexE);
-                            break;
-                        } catch (RemoteException e) {
-                            try {
-                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
-                            } catch (NotBoundException | RemoteException ignored) {
-
-                            }
-                            if (i == 6) {
-                                System.out.println("Impossivel conectar aos servidores RMI");
-                                return false;
-                            }
-                        }
-                    }
-                    if(sizeD != 0) {
-                        System.out.printf("Departamento que pretende remover (1 - %d): \n", ri.sizeDepartamentos(indexE));
+                    System.out.println("0 - SAIR DE REMOVER DEPARTAMENTOS");
+                    String delS = sc.nextLine();
+                    int del = Integer.parseInt(delS);
+                    if(del == 0)
+                        break;
+                    else{
                         for (int i = 0; i <= 6; i++) {
                             try {
-                                System.out.println(ri.showDepartamentos(indexE));
+                                ri.deleteDepartamentos(indexE, del - 1);
                                 break;
                             } catch (RemoteException e) {
                                 try {
@@ -714,40 +738,16 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                                 }
                             }
                         }
-                        System.out.println("0 - SAIR DE REMOVER DEPARTAMENTOS");
-                        String delS = sc.nextLine();
-                        int del = Integer.parseInt(delS);
-                        if(del == 0)
-                            break;
-                        else{
-                            for (int i = 0; i <= 6; i++) {
-                                try {
-                                    ri.deleteDepartamentos(indexE, del - 1);
-                                    break;
-                                } catch (RemoteException e) {
-                                    try {
-                                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
-                                    } catch (NotBoundException | RemoteException ignored) {
-
-                                    }
-                                    if (i == 6) {
-                                        System.out.println("Impossivel conectar aos servidores RMI");
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
-
                     }
-                    else System.out.println("Impossivel Remover Departamento: Sem Departamentos adicionados");
-                    break;
 
-                default:
-                    break;
-            }
+                }
+                else System.out.println("Impossivel Remover Departamento: Sem Departamentos adicionados");
+                break;
+
+            default:
+                break;
         }
-        else System.out.println("Impossivel Gerir Departamento: Não existem Departamentos criados.");
-        return false;
+        return true;
     }
 
     public boolean gerirEleicao() throws RemoteException{
