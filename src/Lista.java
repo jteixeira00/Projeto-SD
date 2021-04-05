@@ -32,9 +32,6 @@ public class Lista implements Serializable {
         this.nome = nome;
     }
 
-    public void addPessoa(Pessoa pessoa){
-        //to do
-    }
 
     public void addVoto(){
         this.votos++;
@@ -51,6 +48,7 @@ public class Lista implements Serializable {
         return membros.size();
     }
 
+    //devolve uma String com as listas candidatas da eleição para uso posterior no Admin Terminal
     public String showCandidatos() throws RemoteException {
         String lista = "";
         int indx;

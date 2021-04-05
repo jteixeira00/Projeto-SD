@@ -15,6 +15,7 @@ public class MessageProtocol {
     HashMap<Integer, String> candidatos = new HashMap<Integer, String>();
 
 
+    //retira values presentes na mensagem
     MessageProtocol(String string){
         for(String s: string.split(";")){
             switch(s.split("\\|")[0]){
@@ -57,6 +58,7 @@ public class MessageProtocol {
             }
         }
     }
+
     public HashMap<Integer, String> getCandidatos(){
         return candidatos;
     }
@@ -77,12 +79,7 @@ public class MessageProtocol {
     }
 
     public String getPassword() {
-
         return password;
-    }
-
-    public String getMsg() {
-        return msg;
     }
 
     public int getChoice(){return choice;}

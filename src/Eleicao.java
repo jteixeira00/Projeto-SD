@@ -15,13 +15,14 @@ public class Eleicao implements Serializable{
     private Date endDate;
     private ArrayList<Lista> listasCandidatas;
     Pessoa.voterType tipoVoters;
-    ArrayList<String> orgVoters;
 
     ArrayList<Mesa> mesas = new ArrayList<>();
 
-
+    //número de votos nulos
     private int votosNulos;
+    //número de votos brancos
     private int votosBrancos;
+    //lista de com todos os votos de uma eleição
     private ArrayList<Voto> votos;
     private ArrayList<String> departamentos;
 
@@ -43,7 +44,6 @@ public class Eleicao implements Serializable{
         this.descricao = descricao;
         this.startDate = new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(parseDate(startDate, startHour,startMinute));
         this.endDate = new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(parseDate(endDate, endHour, endMinute));
-        Date date = new Date();
         this.votosBrancos = 0;
         this.votosNulos = 0;
         this.listasCandidatas = new ArrayList<>();
@@ -53,9 +53,11 @@ public class Eleicao implements Serializable{
 
     }
 
+
     public ArrayList<Voto> getVotos(){
         return this.votos;
     }
+
     public String parseDate(String date, int hour, int minute){
         String sHour = ""+hour;
         if (sHour.length()==1){
@@ -66,24 +68,6 @@ public class Eleicao implements Serializable{
             sMinute = "0"+sMinute;
         }
         return date+" "+sHour+":"+sMinute;
-    }
-
-    public void addOrg(String org){
-        this.orgVoters.add(org);
-    }
-
-    public void setType(int tipo){
-        switch(tipo){
-            case 1:
-                this.tipoVoters = Pessoa.voterType.ALUNO;
-                break;
-            case 2:
-                this.tipoVoters = Pessoa.voterType.DOCENTE;
-                break;
-            case 3:
-                this.tipoVoters = Pessoa.voterType.FUNCIONARIO;
-                break;
-        }
     }
 
     public String getTitulo() {
@@ -100,10 +84,6 @@ public class Eleicao implements Serializable{
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
-    }
-
-    public void setDepartamento(String departamento) {
-        this.departamento = departamento;
     }
 
     public void setStartDate(Date startDate) {
@@ -134,21 +114,8 @@ public class Eleicao implements Serializable{
         this.votosBrancos++;
     }
 
-
     public Pessoa.voterType getTipoVoters() {
         return tipoVoters;
-    }
-
-    public void setTipoVoters(Pessoa.voterType tipoVoters) {
-        this.tipoVoters = tipoVoters;
-    }
-
-    public ArrayList<String> getOrgVoters() {
-        return orgVoters;
-    }
-
-    public void setOrgVoters(ArrayList<String> orgVoters) {
-        this.orgVoters = orgVoters;
     }
 
     public ArrayList<Lista> getListasCandidatas() {
@@ -174,6 +141,7 @@ public class Eleicao implements Serializable{
     public void addVoto(Voto v){
         this.votos.add(v);}
 
+    //devolve uma String com as listas candidatas da eleição para uso posterior no Admin Terminal
     public String showListasCandidatas() throws RemoteException {
         String lista = "";
         int indx;
@@ -187,12 +155,14 @@ public class Eleicao implements Serializable{
         return lista;
     }
 
+    //tamanho listas candidatas
     public int sizeCandidatos() throws RemoteException{
         if (listasCandidatas == null)
             return 0;
         return listasCandidatas.size();
     }
 
+    //tamanho de uma lista dentro do Array de listas candidatas
     public int sizeLista(int index) throws RemoteException{
         if (listasCandidatas.get(index) == null)
             return 0;
@@ -203,10 +173,6 @@ public class Eleicao implements Serializable{
         if (departamentos == null)
             return 0;
         return departamentos.size();
-    }
-
-    public String getDepartamento(){
-        return departamento;
     }
 
     public ArrayList<String> getDepartamentos(){
@@ -223,6 +189,7 @@ public class Eleicao implements Serializable{
         departamentos.remove(dep);
     }
 
+    //Total de votos da eleição
     public int votosTotal(){
         return votos.size();
     }
@@ -234,10 +201,5 @@ public class Eleicao implements Serializable{
     public ArrayList<Mesa> getMesas() {
         return mesas;
     }
-
-    public void setMesas(ArrayList<Mesa> mesas) {
-        this.mesas = mesas;
-    }
-
 
 }

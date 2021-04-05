@@ -6,7 +6,18 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="72664580-6fa9-4ee8-ac8b-09ffc4ff70ed" name="Default Changelist" comment="" />
+    <list default="true" id="72664580-6fa9-4ee8-ac8b-09ffc4ff70ed" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AdminTerminalInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/AdminTerminalInterface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Eleicao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Eleicao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GetPropertyValues.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GetPropertyValues.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Lista.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Lista.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/MessageProtocol.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MessageProtocol.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/MulticastInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MulticastInterface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/MulticastServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MulticastServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RmiServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RmiServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/configs.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/configs.properties" afterDir="false" />
+    </list>
     <list id="acb246f5-625e-44ba-95a6-dddabb3f1aeb" name="Changes by dinis" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,20 +115,7 @@
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
-  <component name="RunManager" selected="Application.AdminTerminal">
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Application.RmiServer">
     <configuration name="AdminTerminal" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="AdminTerminal" />
       <module name="Projeto-SD" />
@@ -157,12 +155,23 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.RmiServer" />
         <item itemvalue="Application.AdminTerminal" />
         <item itemvalue="Application.VotingTerm" />
         <item itemvalue="Application.MulticastServer" />
-        <item itemvalue="Application.RmiServer" />
         <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
@@ -183,6 +192,7 @@
       <workItem from="1617372900986" duration="13411000" />
       <workItem from="1617461882379" duration="11766000" />
       <workItem from="1617626446114" duration="3938000" />
+      <workItem from="1617644437468" duration="3799000" />
     </task>
     <servers />
   </component>

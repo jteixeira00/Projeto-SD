@@ -44,6 +44,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
 
         setDepartamento(args[0]);
         RmiInterface ti = null;
+
         for (int i = 0; i <= 6; i++) {
             try {
                 ti = (RmiInterface) Naming.lookup("rmi://" + registry+ ":"+ rmiport + "/" + rminame);
@@ -59,6 +60,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 }
             }
         }
+
         for (int i = 0; i <= 6; i++) {
             try {
                 MULTICAST_ADDRESS = ti.getNewAddress();
@@ -197,6 +199,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                         }
                     }
                 }
+                //procura user no rmi server
                 String identificacao = "";
                 for(int i = 0; i<=6;i++) {
                     try{
@@ -275,6 +278,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                     run();
                     return;
                 }
+                //vê se o user já votou
                 boolean auxbool = true;
                 for(int i = 0; i<=6;i++) {
                     try{
@@ -297,6 +301,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                     return;
                 }
 
+                //verifica se o user pode votar na eleição pretendida
                 for(int i = 0; i<=6;i++) {
                     try{
                         auxbool = ri.doesItBelong(departamento, choice, numeroUc, tipoUser);
@@ -319,6 +324,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
                 }
 
 
+                //mensagem para dar unlock ao voting term
                 String message = "type|request;number|"+numeroUc;
                 byte[] buffer = message.getBytes();
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
@@ -364,6 +370,7 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
     public static void setDepartamento(String s){
         departamento = s;
     }
+
     @Override
     public String getDepartamento() throws RemoteException{
         return departamento;
@@ -396,8 +403,6 @@ public class MulticastServer extends Thread implements Serializable, MulticastIn
         String[] lines = input.split("\r\n|\r|\n");
         return  lines.length;
     }
-
-
 
     public static boolean isParsable(String input) {
         try {

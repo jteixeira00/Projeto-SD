@@ -3,7 +3,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+//Busca os valores de configs.properties para ser usado em todo o programa
 public class GetPropertyValues {
+
     InputStream inputStream;
     String main_multicast_pool = "";
     String secondary_multicast_pool = "";
@@ -17,7 +19,6 @@ public class GetPropertyValues {
     public String getCallbackip() {
         return callbackip;
     }
-
 
     public InputStream getInputStream() {
         return inputStream;
@@ -50,8 +51,6 @@ public class GetPropertyValues {
     public String getRegistry() {
         return registry;
     }
-
-
 
     public void setPropValues() throws IOException{
         try{
