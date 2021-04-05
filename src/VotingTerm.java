@@ -123,7 +123,7 @@ public class VotingTerm extends Thread{
                         }
                     };
                     timer = new Timer();
-                    timer.schedule(task, 10 * 1000);
+                    timer.schedule(task, 60 * 1000);
                     password = in.nextLine();
                     timer.cancel();
                     if(password.equals("") || password.equals("\n")){
