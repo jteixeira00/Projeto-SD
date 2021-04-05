@@ -5,15 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eleicoes.ser" beforeDir="false" afterPath="$PROJECT_DIR$/eleicoes.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mesas.ser" beforeDir="false" afterPath="$PROJECT_DIR$/mesas.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/AdminTerminal.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/AdminTerminal.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/Eleicao.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/Eleicao.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/MulticastServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/MulticastServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/RmiServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/RmiServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/client.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/AdminTerminal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/AdminTerminal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Eleicao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Eleicao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MulticastServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MulticastServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RmiServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RmiServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/VotingTerm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/VotingTerm.java" afterDir="false" />
     </list>
     <list id="acb246f5-625e-44ba-95a6-dddabb3f1aeb" name="Changes by dinis" comment="" />
@@ -110,7 +102,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
-  <component name="RunManager" selected="Application.AdminTerminal">
+  <component name="RunManager" selected="Application.VotingTerm">
     <configuration name="AdminTerminal" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="AdminTerminal" />
       <module name="Projeto-SD" />
@@ -150,17 +142,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.VotingTerm" />
@@ -186,6 +167,7 @@
       <workItem from="1617202755958" duration="8591000" />
       <workItem from="1617372900986" duration="13411000" />
       <workItem from="1617461882379" duration="11766000" />
+      <workItem from="1617626446114" duration="910000" />
     </task>
     <servers />
   </component>

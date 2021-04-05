@@ -43,8 +43,14 @@ public class VotingTerm extends Thread{
             DatagramPacket packet;
             if(MULTICAST_ADDRESS.length()<9 ) {
                 System.out.println("A que mesa de voto deseja ligar-se?");
-
                 s = in.nextLine();
+                if(s == null){
+                    System.out.println("[Password Inválida]");
+                    run();
+                    return;
+                }
+                
+
                 tableNumber = s;
                 MULTICAST_ADDRESS = MULTICAST_ADDRESS + s;
                 SECONDARY_MULTICAST = MULTICAST_ADDRESS;
