@@ -116,7 +116,6 @@ public class VotingTerm extends Thread{
                     timer.schedule(task, 10 * 1000);
                     password = in.nextLine();
                     timer.cancel();
-                    System.out.println(password);
                     //conecta-se à segunda rede multicast
                     socket = new MulticastSocket(PORT2);
                     group = InetAddress.getByName(SECONDARY_MULTICAST);

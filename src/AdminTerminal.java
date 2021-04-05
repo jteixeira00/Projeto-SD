@@ -18,10 +18,20 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
     public AdminTerminal() throws RemoteException {
         super();
-        try {
-            this.ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
-        } catch (NotBoundException | MalformedURLException | RemoteException e) {
-            e.printStackTrace();
+        for (int i = 0; i <= 6; i++) {
+            try {
+                ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+                break;
+            } catch (RemoteException | NotBoundException | MalformedURLException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException notBoundException) {
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return;
+                }
+            }
         }
     }
 

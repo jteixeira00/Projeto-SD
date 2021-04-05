@@ -186,6 +186,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         else {
 
             Voto v = new Voto(p, departamento);
+            System.out.println(e.getTitulo());
             e.getListasCandidatas().get(choiceLista-2).addVoto();
             /*
             try {

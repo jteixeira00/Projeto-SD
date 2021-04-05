@@ -414,11 +414,20 @@ class client extends Thread{
     public void run() {
         MulticastSocket socket = null;
         RmiInterface ri = null;
-        try {
-            ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
-
-        } catch (NotBoundException | MalformedURLException | RemoteException e) {
-            e.printStackTrace();
+        for (int i = 0; i <= 6; i++) {
+            try {
+                ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
+                break;
+            } catch (RemoteException | NotBoundException | MalformedURLException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException notBoundException) {
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return;
+                }
+            }
         }
         try {
             socket = new MulticastSocket(PORT);
@@ -516,7 +525,6 @@ class client extends Thread{
                             }
                         }
                         if(auxbool){
-                            System.out.println("here");
                             messagestr = "uuid|"+message.getUuid()+";type|success";
                             buffer = messagestr.getBytes();
                             packet = new DatagramPacket(buffer, buffer.length, group, PORT);
