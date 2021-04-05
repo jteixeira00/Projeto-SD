@@ -8,13 +8,7 @@
   <component name="ChangeListManager">
     <list default="true" id="014d9c74-817f-49bb-ab75-89b17826517c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/MulticastServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/MulticastServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/RmiServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/RmiServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/VotingTerm.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/VotingTerm.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/client.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MulticastServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MulticastServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RmiServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RmiServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/VotingTerm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/VotingTerm.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

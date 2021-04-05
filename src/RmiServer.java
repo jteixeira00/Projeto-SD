@@ -315,7 +315,6 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return true;
     }
 
-
     //eliminar candidato com index delete, na lista com index choice, na eleição com index indx na lista de eleições futuras
     @Override
     public boolean deleteCandidateRMI(int indx, int choice, int delete) throws RemoteException {
@@ -361,6 +360,8 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
     }
 
     //adiciona mesa a eleição e vice-versa
+    //indxE - indice eleição na lista de eleições futuras no rmi
+    //indexM - indice mesa na lista de mesas no rmi
     @Override
     public boolean criaMesaRMI(int indexE, int indexM) throws RemoteException {
         for(Mesa m: getEleicoesFuturas().get(indexE).getMesas()){
@@ -969,7 +970,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         return str.toString();
     }
 
-    //Desconecta a mesa de todos os terminais e dá callback
+    //Avisa que se desconectou dos terminais - callback
     public void terminarMesa(String departamento) throws RemoteException{
         for(AdminTerminalInterface a:getTerminais()){
             try{
@@ -980,7 +981,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiInterface {
         }
     }
 
-    //Conecta a mesa a todos os terminais e dá callback
+    //Avisa que se conectou aos terminais - callback
     public void newTerminal(String departamento) throws RemoteException{
         for(AdminTerminalInterface a:getTerminais()){
             try{
