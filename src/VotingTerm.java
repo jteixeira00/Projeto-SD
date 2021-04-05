@@ -49,12 +49,6 @@ public class VotingTerm extends Thread{
             if (firstExec) {
                 System.out.println("A que mesa de voto deseja ligar-se?");
                 s = in.nextLine();
-                if(s == null){
-                    System.out.println("[Password Inválida]");
-                    run();
-                    return;
-                }
-                
 
                 tableNumber = s;
                 MULTICAST_ADDRESS = MULTICAST_ADDRESS + s;
@@ -123,6 +117,12 @@ public class VotingTerm extends Thread{
                     timer.schedule(task, 10 * 1000);
                     password = in.nextLine();
                     timer.cancel();
+                    if(password.equals("") || password.equals("\n")){
+                        System.out.println("[Password Inválida]");
+                        run();
+                        return;
+                    }
+                    
                     //conecta-se à segunda rede multicast
                     socket = new MulticastSocket(PORT2);
                     group = InetAddress.getByName(SECONDARY_MULTICAST);
