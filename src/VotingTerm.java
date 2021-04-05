@@ -4,6 +4,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.spec.RSAOtherPrimeInfo;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -62,6 +63,8 @@ public class VotingTerm extends Thread{
                 }
                 MULTICAST_ADDRESS = properties.getMain_multicast_pool()+s;
                 SECONDARY_MULTICAST = properties.getSecondary_multicast_pool()+s;
+                PORT = properties.getPort1();
+                PORT2 = properties.getPort2();
                 tableNumber = s;
 
                 this.firstExec = false;
@@ -70,6 +73,7 @@ public class VotingTerm extends Thread{
             String messagestr;
             MessageProtocol message;
             int eleicao;
+
             while (true) {
                 socket = new MulticastSocket(PORT2);
                 InetAddress group = InetAddress.getByName(SECONDARY_MULTICAST);
@@ -85,12 +89,14 @@ public class VotingTerm extends Thread{
                 System.out.println("Terminal de voto aguardando pedido de conexão");
                 //aguarda uma mensagem a pedir um terminal livre
                 do {
+
                     buffer = new byte[256];
                     packet = new DatagramPacket(buffer, buffer.length);
                     socket.receive(packet);
+
                     messagestr = new String(packet.getData(), 0, packet.getLength());
                     message = new MessageProtocol(messagestr);
-
+                    System.out.println(messagestr);
                 } while (!message.getType().equals("request"));
                 numeroUc = message.getUsername();
                 //responde a informar que está disponivel

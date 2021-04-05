@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="Projeto-SD:jar4" />
+      <artifact name="Projeto-SD:jar6" />
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
@@ -115,7 +115,22 @@
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
-  <component name="RunManager" selected="Application.RmiServer">
+
+  <component name="RunManager" selected="Application.MulticastServer">
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+
     <configuration name="AdminTerminal" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="AdminTerminal" />
       <module name="Projeto-SD" />
@@ -168,9 +183,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.RmiServer" />
-        <item itemvalue="Application.AdminTerminal" />
         <item itemvalue="Application.VotingTerm" />
+        <item itemvalue="Application.AdminTerminal" />
         <item itemvalue="Application.MulticastServer" />
         <item itemvalue="Application.Main" />
       </list>
