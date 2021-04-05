@@ -15,9 +15,13 @@ import java.util.jar.JarOutputStream;
 
 public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalInterface, Serializable {
     private RmiInterface ri;
-    
+
+    //construtor do admin terminal - lookup do rmi server
     public AdminTerminal() throws RemoteException {
         super();
+        //linha 23 - 27: tenta 6 vezes dar lookup no RmiServer
+        // Caso não encontre, o Rmi seguinte passa a principal
+        //Este pedaço de código é utilizado ao longo do programa quando é necessário chamadas ao RmiServer
         for (int i = 0; i <= 6; i++) {
             try {
                 ri = (RmiInterface) Naming.lookup("rmi://localhost:7000/rmiServer");
@@ -35,6 +39,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         }
     }
 
+    //cria utilizador a partir dos inputs do admin
     public boolean registerUser() throws RemoteException {
         boolean check = false;
         System.out.println("\n---Criar Utilizador---\n");
@@ -91,6 +96,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         return check;
     }
 
+    //cria eleição a partir dos inputs do admin
     public void createEleicao() throws RemoteException {
         System.out.println("\n---Criar Eleição---\n");
         Scanner sc = new Scanner(System.in);
@@ -207,6 +213,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 System.out.println("[Input Inválido: Tente de novo]");
         }
 
+        //cria eleição
         for (int i = 0; i <= 6; i++) {
             try {
                 if(ri.createEleicaoRMI(titulo, descricao, startDate, startHour, startMinute, endDate, endHour, endMinute, "", type) == null) {
@@ -228,7 +235,8 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         }
 
 
-
+        //Depois de criar a eleição, pergunta ao admin se quer adicionar departamentos à eleição
+        //Caso afirmativo: adiciona à lista de departamentos da eleição os inputs do admin
         System.out.println("Restringir departamentos que podem votar? 1 - Sim || 2 - Não");
         int choice = 0;
         while(true) {
@@ -278,6 +286,10 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
     }
 
+    //Gerir candidatos (adicionar/remover) de uma lista
+    //-eleicao: Eleicao que pretendemos aceder
+    //-choice: index da lista nessa eleição
+    //-indx: index da Eleicao na lista de eleições que ainda não começaram, presente no RmiServer
     public boolean gerirCandidatos(Eleicao eleicao, int choice, int indx) throws RemoteException {
         boolean check = false;
         System.out.println("---Gerir Candidatos---");
@@ -299,6 +311,8 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
         int size = eleicao.sizeLista(choice);
         switch (tipo) {
+            //apresenta a lista de todas as pessoas presentes no RmiServer
+            //admin escolhe por index
             case 1:
                 System.out.println("---Adicionar Candidatos---");
                 for (int i = 0; i <= 6; i++) {
@@ -317,6 +331,9 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                         }
                     }
                 }
+                //De modo a minimizar a criação de objetos no AdminTerminal, ao longo do programa criamos chamadas ao RmiServer
+                //que devolvem uma String com o conteúdo que queremos apresentar. Neste caso, uma String
+                //com todas a pessoas presentes no RmiServer.
                 for (int i = 0; i <= 6; i++) {
                     try {
                         System.out.print(ri.showPessoas());
@@ -394,6 +411,8 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
 
             case 2:
+                //remove candidatos presentes na Lista escolhida
+                //por cada candidato removido volta a apresentar a lista de candidatos
                 System.out.println("---Remover Candidatos---");
                 if (size == 0) {
                     System.out.println("Lista Vazia - Impossivel Remover Candidatos");
@@ -476,7 +495,8 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         return check;
     }
 
-
+    //Gerir mesas (adicionar/remover) de uma eleição
+    //-indexE:index da Eleicao na lista de eleições que ainda não começaram, presente no RmiServer
     public boolean gerirMesas(int indexE) throws RemoteException{
         boolean check = false;
         System.out.println("---Gerir Mesas---\n");
@@ -517,6 +537,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
             switch (tipo) {
                 case 1:
+                    //Adiciona mesa por index a partir da lista de Mesas no RmiServer
                     System.out.print("\n---Adicionar Mesa---\n");
                     System.out.println("Mesas atualmente adicionadas:");
                     for (int i = 0; i <= 6; i++) {
@@ -606,6 +627,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     break;
 
                 case 2:
+                    //remove mesas de uma eleição por index
                     System.out.print("\n---Remover Mesa---\n");
                     int sizeMeleicao = 0;
                     for (int i = 0; i <= 6; i++) {
@@ -689,6 +711,9 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         return check;
     }
 
+    //Gerir listas(criar/adicionar/remover) de uma eleição
+    //eleicao: Eleicao que pretendemos aceder
+    //-indx: index da Eleicao na lista de eleições que ainda não começaram, presente no RmiServer
     public void gerirListas(Eleicao eleicao, int indx) throws RemoteException{
         System.out.println("---Gerir Listas---");
         Scanner sc = new Scanner(System.in);
@@ -710,9 +735,11 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
         switch (choice){
             case  1:
+                //cria lista
                 createLista(eleicao,indx);
                 break;
             case 2:
+                //remover lista da eleição por index
                 if(eleicao.sizeCandidatos() == 0)
                     System.out.println("Eleição sem listas.");
                 else{
@@ -755,6 +782,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 }
                 break;
             case 3:
+                //Gerir candidatos de uma lista (adicionar/remover)
                 if(eleicao.sizeCandidatos() == 0)
                     System.out.println("Eleição sem listas.");
                 else {
@@ -806,6 +834,8 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
 
     }
 
+    //Gerir departamentos (adicionar/remover) de uma eleição
+    //-indexE:index da Eleicao na lista de eleições que ainda não começaram, presente no RmiServer
     public boolean gerirDepartamentos(int indexE) throws RemoteException{
         System.out.println("---Gerir Departamentos---\n");
         int sizeD = 0;
@@ -827,8 +857,11 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         }
 
         Scanner sc = new Scanner(System.in);
-        if(sizeD == 0)
+        if(sizeD == 0) {
+            //Avisa o admin em caso de não haver departamentos adicionados à eleição
+            //esta irá decorrer sem restrições
             System.out.println("[Sem Departamentos Adicionados: Eleição permitida a todos os votantes]");
+        }
         System.out.println("1 - Adicionar Departamento || 2 - Remover Departamento:  ");
         int tipo = 0;
 
@@ -845,6 +878,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         }
 
         switch (tipo) {
+            //Adiciona departamento a partir do input do admin
             case 1:
                 System.out.print("\n---Adicionar Departamento---\n");
                 String addS = sc.nextLine();
@@ -867,6 +901,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 break;
 
             case 2:
+                //Remove departamentos por index
                 System.out.print("\n---Remover Departamento---\n");
                 for (int i = 0; i <= 6; i++) {
                     try {
@@ -947,6 +982,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         return true;
     }
 
+    //Gerir eleicao: Modificar propriedades textuais/Gerir Listas/Gerir Mesas/Gerir Departamentos
     public boolean gerirEleicao() throws RemoteException{
         boolean check = false;
         System.out.println("\n---Gerir Eleições---\n");
@@ -1040,6 +1076,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
             }
 
             String change;
+            //gerirListas da eleicao
             if(answer == 5){
                 for (int i = 0; i <= 6; i++) {
                     try {
@@ -1058,6 +1095,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     }
                 }
             }
+            //Modificar propriedades textuais
             else if (answer > 0 && answer <= 4){
                 System.out.println("Alterar para: ");
                 if(answer == 3 || answer == 4){
@@ -1089,9 +1127,11 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     }
                 }
             }
+            //Geir mesas
             else if (answer == 6){
                 gerirMesas(choice - 1);
             }
+            //Gerir Departamentos
             else if(answer == 7){
                 gerirDepartamentos(choice - 1);
             }
@@ -1106,6 +1146,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         return check;
     }
 
+    //Apresenta local e momento de voto das eleições em que um user escolhido pelo o admin votou
     public void votoDetalhes() throws RemoteException{
         System.out.println("---Eleitor Local & Momento de Voto---");
         Scanner sc = new Scanner(System.in);
@@ -1192,7 +1233,9 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         }
     }
 
-
+    //Cria lista: admin insere o nome da lista e escolher candidatos por index a partir da lista de pessoas presente no RmiServer
+    //-eleicao: Eleicao que pretendemos aceder
+    //-indx: index da Eleicao na lista de eleições que ainda não começaram, presente no RmiServer
     public Lista createLista(Eleicao eleicao, int indx) throws RemoteException {
         System.out.println("---Criar Lista---");
         Scanner sc = new Scanner(System.in);
@@ -1218,43 +1261,10 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         if (!check) {
             System.out.println("Erro: Lista já criada com esse nome");
         } else {
-                for (int i = 0; i <= 6; i++) {
-                    try {
-                        System.out.printf("Pessoa(s) que pretende adicionar (1 - %d): \n", ri.sizePessoas());
-                        break;
-                    } catch (RemoteException e) {
-                        try {
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
-                        } catch (NotBoundException | RemoteException ignored) {
-
-                        }
-                        if (i == 6) {
-                            System.out.println("Impossivel conectar aos servidores RMI");
-                            return null;
-                        }
-                    }
-                }
-                for (int i = 0; i <= 6; i++) {
-                    try {
-                        System.out.print(ri.showPessoas());
-                        break;
-                    } catch (RemoteException e) {
-                        try {
-                            ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
-                        } catch (NotBoundException | RemoteException ignored) {
-
-                        }
-                        if (i == 6) {
-                            System.out.println("Impossivel conectar aos servidores RMI");
-                            return null;
-                        }
-                    }
-                }
-                System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
-                int sizeP = 0;
-                for (int i = 0; i <= 6; i++) {
+            //Adiciona candidatos à lista atualmente criada
+            for (int i = 0; i <= 6; i++) {
                 try {
-                    sizeP = ri.sizePessoas();
+                    System.out.printf("Pessoa(s) que pretende adicionar (1 - %d): \n", ri.sizePessoas());
                     break;
                 } catch (RemoteException e) {
                     try {
@@ -1268,52 +1278,88 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     }
                 }
             }
-                int add = 0;
-                while (true) {
-                    while (true) {
-                        String addS = sc.nextLine();
-                        if (isParsable(addS)) {
-                            add = Integer.parseInt(addS);
-                            if (add <= sizeP && add >= 0)
-                                break;
-                            else
-                                System.out.println("[Input Inválido: Tente de Novo]");
-                        } else
-                            System.out.println("[Input Inválido: Tente de Novo]");
+            for (int i = 0; i <= 6; i++) {
+                try {
+                    System.out.print(ri.showPessoas());
+                    break;
+                } catch (RemoteException e) {
+                    try {
+                        ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                    } catch (NotBoundException | RemoteException ignored) {
+
                     }
-
-
-                    if (add != 0) {
-                        for (int i = 0; i <= 6; i++) {
-                            try {
-                                check = ri.addCandidateRMI(indx, 0, add - 1);
-                                break;
-                            } catch (RemoteException e) {
-                                try {
-                                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
-                                } catch (NotBoundException | RemoteException ignored) {
-
-                                }
-                                if (i == 6) {
-                                    System.out.println("Impossivel conectar aos servidores RMI");
-                                    return null;
-                                }
-                            }
-                        }
-                        if(check)
-                            System.out.println("Candidato adicionado.");
-                        else
-                            System.out.println("Erro: Candidato já adicionado");
-
-                    } else {
+                    if (i == 6) {
+                        System.out.println("Impossivel conectar aos servidores RMI");
                         return null;
                     }
                 }
+            }
+            System.out.println("0 - SAIR DE ADICIONAR CANDIDATOS");
+            int sizeP = 0;
+            for (int i = 0; i <= 6; i++) {
+            try {
+                sizeP = ri.sizePessoas();
+                break;
+            } catch (RemoteException e) {
+                try {
+                    ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                } catch (NotBoundException | RemoteException ignored) {
+
+                }
+                if (i == 6) {
+                    System.out.println("Impossivel conectar aos servidores RMI");
+                    return null;
+                }
+            }
+        }
+            int add = 0;
+            while (true) {
+                while (true) {
+                    String addS = sc.nextLine();
+                    if (isParsable(addS)) {
+                        add = Integer.parseInt(addS);
+                        if (add <= sizeP && add >= 0)
+                            break;
+                        else
+                            System.out.println("[Input Inválido: Tente de Novo]");
+                    } else
+                        System.out.println("[Input Inválido: Tente de Novo]");
+                }
+
+
+                if (add != 0) {
+                    for (int i = 0; i <= 6; i++) {
+                        try {
+                            //Ao criar a lista adicionamos à primeira posição da listasCandidatas da eleição
+                            //facilitando a adição de candidatos
+                            check = ri.addCandidateRMI(indx, 0, add - 1);
+                            break;
+                        } catch (RemoteException e) {
+                            try {
+                                ri = (RmiInterface) LocateRegistry.getRegistry("localhost", 7000).lookup("rmiServer");
+                            } catch (NotBoundException | RemoteException ignored) {
+
+                            }
+                            if (i == 6) {
+                                System.out.println("Impossivel conectar aos servidores RMI");
+                                return null;
+                            }
+                        }
+                    }
+                    if(check)
+                        System.out.println("Candidato adicionado.");
+                    else
+                        System.out.println("Erro: Candidato já adicionado");
+
+                } else {
+                    return null;
+                }
+            }
         }
         return null;
     }
 
-
+    //Apresenta detalhes das eleições terminadas
     public void eleicaoEndedDetalhes() throws RemoteException{
         System.out.println("\n---Detalhes Eleicoes Terminadas---\n");
         for (int i = 0; i <= 6; i++) {
@@ -1334,6 +1380,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         }
     }
 
+    //Função auxiliar que determina se uma String é Parsable para Int
     public static boolean isParsable(String input) {
         try {
             Integer.parseInt(input);
@@ -1343,6 +1390,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         }
     }
 
+    //Função auxiliar que determina se uma String é Parsable para Data no formato "dd-MM-yyyy"
     public static boolean isParsableDate(String input){
         try {
             Date startDate = new SimpleDateFormat("dd-MM-yyyy").parse(input);
@@ -1352,6 +1400,7 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         }
     }
 
+    //Função auxiliar que determina se uma String é Parsable para Data no formato "dd-MM-yyyy hh:mm"
     public static boolean isParsableDate_v2(String input){
         try {
             Date startDate = new SimpleDateFormat("dd-MM-yyyy hh:mm").parse(input);
@@ -1359,6 +1408,30 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         } catch (ParseException e) {
             return  false;
         }
+    }
+
+    //Callback: callback no AdminTerminal quando um voto é a adicionado a um departamento
+    //Apresenta o departamento e o número de votos na mesa
+    public void voteUpdate(String departamento, int count) throws RemoteException{
+        System.out.println("[UPDATE] New Vote in department "+ departamento + ", total count in that table: " + count);
+    }
+
+    //Callback: callback no AdminTerminal quando uma mesa se liga ao RmiServer
+    //Apresenta o departamento
+    public void tableUpdate(String dep) throws RemoteException{
+        System.out.println("[UPDATE] Table at "+dep+" connected");
+    }
+
+    //Callback: callback no AdminTerminal quando uma mesa se desconecta ao RmiServer
+    //Apresenta o departamento
+    public void tableDisconnectedUpdate(String dep) throws RemoteException{
+        System.out.println("[UPDATE] Table at "+ dep+" exited gracefully");
+    }
+
+    //Callback: callback no AdminTerminal quando um terminal de voto se liga a um MulticastServer
+    //Apresenta o departamento
+    public void terminalUpdate(String departamento) throws RemoteException{
+        System.out.println("[UPDATE] New terminal connected at the table at " + departamento);
     }
 
 
@@ -1374,21 +1447,21 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
             Scanner sc = new Scanner(System.in);
             int answer = -1;
             String answerS;
-
-            while(answer != 0){
+            //Menu admin
+            while(true){
                 System.out.println("\n---Menu Admin---\n");
                 System.out.println("1 - Criar Eleição");
                 System.out.println("2 - Criar Utilizador");
                 System.out.println("3 - Gerir Eleições");
                 System.out.println("4 - Eleições Passadas");
                 System.out.println("5 - Local e Momento de Voto de um Eleitor");
-                System.out.println("0 - SAIR");
+                System.out.println();
 
                 while (true) {
                     answerS = sc.nextLine();
                     if (isParsable(answerS)) {
                         answer = Integer.parseInt(answerS);
-                        if (answer <= 5 && answer >= 0)
+                        if (answer <= 5 && answer > 0)
                             break;
                         else
                             System.out.println("[Input Inválido: Tente de Novo]");
@@ -1397,26 +1470,32 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                 }
 
                 switch (answer){
+                    //Cria eleição & adiciona-a à lista de Eleicoes no RmiServer
                     case 1:
                         terminal.createEleicao();
                         break;
+                    //Cria user & adiciona-o à lista de Pessoas no RmiServer
                     case 2:
                         terminal.registerUser();
                         break;
+                    //Gerir eleições
                     case 3:
                         if(terminal.ri.getEleicoes().size() == 0)
                             System.out.println("Não existem eleições que possam ser geridas.");
                         else
                             terminal.gerirEleicao();
                         break;
+                    //Apresenta detalhes de todas as eleições terminadas
                     case 4:
                         terminal.eleicaoEndedDetalhes();
                         break;
+                    //Detalhes dos votos de um user
                     case 5:
                         terminal.votoDetalhes();
                         break;
                     default:
-                        System.out.println("Input Inválido.");
+                        System.out.println("[Input Inválido: Tente de Novo]");
+                        break;
                 }
 
             }
@@ -1424,22 +1503,5 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-    }
-
-
-    public void voteUpdate(String departamento, int count) throws RemoteException{
-        System.out.println("[UPDATE] New Vote in department "+ departamento + ", total count in that table: " + count);
-    }
-
-    public void tableUpdate(String dep) throws RemoteException{
-        System.out.println("[UPDATE] Table at "+dep+" connected");
-    }
-
-    public void tableDisconnectedUpdate(String dep) throws RemoteException{
-        System.out.println("[UPDATE] Table at "+ dep+" exited gracefully");
-    }
-
-    public void terminalUpdate(String departamento) throws RemoteException{
-        System.out.println("[UPDATE] New terminal connected at the table at " + departamento);
     }
 }

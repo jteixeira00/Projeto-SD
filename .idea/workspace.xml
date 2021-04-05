@@ -8,12 +8,9 @@
   <component name="ChangeListManager">
     <list default="true" id="72664580-6fa9-4ee8-ac8b-09ffc4ff70ed" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eleicoes.ser" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mesas.ser" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/VotingTerm$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/VotingTerm$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/AdminTerminal.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/AdminTerminal.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Projeto-SD/VotingTerm.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Projeto-SD/VotingTerm.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/AdminTerminal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/AdminTerminal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/VotingTerm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/VotingTerm.java" afterDir="false" />
     </list>
     <list id="acb246f5-625e-44ba-95a6-dddabb3f1aeb" name="Changes by dinis" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -112,7 +109,7 @@
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
-  <component name="RunManager" selected="Application.VotingTerm">
+  <component name="RunManager" selected="Application.AdminTerminal">
     <configuration name="AdminTerminal" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="AdminTerminal" />
       <module name="Projeto-SD" />
@@ -190,7 +187,7 @@
       <workItem from="1617202755958" duration="8591000" />
       <workItem from="1617372900986" duration="13411000" />
       <workItem from="1617461882379" duration="11766000" />
-      <workItem from="1617626446114" duration="3938000" />
+      <workItem from="1617626446114" duration="6567000" />
     </task>
     <servers />
   </component>
