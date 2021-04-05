@@ -101,6 +101,7 @@ public class VotingTerm extends Thread{
                         public void run()
                         {
                             client.run();
+
                         }
                     };
                     timer.schedule( task, 60*1000 );
