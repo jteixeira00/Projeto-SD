@@ -15,7 +15,7 @@ import java.util.jar.JarOutputStream;
 
 public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalInterface, Serializable {
     private RmiInterface ri;
-
+    
     public AdminTerminal() throws RemoteException {
         super();
         try {
@@ -1062,7 +1062,6 @@ public class AdminTerminal extends UnicastRemoteObject implements AdminTerminalI
                     change = sc.nextLine();
                 }
 
-                //to-do pedir a data ao utilizador no formato dd-MM-yyyy HH:mm ou entao pedir data hora e minuto separado
                 for (int i = 0; i <= 6; i++) {
                     try {
                         check = ri.changeEleicoesRMI(choice - 1, answer, change);
